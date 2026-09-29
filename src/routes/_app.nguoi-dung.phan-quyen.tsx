@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Save, X } from "lucide-react";
 import { toast } from "sonner";
@@ -85,8 +85,8 @@ function PermissionsPage() {
             </TableHeader>
             <TableBody>
               {PERMISSION_GROUPS.map((g) => (
-                <>
-                  <TableRow key={g.module} className="bg-surface">
+                <React.Fragment key={g.module}>
+                  <TableRow className="bg-surface">
                     <TableCell colSpan={3} className="font-semibold">{g.module}</TableCell>
                   </TableRow>
                   {g.items.map((i) => {
@@ -113,7 +113,7 @@ function PermissionsPage() {
                       </TableRow>
                     );
                   })}
-                </>
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
