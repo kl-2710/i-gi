@@ -10,33 +10,93 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppNguoiDungPhanQuyenRouteImport } from './routes/_app.nguoi-dung.phan-quyen'
+import { Route as AppNguoiDungTaiKhoanRouteImport } from './routes/_app.nguoi-dung.tai-khoan'
+import { Route as AppNguoiDungVaiTroRouteImport } from './routes/_app.nguoi-dung.vai-tro'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNguoiDungPhanQuyenRoute = AppNguoiDungPhanQuyenRouteImport.update({
+  id: '/nguoi-dung/phan-quyen',
+  path: '/nguoi-dung/phan-quyen',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNguoiDungTaiKhoanRoute = AppNguoiDungTaiKhoanRouteImport.update({
+  id: '/nguoi-dung/tai-khoan',
+  path: '/nguoi-dung/tai-khoan',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNguoiDungVaiTroRoute = AppNguoiDungVaiTroRouteImport.update({
+  id: '/nguoi-dung/vai-tro',
+  path: '/nguoi-dung/vai-tro',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
+  '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
+  '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
+  '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
+  '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
+  '/_app/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
+  '/_app/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/nguoi-dung/phan-quyen'
+    | '/nguoi-dung/tai-khoan'
+    | '/nguoi-dung/vai-tro'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/nguoi-dung/phan-quyen'
+    | '/nguoi-dung/tai-khoan'
+    | '/nguoi-dung/vai-tro'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/dashboard'
+    | '/_app/nguoi-dung/phan-quyen'
+    | '/_app/nguoi-dung/tai-khoan'
+    | '/_app/nguoi-dung/vai-tro'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +108,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/nguoi-dung/phan-quyen': {
+      id: '/_app/nguoi-dung/phan-quyen'
+      path: '/nguoi-dung/phan-quyen'
+      fullPath: '/nguoi-dung/phan-quyen'
+      preLoaderRoute: typeof AppNguoiDungPhanQuyenRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/nguoi-dung/tai-khoan': {
+      id: '/_app/nguoi-dung/tai-khoan'
+      path: '/nguoi-dung/tai-khoan'
+      fullPath: '/nguoi-dung/tai-khoan'
+      preLoaderRoute: typeof AppNguoiDungTaiKhoanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/nguoi-dung/vai-tro': {
+      id: '/_app/nguoi-dung/vai-tro'
+      path: '/nguoi-dung/vai-tro'
+      fullPath: '/nguoi-dung/vai-tro'
+      preLoaderRoute: typeof AppNguoiDungVaiTroRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppNguoiDungPhanQuyenRoute: typeof AppNguoiDungPhanQuyenRoute
+  AppNguoiDungTaiKhoanRoute: typeof AppNguoiDungTaiKhoanRoute
+  AppNguoiDungVaiTroRoute: typeof AppNguoiDungVaiTroRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppNguoiDungPhanQuyenRoute: AppNguoiDungPhanQuyenRoute,
+  AppNguoiDungTaiKhoanRoute: AppNguoiDungTaiKhoanRoute,
+  AppNguoiDungVaiTroRoute: AppNguoiDungVaiTroRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
