@@ -21,6 +21,8 @@ import { Route as AppDayHocTkbRouteImport } from './routes/_app.day-hoc.tkb'
 import { Route as AppNguoiDungPhanQuyenRouteImport } from './routes/_app.nguoi-dung.phan-quyen'
 import { Route as AppNguoiDungTaiKhoanRouteImport } from './routes/_app.nguoi-dung.tai-khoan'
 import { Route as AppNguoiDungVaiTroRouteImport } from './routes/_app.nguoi-dung.vai-tro'
+import { Route as AppSoDauBaiIndexRouteImport } from './routes/_app.so-dau-bai.index'
+import { Route as AppSoDauBaiIdRouteImport } from './routes/_app.so-dau-bai.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -81,6 +83,16 @@ const AppNguoiDungVaiTroRoute = AppNguoiDungVaiTroRouteImport.update({
   path: '/nguoi-dung/vai-tro',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSoDauBaiIndexRoute = AppSoDauBaiIndexRouteImport.update({
+  id: '/so-dau-bai/',
+  path: '/so-dau-bai/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSoDauBaiIdRoute = AppSoDauBaiIdRouteImport.update({
+  id: '/so-dau-bai/$id',
+  path: '/so-dau-bai/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -94,6 +106,8 @@ export interface FileRoutesByFullPath {
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
+  '/so-dau-bai/$id': typeof AppSoDauBaiIdRoute
+  '/so-dau-bai/': typeof AppSoDauBaiIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -107,6 +121,8 @@ export interface FileRoutesByTo {
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
+  '/so-dau-bai/$id': typeof AppSoDauBaiIdRoute
+  '/so-dau-bai': typeof AppSoDauBaiIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -122,6 +138,8 @@ export interface FileRoutesById {
   '/_app/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/_app/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/_app/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
+  '/_app/so-dau-bai/$id': typeof AppSoDauBaiIdRoute
+  '/_app/so-dau-bai/': typeof AppSoDauBaiIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,6 +155,8 @@ export interface FileRouteTypes {
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
+    | '/so-dau-bai/$id'
+    | '/so-dau-bai/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -150,6 +170,8 @@ export interface FileRouteTypes {
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
+    | '/so-dau-bai/$id'
+    | '/so-dau-bai'
   id:
     | '__root__'
     | '/'
@@ -164,6 +186,8 @@ export interface FileRouteTypes {
     | '/_app/nguoi-dung/phan-quyen'
     | '/_app/nguoi-dung/tai-khoan'
     | '/_app/nguoi-dung/vai-tro'
+    | '/_app/so-dau-bai/$id'
+    | '/_app/so-dau-bai/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -257,6 +281,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNguoiDungVaiTroRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/so-dau-bai/': {
+      id: '/_app/so-dau-bai/'
+      path: '/so-dau-bai'
+      fullPath: '/so-dau-bai/'
+      preLoaderRoute: typeof AppSoDauBaiIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/so-dau-bai/$id': {
+      id: '/_app/so-dau-bai/$id'
+      path: '/so-dau-bai/$id'
+      fullPath: '/so-dau-bai/$id'
+      preLoaderRoute: typeof AppSoDauBaiIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -271,6 +309,8 @@ interface AppRouteChildren {
   AppNguoiDungPhanQuyenRoute: typeof AppNguoiDungPhanQuyenRoute
   AppNguoiDungTaiKhoanRoute: typeof AppNguoiDungTaiKhoanRoute
   AppNguoiDungVaiTroRoute: typeof AppNguoiDungVaiTroRoute
+  AppSoDauBaiIdRoute: typeof AppSoDauBaiIdRoute
+  AppSoDauBaiIndexRoute: typeof AppSoDauBaiIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -284,6 +324,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppNguoiDungPhanQuyenRoute: AppNguoiDungPhanQuyenRoute,
   AppNguoiDungTaiKhoanRoute: AppNguoiDungTaiKhoanRoute,
   AppNguoiDungVaiTroRoute: AppNguoiDungVaiTroRoute,
+  AppSoDauBaiIdRoute: AppSoDauBaiIdRoute,
+  AppSoDauBaiIndexRoute: AppSoDauBaiIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
