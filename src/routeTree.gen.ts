@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppBaoCaoRouteImport } from './routes/_app.bao-cao'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDayHocLopRouteImport } from './routes/_app.day-hoc.lop'
 import { Route as AppDayHocMonHocRouteImport } from './routes/_app.day-hoc.mon-hoc'
@@ -19,8 +20,10 @@ import { Route as AppDayHocPpctRouteImport } from './routes/_app.day-hoc.ppct'
 import { Route as AppDayHocSinhSoDauBaiRouteImport } from './routes/_app.day-hoc.sinh-so-dau-bai'
 import { Route as AppDayHocTkbRouteImport } from './routes/_app.day-hoc.tkb'
 import { Route as AppKiemSoatDuyetRouteImport } from './routes/_app.kiem-soat.duyet'
+import { Route as AppKiemSoatHeThongRouteImport } from './routes/_app.kiem-soat.he-thong'
 import { Route as AppKiemSoatKhoaSoRouteImport } from './routes/_app.kiem-soat.khoa-so'
 import { Route as AppKiemSoatKiemTraRouteImport } from './routes/_app.kiem-soat.kiem-tra'
+import { Route as AppKiemSoatLichSuRouteImport } from './routes/_app.kiem-soat.lich-su'
 import { Route as AppKiemSoatLuuTruRouteImport } from './routes/_app.kiem-soat.luu-tru'
 import { Route as AppNguoiDungPhanQuyenRouteImport } from './routes/_app.nguoi-dung.phan-quyen'
 import { Route as AppNguoiDungTaiKhoanRouteImport } from './routes/_app.nguoi-dung.tai-khoan'
@@ -36,6 +39,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppBaoCaoRoute = AppBaoCaoRouteImport.update({
+  id: '/bao-cao',
+  path: '/bao-cao',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
@@ -77,6 +85,11 @@ const AppKiemSoatDuyetRoute = AppKiemSoatDuyetRouteImport.update({
   path: '/kiem-soat/duyet',
   getParentRoute: () => AppRoute,
 } as any)
+const AppKiemSoatHeThongRoute = AppKiemSoatHeThongRouteImport.update({
+  id: '/kiem-soat/he-thong',
+  path: '/kiem-soat/he-thong',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppKiemSoatKhoaSoRoute = AppKiemSoatKhoaSoRouteImport.update({
   id: '/kiem-soat/khoa-so',
   path: '/kiem-soat/khoa-so',
@@ -85,6 +98,11 @@ const AppKiemSoatKhoaSoRoute = AppKiemSoatKhoaSoRouteImport.update({
 const AppKiemSoatKiemTraRoute = AppKiemSoatKiemTraRouteImport.update({
   id: '/kiem-soat/kiem-tra',
   path: '/kiem-soat/kiem-tra',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKiemSoatLichSuRoute = AppKiemSoatLichSuRouteImport.update({
+  id: '/kiem-soat/lich-su',
+  path: '/kiem-soat/lich-su',
   getParentRoute: () => AppRoute,
 } as any)
 const AppKiemSoatLuuTruRoute = AppKiemSoatLuuTruRouteImport.update({
@@ -120,6 +138,7 @@ const AppSoDauBaiIdRoute = AppSoDauBaiIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bao-cao': typeof AppBaoCaoRoute
   '/dashboard': typeof AppDashboardRoute
   '/day-hoc/lop': typeof AppDayHocLopRoute
   '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
@@ -128,8 +147,10 @@ export interface FileRoutesByFullPath {
   '/day-hoc/sinh-so-dau-bai': typeof AppDayHocSinhSoDauBaiRoute
   '/day-hoc/tkb': typeof AppDayHocTkbRoute
   '/kiem-soat/duyet': typeof AppKiemSoatDuyetRoute
+  '/kiem-soat/he-thong': typeof AppKiemSoatHeThongRoute
   '/kiem-soat/khoa-so': typeof AppKiemSoatKhoaSoRoute
   '/kiem-soat/kiem-tra': typeof AppKiemSoatKiemTraRoute
+  '/kiem-soat/lich-su': typeof AppKiemSoatLichSuRoute
   '/kiem-soat/luu-tru': typeof AppKiemSoatLuuTruRoute
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
@@ -139,6 +160,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bao-cao': typeof AppBaoCaoRoute
   '/dashboard': typeof AppDashboardRoute
   '/day-hoc/lop': typeof AppDayHocLopRoute
   '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
@@ -147,8 +169,10 @@ export interface FileRoutesByTo {
   '/day-hoc/sinh-so-dau-bai': typeof AppDayHocSinhSoDauBaiRoute
   '/day-hoc/tkb': typeof AppDayHocTkbRoute
   '/kiem-soat/duyet': typeof AppKiemSoatDuyetRoute
+  '/kiem-soat/he-thong': typeof AppKiemSoatHeThongRoute
   '/kiem-soat/khoa-so': typeof AppKiemSoatKhoaSoRoute
   '/kiem-soat/kiem-tra': typeof AppKiemSoatKiemTraRoute
+  '/kiem-soat/lich-su': typeof AppKiemSoatLichSuRoute
   '/kiem-soat/luu-tru': typeof AppKiemSoatLuuTruRoute
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
@@ -160,6 +184,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/_app/bao-cao': typeof AppBaoCaoRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/day-hoc/lop': typeof AppDayHocLopRoute
   '/_app/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
@@ -168,8 +193,10 @@ export interface FileRoutesById {
   '/_app/day-hoc/sinh-so-dau-bai': typeof AppDayHocSinhSoDauBaiRoute
   '/_app/day-hoc/tkb': typeof AppDayHocTkbRoute
   '/_app/kiem-soat/duyet': typeof AppKiemSoatDuyetRoute
+  '/_app/kiem-soat/he-thong': typeof AppKiemSoatHeThongRoute
   '/_app/kiem-soat/khoa-so': typeof AppKiemSoatKhoaSoRoute
   '/_app/kiem-soat/kiem-tra': typeof AppKiemSoatKiemTraRoute
+  '/_app/kiem-soat/lich-su': typeof AppKiemSoatLichSuRoute
   '/_app/kiem-soat/luu-tru': typeof AppKiemSoatLuuTruRoute
   '/_app/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/_app/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
@@ -181,6 +208,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/bao-cao'
     | '/dashboard'
     | '/day-hoc/lop'
     | '/day-hoc/mon-hoc'
@@ -189,8 +217,10 @@ export interface FileRouteTypes {
     | '/day-hoc/sinh-so-dau-bai'
     | '/day-hoc/tkb'
     | '/kiem-soat/duyet'
+    | '/kiem-soat/he-thong'
     | '/kiem-soat/khoa-so'
     | '/kiem-soat/kiem-tra'
+    | '/kiem-soat/lich-su'
     | '/kiem-soat/luu-tru'
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
@@ -200,6 +230,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/bao-cao'
     | '/dashboard'
     | '/day-hoc/lop'
     | '/day-hoc/mon-hoc'
@@ -208,8 +239,10 @@ export interface FileRouteTypes {
     | '/day-hoc/sinh-so-dau-bai'
     | '/day-hoc/tkb'
     | '/kiem-soat/duyet'
+    | '/kiem-soat/he-thong'
     | '/kiem-soat/khoa-so'
     | '/kiem-soat/kiem-tra'
+    | '/kiem-soat/lich-su'
     | '/kiem-soat/luu-tru'
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
@@ -220,6 +253,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
+    | '/_app/bao-cao'
     | '/_app/dashboard'
     | '/_app/day-hoc/lop'
     | '/_app/day-hoc/mon-hoc'
@@ -228,8 +262,10 @@ export interface FileRouteTypes {
     | '/_app/day-hoc/sinh-so-dau-bai'
     | '/_app/day-hoc/tkb'
     | '/_app/kiem-soat/duyet'
+    | '/_app/kiem-soat/he-thong'
     | '/_app/kiem-soat/khoa-so'
     | '/_app/kiem-soat/kiem-tra'
+    | '/_app/kiem-soat/lich-su'
     | '/_app/kiem-soat/luu-tru'
     | '/_app/nguoi-dung/phan-quyen'
     | '/_app/nguoi-dung/tai-khoan'
@@ -258,6 +294,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/bao-cao': {
+      id: '/_app/bao-cao'
+      path: '/bao-cao'
+      fullPath: '/bao-cao'
+      preLoaderRoute: typeof AppBaoCaoRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/dashboard': {
       id: '/_app/dashboard'
@@ -315,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppKiemSoatDuyetRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/kiem-soat/he-thong': {
+      id: '/_app/kiem-soat/he-thong'
+      path: '/kiem-soat/he-thong'
+      fullPath: '/kiem-soat/he-thong'
+      preLoaderRoute: typeof AppKiemSoatHeThongRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/kiem-soat/khoa-so': {
       id: '/_app/kiem-soat/khoa-so'
       path: '/kiem-soat/khoa-so'
@@ -327,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/kiem-soat/kiem-tra'
       fullPath: '/kiem-soat/kiem-tra'
       preLoaderRoute: typeof AppKiemSoatKiemTraRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/kiem-soat/lich-su': {
+      id: '/_app/kiem-soat/lich-su'
+      path: '/kiem-soat/lich-su'
+      fullPath: '/kiem-soat/lich-su'
+      preLoaderRoute: typeof AppKiemSoatLichSuRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/kiem-soat/luu-tru': {
@@ -375,6 +432,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppBaoCaoRoute: typeof AppBaoCaoRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDayHocLopRoute: typeof AppDayHocLopRoute
   AppDayHocMonHocRoute: typeof AppDayHocMonHocRoute
@@ -383,8 +441,10 @@ interface AppRouteChildren {
   AppDayHocSinhSoDauBaiRoute: typeof AppDayHocSinhSoDauBaiRoute
   AppDayHocTkbRoute: typeof AppDayHocTkbRoute
   AppKiemSoatDuyetRoute: typeof AppKiemSoatDuyetRoute
+  AppKiemSoatHeThongRoute: typeof AppKiemSoatHeThongRoute
   AppKiemSoatKhoaSoRoute: typeof AppKiemSoatKhoaSoRoute
   AppKiemSoatKiemTraRoute: typeof AppKiemSoatKiemTraRoute
+  AppKiemSoatLichSuRoute: typeof AppKiemSoatLichSuRoute
   AppKiemSoatLuuTruRoute: typeof AppKiemSoatLuuTruRoute
   AppNguoiDungPhanQuyenRoute: typeof AppNguoiDungPhanQuyenRoute
   AppNguoiDungTaiKhoanRoute: typeof AppNguoiDungTaiKhoanRoute
@@ -394,6 +454,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppBaoCaoRoute: AppBaoCaoRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDayHocLopRoute: AppDayHocLopRoute,
   AppDayHocMonHocRoute: AppDayHocMonHocRoute,
@@ -402,8 +463,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppDayHocSinhSoDauBaiRoute: AppDayHocSinhSoDauBaiRoute,
   AppDayHocTkbRoute: AppDayHocTkbRoute,
   AppKiemSoatDuyetRoute: AppKiemSoatDuyetRoute,
+  AppKiemSoatHeThongRoute: AppKiemSoatHeThongRoute,
   AppKiemSoatKhoaSoRoute: AppKiemSoatKhoaSoRoute,
   AppKiemSoatKiemTraRoute: AppKiemSoatKiemTraRoute,
+  AppKiemSoatLichSuRoute: AppKiemSoatLichSuRoute,
   AppKiemSoatLuuTruRoute: AppKiemSoatLuuTruRoute,
   AppNguoiDungPhanQuyenRoute: AppNguoiDungPhanQuyenRoute,
   AppNguoiDungTaiKhoanRoute: AppNguoiDungTaiKhoanRoute,
