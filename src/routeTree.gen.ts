@@ -15,6 +15,9 @@ import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDayHocLopRouteImport } from './routes/_app.day-hoc.lop'
 import { Route as AppDayHocMonHocRouteImport } from './routes/_app.day-hoc.mon-hoc'
 import { Route as AppDayHocNamHocRouteImport } from './routes/_app.day-hoc.nam-hoc'
+import { Route as AppDayHocPpctRouteImport } from './routes/_app.day-hoc.ppct'
+import { Route as AppDayHocSinhSoDauBaiRouteImport } from './routes/_app.day-hoc.sinh-so-dau-bai'
+import { Route as AppDayHocTkbRouteImport } from './routes/_app.day-hoc.tkb'
 import { Route as AppNguoiDungPhanQuyenRouteImport } from './routes/_app.nguoi-dung.phan-quyen'
 import { Route as AppNguoiDungTaiKhoanRouteImport } from './routes/_app.nguoi-dung.tai-khoan'
 import { Route as AppNguoiDungVaiTroRouteImport } from './routes/_app.nguoi-dung.vai-tro'
@@ -48,6 +51,21 @@ const AppDayHocNamHocRoute = AppDayHocNamHocRouteImport.update({
   path: '/day-hoc/nam-hoc',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDayHocPpctRoute = AppDayHocPpctRouteImport.update({
+  id: '/day-hoc/ppct',
+  path: '/day-hoc/ppct',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDayHocSinhSoDauBaiRoute = AppDayHocSinhSoDauBaiRouteImport.update({
+  id: '/day-hoc/sinh-so-dau-bai',
+  path: '/day-hoc/sinh-so-dau-bai',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDayHocTkbRoute = AppDayHocTkbRouteImport.update({
+  id: '/day-hoc/tkb',
+  path: '/day-hoc/tkb',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppNguoiDungPhanQuyenRoute = AppNguoiDungPhanQuyenRouteImport.update({
   id: '/nguoi-dung/phan-quyen',
   path: '/nguoi-dung/phan-quyen',
@@ -70,6 +88,9 @@ export interface FileRoutesByFullPath {
   '/day-hoc/lop': typeof AppDayHocLopRoute
   '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
   '/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
+  '/day-hoc/ppct': typeof AppDayHocPpctRoute
+  '/day-hoc/sinh-so-dau-bai': typeof AppDayHocSinhSoDauBaiRoute
+  '/day-hoc/tkb': typeof AppDayHocTkbRoute
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
@@ -80,6 +101,9 @@ export interface FileRoutesByTo {
   '/day-hoc/lop': typeof AppDayHocLopRoute
   '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
   '/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
+  '/day-hoc/ppct': typeof AppDayHocPpctRoute
+  '/day-hoc/sinh-so-dau-bai': typeof AppDayHocSinhSoDauBaiRoute
+  '/day-hoc/tkb': typeof AppDayHocTkbRoute
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
@@ -92,6 +116,9 @@ export interface FileRoutesById {
   '/_app/day-hoc/lop': typeof AppDayHocLopRoute
   '/_app/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
   '/_app/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
+  '/_app/day-hoc/ppct': typeof AppDayHocPpctRoute
+  '/_app/day-hoc/sinh-so-dau-bai': typeof AppDayHocSinhSoDauBaiRoute
+  '/_app/day-hoc/tkb': typeof AppDayHocTkbRoute
   '/_app/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/_app/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/_app/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
@@ -104,6 +131,9 @@ export interface FileRouteTypes {
     | '/day-hoc/lop'
     | '/day-hoc/mon-hoc'
     | '/day-hoc/nam-hoc'
+    | '/day-hoc/ppct'
+    | '/day-hoc/sinh-so-dau-bai'
+    | '/day-hoc/tkb'
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
@@ -114,6 +144,9 @@ export interface FileRouteTypes {
     | '/day-hoc/lop'
     | '/day-hoc/mon-hoc'
     | '/day-hoc/nam-hoc'
+    | '/day-hoc/ppct'
+    | '/day-hoc/sinh-so-dau-bai'
+    | '/day-hoc/tkb'
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
@@ -125,6 +158,9 @@ export interface FileRouteTypes {
     | '/_app/day-hoc/lop'
     | '/_app/day-hoc/mon-hoc'
     | '/_app/day-hoc/nam-hoc'
+    | '/_app/day-hoc/ppct'
+    | '/_app/day-hoc/sinh-so-dau-bai'
+    | '/_app/day-hoc/tkb'
     | '/_app/nguoi-dung/phan-quyen'
     | '/_app/nguoi-dung/tai-khoan'
     | '/_app/nguoi-dung/vai-tro'
@@ -179,6 +215,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDayHocNamHocRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/day-hoc/ppct': {
+      id: '/_app/day-hoc/ppct'
+      path: '/day-hoc/ppct'
+      fullPath: '/day-hoc/ppct'
+      preLoaderRoute: typeof AppDayHocPpctRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/day-hoc/sinh-so-dau-bai': {
+      id: '/_app/day-hoc/sinh-so-dau-bai'
+      path: '/day-hoc/sinh-so-dau-bai'
+      fullPath: '/day-hoc/sinh-so-dau-bai'
+      preLoaderRoute: typeof AppDayHocSinhSoDauBaiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/day-hoc/tkb': {
+      id: '/_app/day-hoc/tkb'
+      path: '/day-hoc/tkb'
+      fullPath: '/day-hoc/tkb'
+      preLoaderRoute: typeof AppDayHocTkbRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/nguoi-dung/phan-quyen': {
       id: '/_app/nguoi-dung/phan-quyen'
       path: '/nguoi-dung/phan-quyen'
@@ -208,6 +265,9 @@ interface AppRouteChildren {
   AppDayHocLopRoute: typeof AppDayHocLopRoute
   AppDayHocMonHocRoute: typeof AppDayHocMonHocRoute
   AppDayHocNamHocRoute: typeof AppDayHocNamHocRoute
+  AppDayHocPpctRoute: typeof AppDayHocPpctRoute
+  AppDayHocSinhSoDauBaiRoute: typeof AppDayHocSinhSoDauBaiRoute
+  AppDayHocTkbRoute: typeof AppDayHocTkbRoute
   AppNguoiDungPhanQuyenRoute: typeof AppNguoiDungPhanQuyenRoute
   AppNguoiDungTaiKhoanRoute: typeof AppNguoiDungTaiKhoanRoute
   AppNguoiDungVaiTroRoute: typeof AppNguoiDungVaiTroRoute
@@ -218,6 +278,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppDayHocLopRoute: AppDayHocLopRoute,
   AppDayHocMonHocRoute: AppDayHocMonHocRoute,
   AppDayHocNamHocRoute: AppDayHocNamHocRoute,
+  AppDayHocPpctRoute: AppDayHocPpctRoute,
+  AppDayHocSinhSoDauBaiRoute: AppDayHocSinhSoDauBaiRoute,
+  AppDayHocTkbRoute: AppDayHocTkbRoute,
   AppNguoiDungPhanQuyenRoute: AppNguoiDungPhanQuyenRoute,
   AppNguoiDungTaiKhoanRoute: AppNguoiDungTaiKhoanRoute,
   AppNguoiDungVaiTroRoute: AppNguoiDungVaiTroRoute,
