@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppDayHocLopRouteImport } from './routes/_app.day-hoc.lop'
+import { Route as AppDayHocMonHocRouteImport } from './routes/_app.day-hoc.mon-hoc'
+import { Route as AppDayHocNamHocRouteImport } from './routes/_app.day-hoc.nam-hoc'
 import { Route as AppNguoiDungPhanQuyenRouteImport } from './routes/_app.nguoi-dung.phan-quyen'
 import { Route as AppNguoiDungTaiKhoanRouteImport } from './routes/_app.nguoi-dung.tai-khoan'
 import { Route as AppNguoiDungVaiTroRouteImport } from './routes/_app.nguoi-dung.vai-tro'
@@ -28,6 +31,21 @@ const AppRoute = AppRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDayHocLopRoute = AppDayHocLopRouteImport.update({
+  id: '/day-hoc/lop',
+  path: '/day-hoc/lop',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDayHocMonHocRoute = AppDayHocMonHocRouteImport.update({
+  id: '/day-hoc/mon-hoc',
+  path: '/day-hoc/mon-hoc',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDayHocNamHocRoute = AppDayHocNamHocRouteImport.update({
+  id: '/day-hoc/nam-hoc',
+  path: '/day-hoc/nam-hoc',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNguoiDungPhanQuyenRoute = AppNguoiDungPhanQuyenRouteImport.update({
@@ -49,6 +67,9 @@ const AppNguoiDungVaiTroRoute = AppNguoiDungVaiTroRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/day-hoc/lop': typeof AppDayHocLopRoute
+  '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
+  '/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
@@ -56,6 +77,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/day-hoc/lop': typeof AppDayHocLopRoute
+  '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
+  '/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
   '/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
@@ -65,6 +89,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/day-hoc/lop': typeof AppDayHocLopRoute
+  '/_app/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
+  '/_app/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
   '/_app/nguoi-dung/phan-quyen': typeof AppNguoiDungPhanQuyenRoute
   '/_app/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/_app/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
@@ -74,6 +101,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/day-hoc/lop'
+    | '/day-hoc/mon-hoc'
+    | '/day-hoc/nam-hoc'
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
@@ -81,6 +111,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/day-hoc/lop'
+    | '/day-hoc/mon-hoc'
+    | '/day-hoc/nam-hoc'
     | '/nguoi-dung/phan-quyen'
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
@@ -89,6 +122,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/_app/dashboard'
+    | '/_app/day-hoc/lop'
+    | '/_app/day-hoc/mon-hoc'
+    | '/_app/day-hoc/nam-hoc'
     | '/_app/nguoi-dung/phan-quyen'
     | '/_app/nguoi-dung/tai-khoan'
     | '/_app/nguoi-dung/vai-tro'
@@ -122,6 +158,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/day-hoc/lop': {
+      id: '/_app/day-hoc/lop'
+      path: '/day-hoc/lop'
+      fullPath: '/day-hoc/lop'
+      preLoaderRoute: typeof AppDayHocLopRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/day-hoc/mon-hoc': {
+      id: '/_app/day-hoc/mon-hoc'
+      path: '/day-hoc/mon-hoc'
+      fullPath: '/day-hoc/mon-hoc'
+      preLoaderRoute: typeof AppDayHocMonHocRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/day-hoc/nam-hoc': {
+      id: '/_app/day-hoc/nam-hoc'
+      path: '/day-hoc/nam-hoc'
+      fullPath: '/day-hoc/nam-hoc'
+      preLoaderRoute: typeof AppDayHocNamHocRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/nguoi-dung/phan-quyen': {
       id: '/_app/nguoi-dung/phan-quyen'
       path: '/nguoi-dung/phan-quyen'
@@ -148,6 +205,9 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDayHocLopRoute: typeof AppDayHocLopRoute
+  AppDayHocMonHocRoute: typeof AppDayHocMonHocRoute
+  AppDayHocNamHocRoute: typeof AppDayHocNamHocRoute
   AppNguoiDungPhanQuyenRoute: typeof AppNguoiDungPhanQuyenRoute
   AppNguoiDungTaiKhoanRoute: typeof AppNguoiDungTaiKhoanRoute
   AppNguoiDungVaiTroRoute: typeof AppNguoiDungVaiTroRoute
@@ -155,6 +215,9 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
+  AppDayHocLopRoute: AppDayHocLopRoute,
+  AppDayHocMonHocRoute: AppDayHocMonHocRoute,
+  AppDayHocNamHocRoute: AppDayHocNamHocRoute,
   AppNguoiDungPhanQuyenRoute: AppNguoiDungPhanQuyenRoute,
   AppNguoiDungTaiKhoanRoute: AppNguoiDungTaiKhoanRoute,
   AppNguoiDungVaiTroRoute: AppNguoiDungVaiTroRoute,
