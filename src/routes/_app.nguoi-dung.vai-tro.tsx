@@ -31,8 +31,7 @@ export const Route = createFileRoute("/_app/nguoi-dung/vai-tro")({
 
 const DESCRIPTIONS: Record<RoleCode, string> = {
   ADMIN: "Quản trị hệ thống: tài khoản, vai trò, phân quyền.",
-  BGH: "Kiểm tra và duyệt sổ đầu bài toàn trường.",
-  PHT: "Thiết lập dạy học, nhập PPCT/TKB, sinh dữ liệu sổ đầu bài.",
+  BGH: "Thiết lập dạy học, nhập PPCT/TKB, sinh dữ liệu sổ đầu bài, kiểm tra và duyệt sổ đầu bài toàn trường.",
   TPT: "Kiểm tra, duyệt, khóa/mở khóa, lưu trữ/khôi phục sổ đầu bài.",
   GVBM: "Cập nhật và xác nhận thông tin tiết dạy của mình.",
   GVCN: "Theo dõi và xác nhận sổ đầu bài lớp chủ nhiệm.",

@@ -5,6 +5,7 @@ import {
   BookMarked,
   ChevronDown,
   LogOut,
+  LockKeyhole,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
@@ -27,6 +28,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useApp } from "@/lib/app-state";
 import { ROLE_LABEL, ROLE_SHORT } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { AccessDeniedDialog } from "@/components/common/AccessDeniedDialog";
 import { DASHBOARD_ITEM, NAV_GROUPS } from "./nav-config";
 
 function Brand({ compact }: { compact?: boolean }) {
@@ -47,13 +49,20 @@ function Brand({ compact }: { compact?: boolean }) {
   );
 }
 
-function SidebarNav({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
+function SidebarNav({
+  collapsed,
+  onNavigate,
+}: {
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
   const { can } = useApp();
   const { pathname } = useLocation();
-  const visibleGroups = NAV_GROUPS.map((g) => ({
-    ...g,
-    items: g.items.filter((i) => i.perms.length === 0 || i.perms.some((p) => can(p))),
-  })).filter((g) => g.items.length > 0);
+  const [accessDeniedOpen, setAccessDeniedOpen] = useState(false);
+
+  const canAccess = (
+    perms: typeof NAV_GROUPS[number]["items"][number]["perms"]
+  ) => perms.length === 0 || perms.some((p) => can(p));
 
   const itemCls = (active: boolean) =>
     cn(
@@ -66,6 +75,8 @@ function SidebarNav({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?
   return (
     <ScrollArea className="h-full">
       <nav className="space-y-5 p-3">
+
+        {/* Dashboard */}
         <Link
           to={DASHBOARD_ITEM.to}
           onClick={onNavigate}
@@ -76,8 +87,10 @@ function SidebarNav({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?
           {!collapsed && <span>Dashboard</span>}
         </Link>
 
-        {visibleGroups.map((g) => (
+        {/* 5 MODULES */}
+        {NAV_GROUPS.map((g) => (
           <div key={g.label} className="space-y-1">
+
             {!collapsed ? (
               <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-sidebar-foreground/50">
                 {g.label}
@@ -85,21 +98,58 @@ function SidebarNav({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?
             ) : (
               <div className="mx-auto my-2 h-px w-6 bg-sidebar-border" />
             )}
-            {g.items.map((i) => (
-              <Link
-                key={i.to}
-                to={i.to}
-                onClick={onNavigate}
-                title={i.label}
-                className={itemCls(pathname === i.to || pathname.startsWith(i.to + "/"))}
-              >
-                <i.icon className="size-4 shrink-0" />
-                {!collapsed && <span className="truncate">{i.label}</span>}
-              </Link>
-            ))}
+
+            {g.items.map((i) => {
+              const allowed = canAccess(i.perms);
+              const active =
+                pathname === i.to ||
+                pathname.startsWith(i.to + "/");
+
+              return (
+                <Link
+                  key={i.to}
+                  to={i.to}
+                  onClick={(event) => {
+                    if (!allowed) {
+                      event.preventDefault();
+                      setAccessDeniedOpen(true);
+                      return;
+                    }
+
+                    onNavigate?.();
+                  }}
+                  title={
+                    allowed
+                      ? i.label
+                      : `${i.label} - Không có quyền truy cập`
+                  }
+                  className={cn(
+                    itemCls(active),
+                    !allowed && "opacity-65",
+                  )}
+                >
+                  <i.icon className="size-4 shrink-0" />
+
+                  {!collapsed && (
+                    <span className="truncate">
+                      {i.label}
+                    </span>
+                  )}
+
+                  {!allowed && (
+                    <LockKeyhole className="ml-auto size-3.5 shrink-0" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
         ))}
       </nav>
+
+      <AccessDeniedDialog
+        open={accessDeniedOpen}
+        onOpenChange={setAccessDeniedOpen}
+      />
     </ScrollArea>
   );
 }

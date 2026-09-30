@@ -1,9 +1,8 @@
-export type RoleCode = "ADMIN" | "BGH" | "PHT" | "TPT" | "GVBM" | "GVCN";
+export type RoleCode = "ADMIN" | "BGH" | "TPT" | "GVBM" | "GVCN";
 
 export const ROLE_LABEL: Record<RoleCode, string> = {
   ADMIN: "Quản trị hệ thống",
   BGH: "Ban Giám hiệu",
-  PHT: "Phó Hiệu trưởng",
   TPT: "Tổng phụ trách",
   GVBM: "Giáo viên bộ môn",
   GVCN: "Giáo viên chủ nhiệm",
@@ -12,7 +11,6 @@ export const ROLE_LABEL: Record<RoleCode, string> = {
 export const ROLE_SHORT: Record<RoleCode, string> = {
   ADMIN: "Admin",
   BGH: "Ban Giám hiệu",
-  PHT: "Phó Hiệu trưởng",
   TPT: "Tổng phụ trách",
   GVBM: "GVBM",
   GVCN: "GVCN",

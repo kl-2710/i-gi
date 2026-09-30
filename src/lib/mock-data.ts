@@ -82,7 +82,7 @@ export const ACCOUNTS: UserAccount[] = [
     username: "phohieutruong",
     email: "bao.tran@thcskhuongmai.edu.vn",
     position: "Phó Hiệu trưởng",
-    roles: ["PHT"],
+    roles: ["BGH"],
     active: true,
     updatedAt: "18/09/2026",
   },
@@ -178,7 +178,7 @@ export const ACCOUNTS: UserAccount[] = [
 export const DEMO_LOGINS = [
   { username: "admin", role: "Admin" },
   { username: "hieutruong", role: "Ban Giám hiệu" },
-  { username: "phohieutruong", role: "Phó Hiệu trưởng" },
+  { username: "phohieutruong", role: "Ban Giám hiệu" },
   { username: "tongphutrach", role: "Tổng phụ trách" },
   { username: "an.nguyen", role: "GVBM" },
   { username: "thu.le", role: "GVBM + GVCN" },
@@ -285,28 +285,59 @@ export function buildLessonBooks(): LessonBook[] {
               ]
             : [],
           status,
-          gvbmConfirm:
-            STATUS_CYCLE.indexOf(status) >= 3 && status !== "yeu_cau_chinh_sua"
-              ? { by: teacher.name, at: time }
-              : undefined,
-          gvcnConfirm:
-            STATUS_CYCLE.indexOf(status) >= 4 && status !== "yeu_cau_chinh_sua"
-              ? { by: cls.gvcn, at: time }
-              : undefined,
-          checkedBy:
-            STATUS_CYCLE.indexOf(status) >= 6 && status !== "yeu_cau_chinh_sua"
-              ? { by: "Phan Thị Kim Oanh", at: time }
-              : undefined,
-          approvedBy:
-            STATUS_CYCLE.indexOf(status) >= 8 && status !== "yeu_cau_chinh_sua"
-              ? { by: "Nguyễn Thị Thanh Hà", at: time }
-              : undefined,
-          lockedBy:
-            STATUS_CYCLE.indexOf(status) >= 9 && status !== "yeu_cau_chinh_sua"
-              ? { by: "Phan Thị Kim Oanh", at: time }
-              : undefined,
-          archivedBy: status === "da_luu_tru" ? { by: "Phan Thị Kim Oanh", at: time } : undefined,
-          fixReason: status === "yeu_cau_chinh_sua" ? "Thiếu nội dung thực tế của tiết học." : undefined,
+          ...(STATUS_CYCLE.indexOf(status) >= 3 && status !== "yeu_cau_chinh_sua"
+            ? {
+              gvbmConfirm: {
+              by: teacher.name,
+              at: time,
+              },
+            }
+            : {}),
+          ...(STATUS_CYCLE.indexOf(status) >= 4 && status !== "yeu_cau_chinh_sua"
+              ? {
+              gvcnConfirm: {
+              by: cls.gvcn,
+              at: time,
+              },
+            }
+            : {}),
+          ...(STATUS_CYCLE.indexOf(status) >= 6 && status !== "yeu_cau_chinh_sua"
+              ? {
+              checkedBy: {
+              by: "Ban Giám hiệu",
+              at: time,
+              },
+            }
+            : {}),
+          ...(STATUS_CYCLE.indexOf(status) >= 8 && status !== "yeu_cau_chinh_sua"
+             ? {
+            approvedBy: {
+            by: "Nguyễn Thị Thanh Hà", 
+            at: time,
+            },
+          }
+        : {}),
+          ...(STATUS_CYCLE.indexOf(status) >= 9 && status !== "yeu_cau_chinh_sua"
+              ? {
+              lockedBy: {
+              by: "Phan Thị Kim Oanh", 
+              at: time,
+              },
+            }
+            : {}),
+          ...(status === "da_luu_tru"
+          ? {
+              archivedBy: {
+                by: "Phan Thi Kim Oanh",
+                at: time,
+              },
+            }
+          : {}),
+          ...(status === "yeu_cau_chinh_sua"
+          ? {
+              fixReason: "Thiếu nội dung thực tế của tiết học.",
+            }
+          : {}),
           year: NAM_HOC,
           semester: HOC_KY,
         });
@@ -321,7 +352,7 @@ export const INITIAL_AUDIT: AuditEntry[] = [
     id: "A001",
     at: "18/09/2026 08:12",
     actor: "Trần Quốc Bảo",
-    role: "PHT",
+    role: "BGH",
     action: "Upload PPCT",
     target: "PPCT_HK1_2026_2027.xlsx",
     recordCode: "PPCT-HK1",
@@ -333,7 +364,7 @@ export const INITIAL_AUDIT: AuditEntry[] = [
     id: "A002",
     at: "18/09/2026 09:40",
     actor: "Trần Quốc Bảo",
-    role: "PHT",
+    role: "BGH",
     action: "Upload TKB",
     target: "TKB_HK1_2026_2027.xlsx",
     recordCode: "TKB-HK1",
@@ -345,7 +376,7 @@ export const INITIAL_AUDIT: AuditEntry[] = [
     id: "A003",
     at: "18/09/2026 10:05",
     actor: "Hệ thống",
-    role: "PHT",
+    role: "BGH",
     action: "Tự động tạo dữ liệu sổ đầu bài",
     target: "Sổ đầu bài HK I",
     recordCode: "GEN-0918",
@@ -423,9 +454,9 @@ export const NOTIFICATIONS: AppNotification[] = [
   { id: "N5", roles: ["BGH"], title: "Có 8 sổ đầu bài chờ duyệt.", time: "Hôm nay 07:50", type: "info" },
   { id: "N6", roles: ["TPT"], title: "Có 10 sổ đầu bài cần kiểm tra.", time: "Hôm nay 08:15", type: "info" },
   { id: "N7", roles: ["TPT"], title: "Có 4 sổ đã duyệt chờ khóa.", time: "Hôm nay 08:15", type: "warning" },
-  { id: "N8", roles: ["PHT"], title: "PPCT đã được upload thành công.", time: "18/09/2026 08:12", type: "success" },
-  { id: "N9", roles: ["PHT"], title: "Có 8 dòng TKB cần kiểm tra.", time: "18/09/2026 09:41", type: "warning" },
-  { id: "N10", roles: ["PHT"], title: "Dữ liệu sổ đầu bài đã sẵn sàng để sinh.", time: "18/09/2026 09:55", type: "info" },
+  { id: "N8", roles: ["BGH"], title: "PPCT đã được upload thành công.", time: "18/09/2026 08:12", type: "success" },
+  { id: "N9", roles: ["BGH"], title: "Có 8 dòng TKB cần kiểm tra.", time: "18/09/2026 09:41", type: "warning" },
+  { id: "N10", roles: ["BGH"], title: "Dữ liệu sổ đầu bài đã sẵn sàng để sinh.", time: "18/09/2026 09:55", type: "info" },
   { id: "N11", roles: ["ADMIN"], title: "2 tài khoản đang ở trạng thái tạm khóa.", time: "Hôm nay 06:00", type: "info" },
 ];
 

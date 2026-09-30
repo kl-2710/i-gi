@@ -76,19 +76,62 @@ function DashboardPage() {
         ];
       case "BGH":
         return [
-          { label: "Sổ cần kiểm tra", value: count("cho_kiem_tra", "xac_nhan_gvcn"), icon: ListChecks, tone: "warning" as const },
-          { label: "Sổ cần duyệt", value: count("cho_duyet", "da_kiem_tra"), icon: CheckCircle2, tone: "info" as const },
-          { label: "Tổng số sổ toàn trường", value: books.length, icon: BookOpen, tone: "primary" as const },
-          { label: "Sổ đã duyệt", value: count("da_duyet", "da_khoa", "da_luu_tru"), icon: ShieldCheck, tone: "success" as const },
-        ];
-      case "PHT":
-        return [
-          { label: "Trạng thái PPCT", value: "Đã nhập", icon: ClipboardList, tone: "success" as const, hint: "PPCT_HK1_2026_2027.xlsx" },
-          { label: "Trạng thái TKB", value: "Đã nhập", icon: FileSpreadsheet, tone: "success" as const, hint: "TKB_HK1_2026_2027.xlsx" },
-          { label: "Tệp đã tải lên", value: 2, icon: FileSpreadsheet, tone: "info" as const },
-          { label: "Kiểm tra dữ liệu", value: "13 dòng cảnh báo", icon: TriangleAlert, tone: "warning" as const },
-          { label: "Bản ghi sổ đã sinh", value: books.length, icon: BookOpen, tone: "primary" as const },
-          { label: "Sổ chờ kiểm tra / duyệt", value: count("cho_kiem_tra", "cho_duyet", "da_kiem_tra"), icon: ListChecks, tone: "warning" as const },
+          {
+            label: "Trạng thái PPCT",
+            value: "Đã nhập",
+            icon: ClipboardList,
+            tone: "success" as const,
+            hint: "PPCT học kỳ hiện tại",
+          },
+          {
+            label: "Trạng thái TKB",
+            value: "Đã nhập",
+            icon: FileSpreadsheet,
+            tone: "success" as const,
+            hint: "TKB học kỳ hiện tại",
+          },
+          {
+            label: "Tệp đã tải lên",
+            value: 2,
+            icon: FileSpreadsheet,
+            tone: "info" as const,
+          },
+          {
+            label: "Kiểm tra dữ liệu",
+            value: "13 dòng cảnh báo",
+            icon: TriangleAlert,
+            tone: "warning" as const,
+          },
+          {
+            label: "Bản ghi sổ đã sinh",
+            value: books.length,
+            icon: BookOpen,
+            tone: "primary" as const,
+          },
+          {
+            label: "Sổ cần kiểm tra",
+            value: count("cho_kiem_tra", "xac_nhan_gvcn"),
+            icon: ListChecks,
+            tone: "warning" as const,
+          },
+          {
+            label: "Sổ cần duyệt",
+            value: count("cho_duyet", "da_kiem_tra"),
+            icon: CheckCircle2,
+            tone: "info" as const,
+          },
+          {
+            label: "Tổng số sổ toàn trường",
+            value: books.length,
+            icon: BookOpen,
+            tone: "primary" as const,
+          },
+          {
+            label: "Sổ đã duyệt",
+            value: count("da_duyet", "da_khoa", "da_luu_tru"),
+            icon: ShieldCheck,
+            tone: "success" as const,
+          },
         ];
       default:
         return [

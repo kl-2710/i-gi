@@ -1,15 +1,18 @@
 import { useEffect } from "react";
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { LoadingState } from "@/components/common/States";
 import { useApp } from "@/lib/app-state";
+import { AccessDeniedScreen } from "@/components/common/AccessDeniedScreen";
+import { getRoutePermissions } from "@/lib/route-permissions";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
 });
 
 function AppLayout() {
-  const { user } = useApp();
+  const { user, can } = useApp();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,9 +27,16 @@ function AppLayout() {
     );
   }
 
-  return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
-  );
+const requiredPermissions = getRoutePermissions(pathname);
+
+const allowed =
+  requiredPermissions === null ||
+  requiredPermissions.length === 0 ||
+  requiredPermissions.some((permission) => can(permission));
+
+return (
+  <AppShell>
+    {allowed ? <Outlet /> : <AccessDeniedScreen />}
+  </AppShell>
+);
 }
