@@ -372,7 +372,7 @@ export const INITIAL_AUDIT: AuditEntry[] = [
   {
     id: "A007",
     at: "22/09/2026 14:25",
-    actor: "Phan Thị Kim Oanh",
+    actor: "Nguyễn Thị Thanh Hà",
     role: "BGH",
     action: "Khóa sổ",
     target: "Tiết 3 - 9A1 - GDCD",
@@ -397,12 +397,12 @@ export const INITIAL_AUDIT: AuditEntry[] = [
 
 export const NOTIFICATIONS: AppNotification[] = [
   { id: "N1", roles: ["GVBM"], title: "Bạn có 2 tiết chưa hoàn thiện.", time: "Hôm nay 07:30", type: "warning" },
-  { id: "N2", roles: ["GVBM"], title: "Sổ đầu bài đã được yêu cầu chỉnh sửa.", time: "Hôm qua 16:20", type: "warning" },
+  { id: "N2", roles: ["GVBM"], title: "Có 2 tiết cần bổ sung thông tin.", time: "Hôm qua 16:20", type: "warning" },
   { id: "N3", roles: ["GVCN"], title: "Có 3 sổ đầu bài lớp 7A1 chờ xác nhận.", time: "Hôm nay 08:05", type: "info" },
   { id: "N4", roles: ["BGH"], title: "Có 15 sổ đầu bài chờ BGH xác nhận.", time: "Hôm nay 07:50", type: "info" },
   { id: "N5", roles: ["BGH"], title: "Có 8 sổ đầu bài chờ BGH xác nhận.", time: "Hôm nay 07:50", type: "info" },
   { id: "N6", roles: ["TPT"], title: "Có 10 sổ đầu bài cần theo dõi.", time: "Hôm nay 08:15", type: "info" },
-  { id: "N7", roles: ["TPT"], title: "Có 4 sổ đã xác nhận BGH chờ khóa.", time: "Hôm nay 08:15", type: "warning" },
+  { id: "N7", roles: ["TPT"], title: "Có 4 sổ đầu bài đã được BGH xác nhận.", time: "Hôm nay 08:15", type: "warning" },
   { id: "N8", roles: ["PHT"], title: "PPCT đã được nhập thành công.", time: "18/09/2026 08:12", type: "success" },
   { id: "N9", roles: ["PHT"], title: "Có 8 dòng TKB cần kiểm tra.", time: "18/09/2026 09:41", type: "warning" },
   { id: "N10", roles: ["PHT"], title: "Dữ liệu sổ đầu bài đã sẵn sàng để hình thành tiết học.", time: "18/09/2026 09:55", type: "info" },
