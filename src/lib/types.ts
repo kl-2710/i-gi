@@ -1,8 +1,9 @@
-export type RoleCode = "ADMIN" | "BGH" | "TPT" | "GVBM" | "GVCN";
+export type RoleCode = "ADMIN" | "BGH" | "PHT" | "TPT" | "GVBM" | "GVCN";
 
 export const ROLE_LABEL: Record<RoleCode, string> = {
   ADMIN: "Quản trị hệ thống",
   BGH: "Ban Giám hiệu",
+  PHT: "Phó Hiệu trưởng",
   TPT: "Tổng phụ trách",
   GVBM: "Giáo viên bộ môn",
   GVCN: "Giáo viên chủ nhiệm",
@@ -10,17 +11,16 @@ export const ROLE_LABEL: Record<RoleCode, string> = {
 
 export const ROLE_SHORT: Record<RoleCode, string> = {
   ADMIN: "Admin",
-  BGH: "Ban Giám hiệu",
-  TPT: "Tổng phụ trách",
+  BGH: "BGH",
+  PHT: "PHT",
+  TPT: "TPT",
   GVBM: "GVBM",
   GVCN: "GVCN",
 };
 
 export type Permission =
   | "user.manage"
-  | "role.manage"
   | "perm.manage"
-  | "system.info"
   | "setup.view"
   | "setup.manage"
   | "ppct.upload"
@@ -32,15 +32,12 @@ export type Permission =
   | "book.edit"
   | "book.confirm.gvbm"
   | "book.confirm.gvcn"
-  | "ctrl.check"
-  | "ctrl.approve"
-  | "ctrl.request_fix"
-  | "ctrl.lock"
-  | "ctrl.unlock"
-  | "ctrl.archive"
-  | "ctrl.restore"
-  | "audit.view"
-  | "report.view";
+  | "book.confirm.bgh"
+  | "book.lock"
+  | "book.unlock"
+  | "report.view"
+  | "profile.view"
+  | "blocked.route";
 
 export interface UserAccount {
   id: string;
@@ -62,29 +59,17 @@ export type BookStatus =
   | "da_cap_nhat"
   | "xac_nhan_gvbm"
   | "xac_nhan_gvcn"
-  | "cho_kiem_tra"
-  | "yeu_cau_chinh_sua"
-  | "da_kiem_tra"
-  | "cho_duyet"
-  | "da_duyet"
-  | "da_khoa"
-  | "da_luu_tru"
-  | "da_khoi_phuc";
+  | "xac_nhan_bgh"
+  | "da_khoa";
 
 export const STATUS_LABEL: Record<BookStatus, string> = {
-  he_thong_tao: "Được hệ thống tạo",
+  he_thong_tao: "Được hệ thống hình thành",
   chua_hoan_thien: "Chưa hoàn thiện",
   da_cap_nhat: "Đã cập nhật",
   xac_nhan_gvbm: "Đã xác nhận GVBM",
   xac_nhan_gvcn: "Đã xác nhận GVCN",
-  cho_kiem_tra: "Chờ kiểm tra",
-  yeu_cau_chinh_sua: "Yêu cầu chỉnh sửa",
-  da_kiem_tra: "Đã kiểm tra",
-  cho_duyet: "Chờ duyệt",
-  da_duyet: "Đã duyệt",
+  xac_nhan_bgh: "Đã xác nhận BGH",
   da_khoa: "Đã khóa",
-  da_luu_tru: "Đã lưu trữ",
-  da_khoi_phuc: "Đã khôi phục",
 };
 
 export interface Attachment {
@@ -104,8 +89,9 @@ export interface AbsentStudent {
 export interface LessonBook {
   id: string;
   code: string;
-  date: string; // dd/mm/yyyy
+  date: string;
   weekday: string;
+  week: number;
   period: number;
   className: string;
   grade: string;
@@ -125,11 +111,8 @@ export interface LessonBook {
   status: BookStatus;
   gvbmConfirm?: { by: string; at: string };
   gvcnConfirm?: { by: string; at: string };
-  checkedBy?: { by: string; at: string };
-  approvedBy?: { by: string; at: string };
+  bghConfirm?: { by: string; at: string };
   lockedBy?: { by: string; at: string };
-  archivedBy?: { by: string; at: string };
-  fixReason?: string;
   year: string;
   semester: string;
 }
