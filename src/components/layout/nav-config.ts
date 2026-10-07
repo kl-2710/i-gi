@@ -1,6 +1,6 @@
 import {
   BarChart3, BookOpen, CalendarRange, ClipboardList, FileSpreadsheet,
-  GraduationCap, KeyRound, LayoutDashboard, Library, LockKeyhole,
+  GraduationCap, KeyRound, LayoutDashboard, Library,
   UserRound, Users, UserSearch, Sparkles
 } from "lucide-react";
 import type { Permission } from "@/lib/types";
