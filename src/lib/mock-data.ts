@@ -283,36 +283,6 @@ export function buildLessonBooks(): LessonBook[] {
           status,
 
 
-          ...(STATUS_CYCLE.indexOf(status) >= 6 && status !== "yeu_cau_chinh_sua"
-              ? {
-              checkedBy: {
-              by: "Ban Giám hiệu",
-              at: time,
-              },
-            }
-            : {}),
-          ...(STATUS_CYCLE.indexOf(status) >= 8 && status !== "yeu_cau_chinh_sua"
-             ? {
-            approvedBy: {
-            by: "Nguyễn Thị Thanh Hà", 
-            at: time,
-            },
-          }
-        : {}),
-
-          ...(status === "da_luu_tru"
-          ? {
-              archivedBy: {
-                by: "Phan Thi Kim Oanh",
-                at: time,
-              },
-            }
-          : {}),
-          ...(status === "yeu_cau_chinh_sua"
-          ? {
-              fixReason: "Thiếu nội dung thực tế của tiết học.",
-            }
-          : {}),
           ...(STATUS_CYCLE.indexOf(status) >= 3 ? { gvbmConfirm: { by: teacher.name, at: time } } : {}),
           ...(STATUS_CYCLE.indexOf(status) >= 4 ? { gvcnConfirm: { by: cls.gvcn, at: time } } : {}),
           ...(STATUS_CYCLE.indexOf(status) >= 5 ? { bghConfirm: { by: "Nguyễn Thị Thanh Hà", at: time } } : {}),
