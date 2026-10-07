@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { CheckCircle2, Cpu, FileUp, Lock, Paperclip, Save, UserCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -47,15 +47,9 @@ function BookDetailPage() {
   }
 
   const locked = book.status === "da_khoa";
-  const weekBooks = useMemo(
-    () => books.filter((b) => b.className === book.className && b.week === book.week && b.year === book.year && b.semester === book.semester),
-    [books, book.className, book.week, book.year, book.semester],
-  );
+  const weekBooks = books.filter((b) => b.className === book.className && b.week === book.week && b.year === book.year && b.semester === book.semester);
   const allGvbmConfirmed = weekBooks.length > 0 && weekBooks.every((b) => !!b.gvbmConfirm);
-  const classBooks = useMemo(
-    () => books.filter((b) => b.className === book.className && b.year === book.year && b.semester === book.semester),
-    [books, book.className, book.year, book.semester],
-  );
+  const classBooks = books.filter((b) => b.className === book.className && b.year === book.year && b.semester === book.semester);
   const allGvcnConfirmed = classBooks.length > 0 && classBooks.every((b) => !!b.gvcnConfirm);
 
   const canEdit = can("book.edit") && !locked && !book.gvbmConfirm && book.teacher === user?.fullName;
