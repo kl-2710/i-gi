@@ -70,7 +70,7 @@ function BookListPage() {
     <div>
       <PageHeader
         title="Danh sách sổ đầu bài"
-        description="Dữ liệu được hệ thống sinh từ PPCT và TKB; giáo viên bổ sung thông tin thực tế của tiết dạy."
+        description="Dữ liệu được hệ thống hình thành từ PPCT và TKB; GVBM bổ sung thông tin thực tế, GVCN xác nhận theo tuần và BGH xác nhận trước khi khóa."
         crumbs={[{ label: "Quản lý sổ đầu bài" }]}
       />
       <TableCard>
@@ -128,15 +128,13 @@ function BookListPage() {
                 <TableRow>
                   <TableHead>Ngày</TableHead>
                   <TableHead>Thứ</TableHead>
+                  <TableHead>Tuần</TableHead>
                   <TableHead>Tiết</TableHead>
                   <TableHead>Lớp</TableHead>
                   <TableHead>Môn</TableHead>
                   <TableHead>Giáo viên</TableHead>
                   <TableHead>Nội dung</TableHead>
                   <TableHead className="text-center">GVBM</TableHead>
-                  <TableHead className="text-center">GVCN</TableHead>
-                  <TableHead className="text-center">Kiểm tra</TableHead>
-                  <TableHead className="text-center">Duyệt</TableHead>
                   <TableHead className="text-center">Khóa</TableHead>
                   <TableHead>Trạng thái</TableHead>
                   <TableHead></TableHead>
@@ -153,9 +151,6 @@ function BookListPage() {
                     <TableCell className="whitespace-nowrap">{b.teacher}</TableCell>
                     <TableCell className="max-w-[240px] truncate">{b.actualContent || b.plannedContent}</TableCell>
                     <TableCell className="text-center"><div className="flex justify-center"><YesNo ok={!!b.gvbmConfirm} /></div></TableCell>
-                    <TableCell className="text-center"><div className="flex justify-center"><YesNo ok={!!b.gvcnConfirm} /></div></TableCell>
-                    <TableCell className="text-center"><div className="flex justify-center"><YesNo ok={!!b.checkedBy} /></div></TableCell>
-                    <TableCell className="text-center"><div className="flex justify-center"><YesNo ok={!!b.approvedBy} /></div></TableCell>
                     <TableCell className="text-center"><div className="flex justify-center"><YesNo ok={!!b.lockedBy} /></div></TableCell>
                     <TableCell><StatusBadge status={b.status} /></TableCell>
                     <TableCell className="text-right">

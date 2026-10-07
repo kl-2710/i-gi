@@ -35,6 +35,7 @@ const DESCRIPTIONS: Record<RoleCode, string> = {
   TPT: "Kiểm tra, duyệt, khóa/mở khóa, lưu trữ/khôi phục sổ đầu bài.",
   GVBM: "Cập nhật và xác nhận thông tin tiết dạy của mình.",
   GVCN: "Theo dõi và xác nhận sổ đầu bài lớp chủ nhiệm.",
+  PHT: "Quản lý danh mục dữ liệu dạy học, nhập PPCT/TKB và hình thành tiết học.",
 };
 
 function RolesPage() {
@@ -44,7 +45,7 @@ function RolesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [active, setActive] = useState<Record<string, boolean>>({});
 
-  if (!can("role.manage")) {
+  if (!can("perm.manage")) {
     return (
       <div>
         <PageHeader title="Quản lý vai trò" crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý vai trò" }]} />

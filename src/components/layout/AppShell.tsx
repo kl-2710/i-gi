@@ -10,9 +10,11 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   UserCog,
+  UserRound,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +27,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useApp } from "@/lib/app-state";
 import { ROLE_LABEL, ROLE_SHORT } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -159,6 +164,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   if (!user || !role) return null;
 
@@ -322,6 +328,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </DropdownMenuRadioGroup>
               )}
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setProfileOpen(true)}>
+                <UserRound className="size-4" />
+                Hồ sơ cá nhân
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
                   logout();
@@ -375,6 +386,25 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <main className="min-w-0 flex-1 p-4 sm:p-6">{children}</main>
       </div>
+
+      <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Hồ sơ cá nhân</DialogTitle>
+            <DialogDescription>Xem và cập nhật thông tin cá nhân hoặc thay đổi mật khẩu.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5 sm:col-span-2"><Label>Họ và tên</Label><Input defaultValue={user.fullName} /></div>
+            <div className="space-y-1.5"><Label>Tên đăng nhập</Label><Input defaultValue={user.username} disabled /></div>
+            <div className="space-y-1.5"><Label>Email</Label><Input defaultValue={user.email} /></div>
+            <div className="space-y-1.5 sm:col-span-2"><Label>Mật khẩu mới</Label><Input type="password" placeholder="Để trống nếu không thay đổi" /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setProfileOpen(false)}>Hủy</Button>
+            <Button onClick={() => { setProfileOpen(false); toast.success("Đã lưu hồ sơ cá nhân (dữ liệu mẫu)"); }}>Lưu thay đổi</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

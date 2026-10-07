@@ -32,6 +32,9 @@ interface Ctx {
   accounts: UserAccount[];
   toggleAccount: (id: string) => void;
   updateBook: (id: string, patch: Partial<LessonBook>, action: string, to: BookStatus, reason?: string) => void;
+  confirmWeekGvcn: (className: string, week: number) => boolean;
+  confirmClassBgh: (className: string) => boolean;
+  toggleClassLock: (className: string, locked: boolean) => boolean;
   generated: boolean;
   setGenerated: (v: boolean) => void;
   ppctUploaded: boolean;
@@ -107,6 +110,66 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [books, user, role],
   );
 
+  const confirmWeekGvcn = useCallback((className: string, week: number) => {
+    if (!user || role !== "GVCN") return false;
+    const targets = books.filter((b) => b.className === className && b.week === week && b.year === NAM_HOC && b.semester === HOC_KY);
+    if (!targets.length || targets.some((b) => !b.gvbmConfirm)) return false;
+    const now = new Date().toLocaleString("vi-VN", { hour12: false });
+    setBooks((prev) => prev.map((b) =>
+      b.className === className && b.week === week && b.year === NAM_HOC && b.semester === HOC_KY
+        ? { ...b, gvcnConfirm: { by: user.fullName, at: now }, status: "xac_nhan_gvcn" }
+        : b,
+    ));
+    setAudit((prev) => [{
+      id: `A${Date.now()}`, at: now, actor: user.fullName, role,
+      action: "Xác nhận Sổ đầu bài của GVCN",
+      target: `Lớp ${className} - Tuần ${week}`, recordCode: `W-${className}-${week}`,
+      from: "Đã xác nhận GVBM", to: "Đã xác nhận GVCN", reason: "-",
+    }, ...prev]);
+    return true;
+  }, [books, user, role]);
+
+  const confirmClassBgh = useCallback((className: string) => {
+    if (!user || role !== "BGH") return false;
+    const targets = books.filter((b) => b.className === className && b.year === NAM_HOC && b.semester === HOC_KY);
+    if (!targets.length || targets.some((b) => !b.gvcnConfirm)) return false;
+    const now = new Date().toLocaleString("vi-VN", { hour12: false });
+    setBooks((prev) => prev.map((b) =>
+      b.className === className && b.year === NAM_HOC && b.semester === HOC_KY
+        ? { ...b, bghConfirm: { by: user.fullName, at: now }, status: "xac_nhan_bgh" }
+        : b,
+    ));
+    setAudit((prev) => [{
+      id: `A${Date.now()}`, at: now, actor: user.fullName, role,
+      action: "Xác nhận Sổ đầu bài của BGH",
+      target: `Lớp ${className}`, recordCode: `BOOK-${className}`,
+      from: "Đã xác nhận GVCN", to: "Đã xác nhận BGH", reason: "-",
+    }, ...prev]);
+    return true;
+  }, [books, user, role]);
+
+  const toggleClassLock = useCallback((className: string, locked: boolean) => {
+    if (!user || role !== "BGH") return false;
+    const targets = books.filter((b) => b.className === className && b.year === NAM_HOC && b.semester === HOC_KY);
+    if (!targets.length) return false;
+    if (locked && targets.some((b) => !b.bghConfirm)) return false;
+    const now = new Date().toLocaleString("vi-VN", { hour12: false });
+    setBooks((prev) => prev.map((b) =>
+      b.className === className && b.year === NAM_HOC && b.semester === HOC_KY
+        ? locked
+          ? { ...b, status: "da_khoa", lockedBy: { by: user.fullName, at: now } }
+          : { ...b, status: "xac_nhan_bgh", lockedBy: undefined }
+        : b,
+    ));
+    setAudit((prev) => [{
+      id: `A${Date.now()}`, at: now, actor: user.fullName, role,
+      action: locked ? "Khóa Sổ đầu bài" : "Mở khóa Sổ đầu bài",
+      target: `Lớp ${className}`, recordCode: `BOOK-${className}`,
+      from: locked ? "Đã xác nhận BGH" : "Đã khóa", to: locked ? "Đã khóa" : "Đã xác nhận BGH", reason: "-",
+    }, ...prev]);
+    return true;
+  }, [books, user, role]);
+
   const toggleAccount = useCallback((id: string) => {
     setAccounts((prev) => prev.map((a) => (a.id === id ? { ...a, active: !a.active } : a)));
   }, []);
@@ -130,6 +193,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     accounts,
     toggleAccount,
     updateBook,
+    confirmWeekGvcn,
+    confirmClassBgh,
+    toggleClassLock,
     generated,
     setGenerated,
     ppctUploaded,
