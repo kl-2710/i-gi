@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppBaoCaoRouteImport } from './routes/_app.bao-cao'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDayHocLopRouteImport } from './routes/_app.day-hoc.lop'
+import { Route as AppDayHocGiaoVienRouteImport } from './routes/_app.day-hoc.giao-vien'
 import { Route as AppDayHocMonHocRouteImport } from './routes/_app.day-hoc.mon-hoc'
 import { Route as AppDayHocNamHocRouteImport } from './routes/_app.day-hoc.nam-hoc'
 import { Route as AppDayHocPpctRouteImport } from './routes/_app.day-hoc.ppct'
@@ -53,6 +54,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
 const AppDayHocLopRoute = AppDayHocLopRouteImport.update({
   id: '/day-hoc/lop',
   path: '/day-hoc/lop',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDayHocGiaoVienRoute = AppDayHocGiaoVienRouteImport.update({
+  id: '/day-hoc/giao-vien',
+  path: '/day-hoc/giao-vien',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDayHocMonHocRoute = AppDayHocMonHocRouteImport.update({
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/bao-cao': typeof AppBaoCaoRoute
   '/dashboard': typeof AppDashboardRoute
   '/day-hoc/lop': typeof AppDayHocLopRoute
+  '/day-hoc/giao-vien': typeof AppDayHocGiaoVienRoute
   '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
   '/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
   '/day-hoc/ppct': typeof AppDayHocPpctRoute
@@ -187,6 +194,7 @@ export interface FileRoutesById {
   '/_app/bao-cao': typeof AppBaoCaoRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/day-hoc/lop': typeof AppDayHocLopRoute
+  '/_app/day-hoc/giao-vien': typeof AppDayHocGiaoVienRoute
   '/_app/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
   '/_app/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
   '/_app/day-hoc/ppct': typeof AppDayHocPpctRoute
@@ -211,6 +219,7 @@ export interface FileRouteTypes {
     | '/bao-cao'
     | '/dashboard'
     | '/day-hoc/lop'
+    | '/day-hoc/giao-vien'
     | '/day-hoc/mon-hoc'
     | '/day-hoc/nam-hoc'
     | '/day-hoc/ppct'
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/_app/bao-cao'
     | '/_app/dashboard'
     | '/_app/day-hoc/lop'
+    | '/_app/day-hoc/giao-vien'
     | '/_app/day-hoc/mon-hoc'
     | '/_app/day-hoc/nam-hoc'
     | '/_app/day-hoc/ppct'
@@ -435,6 +445,7 @@ interface AppRouteChildren {
   AppBaoCaoRoute: typeof AppBaoCaoRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDayHocLopRoute: typeof AppDayHocLopRoute
+  AppDayHocGiaoVienRoute: typeof AppDayHocGiaoVienRoute
   AppDayHocMonHocRoute: typeof AppDayHocMonHocRoute
   AppDayHocNamHocRoute: typeof AppDayHocNamHocRoute
   AppDayHocPpctRoute: typeof AppDayHocPpctRoute
@@ -457,6 +468,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBaoCaoRoute: AppBaoCaoRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDayHocLopRoute: AppDayHocLopRoute,
+  AppDayHocGiaoVienRoute: AppDayHocGiaoVienRoute,
   AppDayHocMonHocRoute: AppDayHocMonHocRoute,
   AppDayHocNamHocRoute: AppDayHocNamHocRoute,
   AppDayHocPpctRoute: AppDayHocPpctRoute,
