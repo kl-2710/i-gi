@@ -63,10 +63,10 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: BarChart3,
     perms: ["report.view"],
     items: [
-      { label: "Thống kê tiến độ giảng dạy", to: "/bao-cao?view=tien-do", icon: BarChart3, perms: ["report.view"] },
-      { label: "Thống kê kết quả xếp loại tiết học", to: "/bao-cao?view=xep-loai", icon: BarChart3, perms: ["report.view"] },
-      { label: "Thống kê tình trạng hoàn thiện Sổ đầu bài", to: "/bao-cao?view=hoan-thien", icon: BarChart3, perms: ["report.view"] },
-      { label: "Báo cáo Sổ đầu bài tổng hợp", to: "/bao-cao?view=tong-hop", icon: BarChart3, perms: ["report.view"] },
+      { label: "Thống kê tiến độ giảng dạy", to: "/bao-cao", icon: BarChart3, perms: ["report.view"] },
+      { label: "Thống kê kết quả xếp loại tiết học", to: "/bao-cao", icon: BarChart3, perms: ["report.view"] },
+      { label: "Thống kê tình trạng hoàn thiện Sổ đầu bài", to: "/bao-cao", icon: BarChart3, perms: ["report.view"] },
+      { label: "Báo cáo Sổ đầu bài tổng hợp", to: "/bao-cao", icon: BarChart3, perms: ["report.view"] },
     ],
   },
 ];
