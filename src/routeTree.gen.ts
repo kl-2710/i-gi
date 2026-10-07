@@ -170,6 +170,7 @@ export interface FileRoutesByTo {
   '/bao-cao': typeof AppBaoCaoRoute
   '/dashboard': typeof AppDashboardRoute
   '/day-hoc/lop': typeof AppDayHocLopRoute
+  '/day-hoc/giao-vien': typeof AppDayHocGiaoVienRoute
   '/day-hoc/mon-hoc': typeof AppDayHocMonHocRoute
   '/day-hoc/nam-hoc': typeof AppDayHocNamHocRoute
   '/day-hoc/ppct': typeof AppDayHocPpctRoute
