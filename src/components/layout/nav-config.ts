@@ -1,22 +1,7 @@
 import {
-  Archive,
-  BarChart3,
-  BookOpen,
-  CalendarRange,
-  CheckSquare,
-  ClipboardList,
-  FileSpreadsheet,
-  GraduationCap,
-  History,
-  KeyRound,
-  LayoutDashboard,
-  Library,
-  ListChecks,
-  Lock,
-  Server,
-  ShieldCheck,
-  Sparkles,
-  Users,
+  BarChart3, BookOpen, CalendarRange, ClipboardList, FileSpreadsheet,
+  GraduationCap, KeyRound, LayoutDashboard, Library, LockKeyhole,
+  UserRound, Users, UserSearch, Sparkles
 } from "lucide-react";
 import type { Permission } from "@/lib/types";
 
@@ -43,60 +28,45 @@ export const DASHBOARD_ITEM: NavItem = {
 
 export const NAV_GROUPS: NavGroup[] = [
   {
-    label: "1. Quản lý người dùng & phân quyền",
+    label: "1. QUẢN TRỊ HỆ THỐNG",
     icon: Users,
-    perms: ["user.manage", "role.manage", "perm.manage"],
+    perms: ["user.manage", "perm.manage"],
     items: [
       { label: "Quản lý tài khoản", to: "/nguoi-dung/tai-khoan", icon: Users, perms: ["user.manage"] },
-      { label: "Quản lý vai trò", to: "/nguoi-dung/vai-tro", icon: ShieldCheck, perms: ["role.manage"] },
       { label: "Quản lý phân quyền", to: "/nguoi-dung/phan-quyen", icon: KeyRound, perms: ["perm.manage"] },
     ],
   },
   {
-    label: "2. Thiết lập dạy học",
+    label: "2. QUẢN LÝ DANH MỤC VÀ DỮ LIỆU DẠY HỌC",
     icon: GraduationCap,
-    perms: ["setup.view", "setup.manage"],
+    perms: ["setup.view"],
     items: [
       { label: "Năm học / Học kỳ", to: "/day-hoc/nam-hoc", icon: CalendarRange, perms: ["setup.view"] },
-      { label: "Lớp", to: "/day-hoc/lop", icon: Library, perms: ["setup.view"] },
+      { label: "Theo dõi giáo viên", to: "/day-hoc/giao-vien", icon: UserSearch, perms: ["setup.view"] },
+      { label: "Khối / Lớp học", to: "/day-hoc/lop", icon: Library, perms: ["setup.view"] },
       { label: "Môn học", to: "/day-hoc/mon-hoc", icon: BookOpen, perms: ["setup.view"] },
       { label: "PPCT", to: "/day-hoc/ppct", icon: ClipboardList, perms: ["ppct.upload"] },
       { label: "TKB", to: "/day-hoc/tkb", icon: FileSpreadsheet, perms: ["tkb.upload"] },
-      { label: "Sinh dữ liệu sổ đầu bài", to: "/day-hoc/sinh-so-dau-bai", icon: Sparkles, perms: ["gen.confirm"] },
+      { label: "Hình thành tiết học", to: "/day-hoc/sinh-so-dau-bai", icon: Sparkles, perms: ["gen.confirm"] },
     ],
   },
   {
-    label: "3. Quản lý sổ đầu bài",
+    label: "3. QUẢN LÝ SỔ ĐẦU BÀI",
     icon: BookOpen,
     perms: ["book.view.all", "book.view.own", "book.view.class"],
     items: [
-      {
-        label: "Danh sách sổ đầu bài",
-        to: "/so-dau-bai",
-        icon: BookOpen,
-        perms: ["book.view.all", "book.view.own", "book.view.class"],
-      },
+      { label: "Danh sách sổ đầu bài", to: "/so-dau-bai", icon: BookOpen, perms: ["book.view.all", "book.view.own", "book.view.class"] },
     ],
   },
   {
-    label: "4. Kiểm soát & lưu trữ",
-    icon: CheckSquare,
-    perms: ["ctrl.check", "ctrl.approve", "ctrl.lock", "ctrl.archive", "audit.view"],
-    items: [
-      { label: "Kiểm tra", to: "/kiem-soat/kiem-tra", icon: ListChecks, perms: ["ctrl.check"] },
-      { label: "Duyệt", to: "/kiem-soat/duyet", icon: CheckSquare, perms: ["ctrl.approve"] },
-      { label: "Khóa / Mở khóa", to: "/kiem-soat/khoa-so", icon: Lock, perms: ["ctrl.lock"] },
-      { label: "Lưu trữ / Khôi phục", to: "/kiem-soat/luu-tru", icon: Archive, perms: ["ctrl.archive"] },
-      { label: "Lịch sử thao tác", to: "/kiem-soat/lich-su", icon: History, perms: ["audit.view"] },
-      { label: "Thông tin hệ thống", to: "/kiem-soat/he-thong", icon: Server, perms: ["audit.view", "system.info"] },
-    ],
-  },
-  {
-    label: "5. Báo cáo & thống kê",
+    label: "4. BÁO CÁO VÀ THỐNG KÊ",
     icon: BarChart3,
     perms: ["report.view"],
     items: [
-      { label: "Báo cáo Sổ đầu bài tổng hợp", to: "/bao-cao", icon: BarChart3, perms: ["report.view"] },
+      { label: "Thống kê tiến độ giảng dạy", to: "/bao-cao?view=tien-do", icon: BarChart3, perms: ["report.view"] },
+      { label: "Thống kê kết quả xếp loại tiết học", to: "/bao-cao?view=xep-loai", icon: BarChart3, perms: ["report.view"] },
+      { label: "Thống kê tình trạng hoàn thiện Sổ đầu bài", to: "/bao-cao?view=hoan-thien", icon: BarChart3, perms: ["report.view"] },
+      { label: "Báo cáo Sổ đầu bài tổng hợp", to: "/bao-cao?view=tong-hop", icon: BarChart3, perms: ["report.view"] },
     ],
   },
 ];
