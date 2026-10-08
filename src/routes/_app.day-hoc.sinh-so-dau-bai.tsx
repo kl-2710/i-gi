@@ -64,7 +64,6 @@ function GeneratePage() {
     <div className="space-y-5">
       <PageHeader
         title="Hình thành dữ liệu tiết dạy"
-        description="Ban Giám hiệu khởi chạy chức năng để hệ thống đối soát PPCT, TKB và lịch học, sau đó hình thành dữ liệu tiết dạy và Sổ đầu bài."
         crumbs={[
           { label: "Quản lý danh mục và dữ liệu dạy học" },
           { label: "Hình thành dữ liệu tiết dạy" },
@@ -114,20 +113,6 @@ function GeneratePage() {
 
       {!showGenerated ? (
         <>
-          <div className="rounded-xl border border-primary/25 bg-primary/5 p-5 text-sm">
-            <p className="font-medium">Dữ liệu đầu vào</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              <div>
-                <Pill tone={ppctUploaded ? "success" : "warning"}>{ppctUploaded ? "Đã nhập" : "Chưa nhập"}</Pill>
-                <span className="ml-2">Dữ liệu PPCT</span>
-              </div>
-              <div>
-                <Pill tone={tkbUploaded ? "success" : "warning"}>{tkbUploaded ? "Đã nhập" : "Chưa nhập"}</Pill>
-                <span className="ml-2">Dữ liệu TKB</span>
-              </div>
-            </div>
-          </div>
-
           <div className="flex justify-end">
             <Button size="lg" disabled={!ready} onClick={handleGenerate}>
               <Sparkles className="size-4" />
@@ -141,9 +126,9 @@ function GeneratePage() {
             <div className="flex items-start gap-3">
               <CheckCircle2 className="mt-0.5 size-5 text-success" />
               <div>
-                <p className="font-semibold">Dữ liệu tiết dạy đã được hình thành</p>
+                <p className="font-semibold">Đã hình thành dữ liệu tiết dạy</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {schoolYear} · {semester} — hệ thống đã đối soát PPCT, TKB và lịch học, sau đó hình thành dữ liệu tiết dạy.
+                  {schoolYear} · {semester}
                 </p>
               </div>
             </div>
