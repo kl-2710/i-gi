@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_app/day-hoc/mon-hoc")({
   head: () => ({
     meta: [
       { title: "Môn học — Sổ đầu bài THCS Khương Mai" },
-      { name: "description", content: "Danh mục môn học và phân môn áp dụng trong năm học hiện hành." },
+      { name: "description", content: "Danh mục môn học áp dụng trong năm học hiện hành." },
       { property: "og:title", content: "Môn học" },
       { property: "og:description", content: "Danh mục môn học của Trường THCS Khương Mai." },
     ],
@@ -36,7 +36,7 @@ function SubjectPage() {
     );
   }
 
-  const rows = SUBJECTS.filter((s) => `${s.code} ${s.name} ${s.sub}`.toLowerCase().includes(q.toLowerCase()));
+  const rows = SUBJECTS.filter((s) => `${s.code} ${s.name}`.toLowerCase().includes(q.toLowerCase()));
 
   return (
     <div>
@@ -66,7 +66,6 @@ function SubjectPage() {
                 <TableRow>
                   <TableHead>Mã môn</TableHead>
                   <TableHead>Tên môn</TableHead>
-                  <TableHead>Phân môn</TableHead>
                   <TableHead>Trạng thái</TableHead>
                 </TableRow>
               </TableHeader>
@@ -75,7 +74,6 @@ function SubjectPage() {
                   <TableRow key={s.code}>
                     <TableCell className="font-mono text-xs">{s.code}</TableCell>
                     <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{s.sub}</TableCell>
                     <TableCell><Pill tone="success">Đang áp dụng</Pill></TableCell>
                   </TableRow>
                 ))}
