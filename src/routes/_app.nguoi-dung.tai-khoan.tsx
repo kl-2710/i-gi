@@ -210,6 +210,7 @@ function AccountsPage() {
                   <SelectItem value="ADMIN">Quản trị viên</SelectItem>
                   <SelectItem value="BGH">Ban Giám hiệu</SelectItem>
                   <SelectItem value="TPT">Tổng phụ trách</SelectItem>
+                  <SelectItem value="GVBM">Giáo viên bộ môn</SelectItem>
                   <SelectItem value="GVBM_GVCN">Giáo viên chủ nhiệm kiêm giáo viên bộ môn</SelectItem>
                 </SelectContent>
               </Select>
