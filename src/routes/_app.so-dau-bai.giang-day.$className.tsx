@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link, createFileRoute, useParams } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
 import { ScrollTable, TableCard } from "@/components/common/DataTable";
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/_app/so-dau-bai/giang-day/$className")({
 function TeachingClassPage() {
   const { className } = useParams({ from: "/_app/so-dau-bai/giang-day/$className" });
   const { user, role, books, can } = useApp();
+  const canUpdate = can("book.edit");
 
   const isTeacher =
     Boolean(user?.teacherId) &&
@@ -92,7 +93,7 @@ function TeachingClassPage() {
                   <TableCell><StatusBadge status={book.status} /></TableCell>
                   <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
-                      <Link to="/so-dau-bai/$id" params={{ id: book.id }}>Xem</Link>
+                      <Link to="/so-dau-bai/$id" params={{ id: book.id }}><Pencil className="size-4" />{canUpdate && book.status !== "da_khoa" && !book.gvbmConfirm ? "Cập nhật" : "Xem"}</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
