@@ -57,7 +57,7 @@ function AccountsPage() {
     return (
       <div>
         <PageHeader title="Quản lý tài khoản" crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý tài khoản" }]} />
-        <NoPermissionState message="Chỉ Quản trị hệ thống được phép quản lý tài khoản người dùng." />
+        <NoPermissionState message="Chỉ Quản trị viên được phép quản lý tài khoản người dùng." />
       </div>
     );
   }
