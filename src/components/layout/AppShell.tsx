@@ -11,6 +11,8 @@ import {
   PanelLeftOpen,
   UserCog,
   X,
+  Save,
+  UserCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +32,9 @@ import { ROLE_LABEL, ROLE_SHORT } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { AccessDeniedDialog } from "@/components/common/AccessDeniedDialog";
 import { NAV_GROUPS } from "./nav-config";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function Brand({ compact }: { compact?: boolean }) {
   return (
@@ -144,12 +149,18 @@ function SidebarNav({
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, role, setRole, logout, notifications, year, semester } = useApp();
+  const { user, role, setRole, logout, notifications, year, semester, updateProfile } = useApp();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   if (!user || !role) return null;
+
+  const openProfile = () => { setProfileName(user.fullName); setProfilePhone(user.phone); setProfileOpen(true); };
 
   const initials = user.fullName
     .split(" ")
@@ -311,6 +322,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </DropdownMenuRadioGroup>
               )}
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={openProfile}><UserCircle className="size-4" />Hồ sơ cá nhân</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setPasswordOpen(true)}><KeyRound className="size-4" />Thay đổi mật khẩu</DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
                   logout();
@@ -363,6 +377,26 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
 
         <main className="min-w-0 flex-1 p-4 sm:p-6">{children}</main>
+
+        <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader><DialogTitle>Hồ sơ cá nhân</DialogTitle><DialogDescription>Xem và cập nhật thông tin cá nhân của người dùng đang đăng nhập.</DialogDescription></DialogHeader>
+            <div className="space-y-3">
+              <div className="space-y-1.5"><Label>Họ và tên</Label><Input value={profileName} onChange={(e) => setProfileName(e.target.value)} /></div>
+              <div className="space-y-1.5"><Label>Tên đăng nhập</Label><Input value={user.username} disabled /></div>
+              <div className="space-y-1.5"><Label>Số điện thoại</Label><Input value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} /></div>
+              <div className="space-y-1.5"><Label>Phân quyền</Label><Input value={ROLE_LABEL[role]} disabled /></div>
+            </div>
+            <DialogFooter><Button variant="outline" onClick={() => setProfileOpen(false)}>Hủy</Button><Button onClick={() => { updateProfile({ fullName: profileName.trim(), phone: profilePhone.trim() }); setProfileOpen(false); }}>Lưu thay đổi</Button></DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader><DialogTitle>Thay đổi mật khẩu</DialogTitle><DialogDescription>Nhập mật khẩu mới để cập nhật mật khẩu tài khoản.</DialogDescription></DialogHeader>
+            <div className="space-y-3"><div className="space-y-1.5"><Label>Mật khẩu mới</Label><Input type="password" /></div><div className="space-y-1.5"><Label>Xác nhận mật khẩu</Label><Input type="password" /></div></div>
+            <DialogFooter><Button variant="outline" onClick={() => setPasswordOpen(false)}>Hủy</Button><Button onClick={() => { setPasswordOpen(false); }}>Lưu mật khẩu</Button></DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
