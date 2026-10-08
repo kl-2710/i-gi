@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus, ShieldCheck } from "lucide-react";
+import { Eye, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
@@ -12,7 +12,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { useApp } from "@/lib/app-state";
 import { ROLE_LABEL, type RoleCode } from "@/lib/types";
 import { PERMISSION_GROUPS } from "@/lib/permissions";
@@ -42,31 +41,57 @@ function PermissionProfilesPage() {
   const [q, setQ] = useState("");
   const [detail, setDetail] = useState<PermissionProfile | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
-  const [active, setActive] = useState<Record<string, boolean>>({});
+  const [deleted, setDeleted] = useState<Record<string, boolean>>({});
+  const [deleteTarget, setDeleteTarget] = useState<PermissionProfile | null>(null);
 
   if (!can("role.manage")) {
     return <div><PageHeader title="Quản lý phân quyền" crumbs={[{ label: "Quản trị hệ thống" }, { label: "Quản lý phân quyền" }]} /><NoPermissionState message="Chỉ Quản trị viên được phép quản lý phân quyền." /></div>;
   }
 
-  const profiles = PROFILES.filter((p) => `${p.label} ${p.description}`.toLowerCase().includes(q.toLowerCase()));
-  const accountCount = (profile: PermissionProfile) => accounts.filter((a) => profile.roles.every((r) => a.roles.includes(r))).length;
+  const profiles = PROFILES.filter((p) => !deleted[p.key] && p.label.toLowerCase().includes(q.toLowerCase()));
+
 
   return <div>
     <PageHeader title="Quản lý phân quyền" description="Danh sách phân quyền được sử dụng trong hệ thống." crumbs={[{ label: "Quản trị hệ thống" }, { label: "Quản lý phân quyền" }]} actions={<Button onClick={() => setCreateOpen(true)}><Plus className="size-4" />Thêm phân quyền</Button>} />
     <TableCard>
       <TableToolbar><SearchBar value={q} onChange={setQ} placeholder="Tìm phân quyền..." /></TableToolbar>
       {profiles.length === 0 ? <EmptyState /> : <ScrollTable><Table><TableHeader><TableRow>
-        <TableHead>Phân quyền</TableHead><TableHead>Mô tả</TableHead><TableHead>Số tài khoản</TableHead><TableHead>Trạng thái</TableHead><TableHead className="text-right">Thao tác</TableHead>
+        <TableHead>Phân quyền</TableHead><TableHead className="text-right">Thao tác</TableHead>
       </TableRow></TableHeader><TableBody>
-        {profiles.map((p) => { const enabled = active[p.key] ?? true; return <TableRow key={p.key}>
+        {profiles.map((p) => { return <TableRow key={p.key}>
           <TableCell className="whitespace-nowrap font-medium"><span className="flex items-center gap-2"><ShieldCheck className="size-4 text-primary" />{p.label}</span></TableCell>
-          <TableCell className="text-muted-foreground">{p.description}</TableCell>
-          <TableCell className="tabular-nums">{accountCount(p)}</TableCell>
-          <TableCell><Pill tone={enabled ? "success" : "danger"}>{enabled ? "Đang áp dụng" : "Ngừng áp dụng"}</Pill></TableCell>
-          <TableCell><div className="flex items-center justify-end gap-2"><Button variant="outline" size="sm" onClick={() => setDetail(p)}>Chi tiết</Button><Switch checked={enabled} onCheckedChange={(v) => { setActive((prev) => ({ ...prev, [p.key]: v })); toast.success(v ? "Đã kích hoạt phân quyền" : "Đã ngừng áp dụng phân quyền"); }} /></div></TableCell>
+          <TableCell><div className="flex items-center justify-end gap-1">
+            <Button variant="ghost" size="icon" title="Xem chi tiết" onClick={() => setDetail(p)}>
+              <Eye className="size-4" />
+            </Button>
+            <Button variant="ghost" size="icon" title="Xóa phân quyền" onClick={() => setDeleteTarget(p)}>
+              <Trash2 className="size-4 text-destructive" />
+            </Button>
+          </div></TableCell>
         </TableRow>; })}
       </TableBody></Table></ScrollTable>}
     </TableCard>
+
+    <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Xóa phân quyền</DialogTitle>
+          <DialogDescription>
+            Bạn có chắc muốn xóa phân quyền "{deleteTarget?.label ?? ""}" khỏi hệ thống?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setDeleteTarget(null)}>Hủy</Button>
+          <Button variant="destructive" onClick={() => {
+            if (deleteTarget) {
+              setDeleted((prev) => ({ ...prev, [deleteTarget.key]: true }));
+              setDeleteTarget(null);
+              toast.success("Đã xóa phân quyền");
+            }
+          }}>Xóa phân quyền</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
     <Dialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}><DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
       <DialogHeader><DialogTitle>{detail?.label}</DialogTitle><DialogDescription>{detail?.description}</DialogDescription></DialogHeader>
