@@ -17,9 +17,9 @@ import { ROLE_LABEL, type RoleCode } from "@/lib/types";
 export const Route = createFileRoute("/_app/nguoi-dung/phan-quyen")({
   head: () => ({
     meta: [
-      { title: "Quản lý phân quyền — Sổ đầu bài THCS Khương Mai" },
+      { title: "Quản lý quyền — Sổ đầu bài THCS Khương Mai" },
       { name: "description", content: "Cấu hình quyền theo phân quyền cho từng phân hệ và chức năng của hệ thống." },
-      { property: "og:title", content: "Quản lý phân quyền" },
+      { property: "og:title", content: "Quản lý quyền" },
       { property: "og:description", content: "Ma trận quyền theo phân quyền và phân hệ." },
     ],
   }),
@@ -34,7 +34,7 @@ function PermissionsPage() {
   if (!can("perm.manage")) {
     return (
       <div>
-        <PageHeader title="Quản lý phân quyền" crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý phân quyền" }]} />
+        <PageHeader title="Quản lý quyền" crumbs={[{ label: "Quản trị hệ thống" }, { label: "Quản lý quyền" }]} />
         <NoPermissionState message="Chỉ Quản trị hệ thống được phép cấu hình phân quyền." />
       </div>
     );
@@ -45,9 +45,9 @@ function PermissionsPage() {
   return (
     <div>
       <PageHeader
-        title="Quản lý phân quyền"
+        title="Quản lý quyền"
         description="Phân quyền được cấu hình tập trung, áp dụng cho toàn bộ hệ thống."
-        crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý phân quyền" }]}
+        crumbs={[{ label: "Quản trị hệ thống" }, { label: "Quản lý quyền" }]}
         actions={<Button onClick={() => toast.success("Đã lưu cấu hình phân quyền")}><Save className="size-4" />Lưu cấu hình</Button>}
       />
 
