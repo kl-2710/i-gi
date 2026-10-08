@@ -171,7 +171,7 @@ export const DEMO_LOGINS = [
   { username: "phohieutruong", role: "Ban Giám hiệu" },
   { username: "tongphutrach", role: "Tổng phụ trách" },
   { username: "an.nguyen", role: "GVBM" },
-  { username: "thu.le", role: "GVBM + GVCN" },
+  { username: "thu.le", role: "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" },
 ];
 
 const CONTENTS: Record<string, string[]> = {
