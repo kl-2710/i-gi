@@ -103,7 +103,7 @@ function BookListPage() {
         crumbs={[{ label: "Quản lý Sổ đầu bài" }]}
       />
 
-      {role === "GVCN" && (
+      {user.roles.includes("GVCN") || role === "GVCN" && (
         <TableCard>
           <div className="border-b border-border p-4">
             <h2 className="text-base font-semibold">Xác nhận Sổ đầu bài theo tuần</h2>
