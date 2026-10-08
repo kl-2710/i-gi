@@ -27,7 +27,8 @@ export const Route = createFileRoute("/_app/bao-cao")({
 const PAGE_SIZE = 8;
 
 function ReportPage() {
-  const { can, scopedBooks } = useApp();
+  const { can, scopedBooks, user } = useApp();
+  const teacherOnly = Boolean(user && user.roles.length > 0 && user.roles.every((r) => r === "GVBM" || r === "GVCN"));
   const [q, setQ] = useState("");
   const [subject, setSubject] = useState("all");
   const [page, setPage] = useState(1);
@@ -87,7 +88,7 @@ function ReportPage() {
 
   const pageRows = byClass.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  if (!can("report.view")) {
+  if (teacherOnly || !can("report.view")) {
     return (
       <div>
         <PageHeader title="Báo cáo và thống kê" crumbs={[{ label: "Báo cáo và thống kê" }]} />
