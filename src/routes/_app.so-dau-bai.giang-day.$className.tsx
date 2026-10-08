@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { Link, createFileRoute, useParams } from "@tanstack/react-router";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Eye, Pencil } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
 import { ScrollTable, TableCard } from "@/components/common/DataTable";
-import { StatusBadge } from "@/components/common/StatusBadge";
+import { LessonStatusBadge } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
@@ -78,7 +78,7 @@ function TeachingClassPage() {
                 <TableHead>Tiết</TableHead>
                 <TableHead>Môn</TableHead>
                 <TableHead>Nội dung từ PPCT</TableHead>
-                <TableHead>Trạng thái</TableHead>
+                <TableHead>Trạng thái tiết dạy</TableHead>
                 <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
@@ -90,11 +90,22 @@ function TeachingClassPage() {
                   <TableCell>Tiết {book.period}</TableCell>
                   <TableCell>{book.subject}</TableCell>
                   <TableCell className="max-w-[320px] truncate">{book.plannedContent}</TableCell>
-                  <TableCell><StatusBadge status={book.status} /></TableCell>
+                  <TableCell><LessonStatusBadge status={book.status} /></TableCell>
                   <TableCell className="text-right">
-                    <Button asChild variant="outline" size="sm">
-                      <Link to="/so-dau-bai/$id" params={{ id: book.id }}><Pencil className="size-4" />{canUpdate && book.status !== "da_khoa" && !book.gvbmConfirm ? "Cập nhật" : "Xem"}</Link>
-                    </Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button asChild variant="ghost" size="icon" title="Xem tiết dạy">
+                        <Link to="/so-dau-bai/$id" params={{ id: book.id }} search={{ mode: "view" }}>
+                          <Eye className="size-4" />
+                        </Link>
+                      </Button>
+                      {canUpdate && book.status !== "da_khoa" && !book.gvbmConfirm && (
+                        <Button asChild variant="ghost" size="icon" title="Cập nhật tiết dạy">
+                          <Link to="/so-dau-bai/$id" params={{ id: book.id }} search={{ mode: "edit" }}>
+                            <Pencil className="size-4" />
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
