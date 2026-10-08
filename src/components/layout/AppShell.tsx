@@ -331,15 +331,97 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main className="min-w-0 flex-1 p-4 sm:p-6">{children}</main>
 
         <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader><DialogTitle>Hồ sơ cá nhân</DialogTitle><DialogDescription>Xem và cập nhật thông tin cá nhân của người dùng đang đăng nhập.</DialogDescription></DialogHeader>
-            <div className="space-y-3">
-              <div className="space-y-1.5"><Label>Họ và tên</Label><Input value={profileName} onChange={(e) => setProfileName(e.target.value)} /></div>
-              <div className="space-y-1.5"><Label>Tên đăng nhập</Label><Input value={user.username} disabled /></div>
-              <div className="space-y-1.5"><Label>Số điện thoại</Label><Input value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} /></div>
-              <div className="space-y-1.5"><Label>Phân quyền</Label><Input value={user.roles.includes("GVBM") && user.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[role]} disabled /></div>
+          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Hồ sơ cá nhân</DialogTitle>
+              <DialogDescription>
+                Thông tin đầy đủ của tài khoản đang đăng nhập. Các thông tin do hệ thống quản lý chỉ được xem.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6">
+              <section className="space-y-4">
+                <h3 className="text-sm font-semibold">Thông tin tài khoản</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label>Mã tài khoản</Label>
+                    <Input value={user.code} disabled />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Tên đăng nhập</Label>
+                    <Input value={user.username} disabled />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Họ và tên</Label>
+                    <Input value={profileName} onChange={(e) => setProfileName(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Số điện thoại</Label>
+                    <Input value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Chức vụ</Label>
+                    <Input value={user.position} disabled />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Phân quyền</Label>
+                    <Input
+                      value={
+                        user.roles.includes("GVBM") && user.roles.includes("GVCN")
+                          ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn"
+                          : ROLE_LABEL[role]
+                      }
+                      disabled
+                    />
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label>Ngày cập nhật</Label>
+                    <Input value={user.updatedAt} disabled />
+                  </div>
+                </div>
+              </section>
+
+              {(user.teacherId || user.homeroomClass || (user.subjects && user.subjects.length > 0)) && (
+                <section className="space-y-4 border-t border-border pt-5">
+                  <h3 className="text-sm font-semibold">Thông tin giáo viên</h3>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {user.teacherId && (
+                      <div className="space-y-1.5">
+                        <Label>Mã giáo viên</Label>
+                        <Input value={user.teacherId} disabled />
+                      </div>
+                    )}
+                    {user.homeroomClass && (
+                      <div className="space-y-1.5">
+                        <Label>Lớp chủ nhiệm</Label>
+                        <Input value={user.homeroomClass} disabled />
+                      </div>
+                    )}
+                    {user.subjects && user.subjects.length > 0 && (
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <Label>Môn giảng dạy</Label>
+                        <Input value={user.subjects.join(", ")} disabled />
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
             </div>
-            <DialogFooter><Button variant="outline" onClick={() => setProfileOpen(false)}>Hủy</Button><Button onClick={() => { updateProfile({ fullName: profileName.trim(), phone: profilePhone.trim() }); setProfileOpen(false); }}>Lưu thay đổi</Button></DialogFooter>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setProfileOpen(false)}>Hủy</Button>
+              <Button
+                onClick={() => {
+                  updateProfile({
+                    fullName: profileName.trim(),
+                    phone: profilePhone.trim(),
+                  });
+                  setProfileOpen(false);
+                }}
+              >
+                Lưu thay đổi
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
         <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
