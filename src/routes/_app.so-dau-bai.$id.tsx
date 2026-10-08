@@ -57,7 +57,7 @@ function BookDetailPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title={`Sổ đầu bài ${book.className} · Tiết ${book.period} · ${book.subject}`}
+        title={`${can("book.edit") && book.teacherId === user?.teacherId ? "Cập nhật thông tin tiết dạy" : "Chi tiết Sổ đầu bài"} · ${book.className} · Tiết ${book.period} · ${book.subject}`}
         description={`${book.weekday}, ${book.date} · Giáo viên dạy: ${book.teacher}`}
         crumbs={[{ label: "Quản lý Sổ đầu bài", to: "/so-dau-bai" }, { label: book.code }]}
         actions={<StatusBadge status={book.status} />}
@@ -157,7 +157,7 @@ function BookDetailPage() {
                 </div>
               )}
 
-              {role === "GVCN" && (
+              {(user?.roles.includes("GVCN") || role === "GVCN") && (
                 <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
                   <p className="font-medium">Xác nhận GVCN theo tuần</p>
                   <p className="mt-1 text-muted-foreground">
