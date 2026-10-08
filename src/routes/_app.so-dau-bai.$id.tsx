@@ -149,10 +149,10 @@ function BookDetailPage() {
           <Select value={rank} onValueChange={(v) => setRank(v)} disabled={!editable}>
             <SelectTrigger><SelectValue placeholder="Chọn xếp loại" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="A">A - Tốt</SelectItem>
-              <SelectItem value="B">B - Khá</SelectItem>
-              <SelectItem value="C">C - Trung bình</SelectItem>
-              <SelectItem value="D">D - Yếu</SelectItem>
+              <SelectItem value="A">Tốt</SelectItem>
+              <SelectItem value="B">Khá</SelectItem>
+              <SelectItem value="C">Trung bình</SelectItem>
+              <SelectItem value="D">Yếu</SelectItem>
             </SelectContent>
           </Select>
         </div>
