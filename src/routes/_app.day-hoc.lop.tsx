@@ -36,6 +36,25 @@ export const Route = createFileRoute("/_app/day-hoc/lop")({
   component: ClassPage,
 });
 
+const HISTORICAL_ROWS: ClassRow[] = [
+  ...CLASSES.map((c) => ({
+    code: c.code,
+    name: c.name,
+    grade: c.grade,
+    gvcn: c.gvcn,
+    year: "2025 - 2026",
+    active: false,
+  })),
+  ...CLASSES.map((c) => ({
+    code: c.code.replace(/^L/, "H"),
+    name: c.name,
+    grade: c.grade,
+    gvcn: c.gvcn,
+    year: "2024 - 2025",
+    active: false,
+  })),
+];
+
 const INITIAL_ROWS: ClassRow[] = CLASSES.map((c) => ({
   code: c.code,
   name: c.name,
@@ -52,9 +71,16 @@ function ClassPage() {
   const [rows, setRows] = useState<ClassRow[]>(INITIAL_ROWS);
   const [q, setQ] = useState("");
   const [grade, setGrade] = useState("all");
+  const [selectedYear, setSelectedYear] = useState(NAM_HOC);
   const [open, setOpen] = useState(false);
   const [className, setClassName] = useState("");
   const [classGrade, setClassGrade] = useState("Khối 6");
+
+  const allRows = useMemo(() => [...INITIAL_ROWS, ...HISTORICAL_ROWS], []);
+  const availableYears = useMemo(
+    () => Array.from(new Set(allRows.map((r) => r.year))).sort((a, b) => b.localeCompare(a)),
+    [allRows],
+  );
 
   const availableClassNames = useMemo(
     () => rows.map((r) => r.name.toLowerCase()),
@@ -72,6 +98,7 @@ function ClassPage() {
 
   const filteredRows = rows.filter(
     (c) =>
+      c.year === selectedYear &&
       (grade === "all" || c.grade === grade) &&
       `${c.code} ${c.name} ${c.gvcn}`.toLowerCase().includes(q.toLowerCase()),
   );
@@ -124,10 +151,10 @@ function ClassPage() {
     <div className="space-y-5">
       <PageHeader
         title="Lớp"
-        description="Danh sách lớp học trong năm học hiện hành."
+        description={`Danh sách lớp học của năm học ${selectedYear}.`}
         crumbs={[{ label: "Quản lý danh mục và dữ liệu dạy học" }, { label: "Lớp" }]}
         actions={
-          can("setup.manage") ? (
+          can("setup.manage") && selectedYear === NAM_HOC ? (
             <Button onClick={openAdd}>
               <Plus className="size-4" />
               Thêm lớp
@@ -139,6 +166,16 @@ function ClassPage() {
       <TableCard>
         <TableToolbar>
           <SearchBar value={q} onChange={setQ} placeholder="Tìm theo mã lớp, tên lớp, GVCN..." />
+          <FilterField label="Năm học">
+            <Select value={selectedYear} onValueChange={(v) => { setSelectedYear(v); setGrade("all"); }}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {availableYears.map((y) => (
+                  <SelectItem key={y} value={y}>{y}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FilterField>
           <FilterField label="Khối">
             <Select value={grade} onValueChange={setGrade}>
               <SelectTrigger><SelectValue /></SelectTrigger>
