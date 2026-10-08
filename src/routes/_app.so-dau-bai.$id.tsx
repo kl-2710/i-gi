@@ -195,8 +195,8 @@ function BookDetailPage() {
     return (
       <div className="space-y-5">
         <PageHeader
-          title={`Cập nhật thông tin tiết dạy · ${book.className} · Tiết ${book.period} · ${book.subject}`}
-          description={`${book.weekday}, ${book.date} · Giáo viên dạy: ${book.teacher}`}
+          title="Thông tin tiết dạy"
+          description={`${book.className} · Tiết ${book.period} · ${book.subject} · ${book.weekday}, ${book.date} · Giáo viên dạy: ${book.teacher}`}
           crumbs={[
             { label: "Quản lý Sổ đầu bài", to: "/so-dau-bai" },
             { label: "Cập nhật tiết dạy" },
@@ -216,12 +216,6 @@ function BookDetailPage() {
         )}
 
         <section className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <Cpu className="size-4 text-primary" />
-            <h2 className="text-base font-semibold">Thông tin tiết dạy</h2>
-            <Pill tone="info">TKB + PPCT</Pill>
-          </div>
-
           <div className="space-y-6">
             {systemInfo}
             <div className="border-t border-border pt-5">
