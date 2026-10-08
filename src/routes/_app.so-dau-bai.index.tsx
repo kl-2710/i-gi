@@ -231,7 +231,8 @@ function BookListPage() {
                 {(Object.keys(STATUS_LABEL) as BookStatus[]).filter((s) => ["he_thong_tao", "chua_hoan_thien", "da_cap_nhat", "xac_nhan_gvbm", "xac_nhan_gvcn", "xac_nhan_bgh", "da_khoa", "yeu_cau_chinh_sua"].includes(s)).map((s) => (
                   <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
                 ))}
-              </Select>
+              </SelectContent>
+            </Select>
             </FilterField>
           </TableToolbar>
 
