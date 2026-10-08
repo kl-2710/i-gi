@@ -10,6 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useApp } from "@/lib/app-state";
 
 export const Route = createFileRoute("/_app/so-dau-bai/giang-day/$className")({
+  validateSearch: (search) => ({
+    viewer: search.viewer === "school" ? "school" : "teacher",
+  }),
   head: () => ({
     meta: [{ title: "Tiết dạy theo lớp — THCS Khương Mai" }],
   }),
@@ -18,27 +21,27 @@ export const Route = createFileRoute("/_app/so-dau-bai/giang-day/$className")({
 
 function TeachingClassPage() {
   const { className } = useParams({ from: "/_app/so-dau-bai/giang-day/$className" });
+  const { viewer } = Route.useSearch();
   const { user, role, books, can } = useApp();
   const canUpdate = can("book.edit");
 
   const isTeacher =
     Boolean(user?.teacherId) &&
-    (
-      user.roles.includes("GVBM") ||
-      role === "GVBM"
-    );
+    (user.roles.includes("GVBM") || role === "GVBM");
+  const isSchoolViewer = viewer === "school" && (role === "BGH" || role === "TPT" || role === "ADMIN");
 
   const classBooks = useMemo(
     () =>
-      books.filter(
-        (book) =>
-          book.className === className &&
-          book.teacherId === user?.teacherId,
+      books.filter((book) =>
+        book.className === className &&
+        (isSchoolViewer || book.teacherId === user?.teacherId),
       ),
-    [books, className, user?.teacherId],
+    [books, className, user?.teacherId, isSchoolViewer],
   );
 
-  if (!can("book.view.own") || !isTeacher || classBooks.length === 0) {
+  if ((!isSchoolViewer && (!can("book.view.own") || !isTeacher)) ||
+      (isSchoolViewer && !can("book.view.all")) ||
+      classBooks.length === 0) {
     return (
       <div>
         <PageHeader
@@ -53,8 +56,8 @@ function TeachingClassPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title={`Tiết dạy lớp ${className}`}
-        description={`Giáo viên: ${user?.fullName ?? "-"} · Năm học ${classBooks[0]?.year ?? "-"} · ${classBooks[0]?.semester ?? "-"}`}
+        title={`Danh sách tiết dạy lớp ${className}`}
+        description={isSchoolViewer ? `Năm học ${classBooks[0]?.year ?? "-"} · ${classBooks[0]?.semester ?? "-"}` : `Giáo viên: ${user?.fullName ?? "-"} · Năm học ${classBooks[0]?.year ?? "-"} · ${classBooks[0]?.semester ?? "-"}`}
         crumbs={[
           { label: "Quản lý Sổ đầu bài", to: "/so-dau-bai" },
           { label: `Lớp ${className}` },
@@ -98,7 +101,7 @@ function TeachingClassPage() {
                           <Eye className="size-4" />
                         </Link>
                       </Button>
-                      {canUpdate && book.status !== "da_khoa" && !book.gvbmConfirm && (
+                      {!isSchoolViewer && canUpdate && book.status !== "da_khoa" && !book.gvbmConfirm && (
                         <Button asChild variant="ghost" size="icon" title="Cập nhật tiết dạy">
                           <Link to="/so-dau-bai/$id" params={{ id: book.id }} search={{ mode: "edit" }}>
                             <Pencil className="size-4" />
