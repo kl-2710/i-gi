@@ -46,7 +46,7 @@ function PermissionsPage() {
     <div>
       <PageHeader
         title="Quản lý phân quyền"
-        description="Phân quyền được cấu hình tập trung theo vai trò, áp dụng cho toàn bộ hệ thống."
+        description="Vai trò BGH dùng chung cho Hiệu trưởng và Phó Hiệu trưởng; các quyền nghiệp vụ cụ thể có thể điều chỉnh theo tài khoản."
         crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý phân quyền" }]}
         actions={<Button onClick={() => toast.success("Đã lưu cấu hình phân quyền")}><Save className="size-4" />Lưu cấu hình</Button>}
       />
