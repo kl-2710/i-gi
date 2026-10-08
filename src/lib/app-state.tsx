@@ -62,7 +62,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   });
   const [bghConfirmed, setBghConfirmed] = useState(false);
   const [bghConfirmAt, setBghConfirmAt] = useState<Confirmation | null>(null);
-  const [generated, setGenerated] = useState(true);
+  const [generated, setGenerated] = useState(false);
   const [ppctUploaded, setPpctUploaded] = useState(true);
   const [tkbUploaded, setTkbUploaded] = useState(true);
 
