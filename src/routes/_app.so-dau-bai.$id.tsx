@@ -3,6 +3,7 @@ import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { CheckCircle2, Cpu, Lock, Save, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
+import { ActionDialog } from "@/components/common/ActionDialog";
 import { LessonStatusBadge, Pill } from "@/components/common/StatusBadge";
 import { AuditTimeline } from "@/components/common/AuditTimeline";
 import { EmptyState } from "@/components/common/States";
