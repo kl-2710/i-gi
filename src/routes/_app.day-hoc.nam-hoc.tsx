@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { CalendarDays, CalendarOff, CalendarRange, Clock3, Pencil, Plus, Power, RefreshCw, Save, Trash2 } from "lucide-react";
+import { CalendarOff, CalendarRange, Clock3, Pencil, Plus, Power, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ScrollTable, TableCard } from "@/components/common/DataTable";
@@ -31,7 +31,6 @@ type SchoolTerm = {
 export const Route = createFileRoute("/_app/day-hoc/nam-hoc")({
   head: () => ({ meta: [
     { title: "Năm học / Học kỳ — Sổ đầu bài THCS Khương Mai" },
-    { name: "description", content: "Thiết lập năm học và học kỳ làm ngữ cảnh cho PPCT, TKB và Sổ đầu bài." },
   ] }),
   component: YearPage,
 });
@@ -54,12 +53,9 @@ function YearPage() {
   const [deleteTarget, setDeleteTarget] = useState<SchoolTerm | null>(null);
   const [weekTarget, setWeekTarget] = useState<SchoolTerm | null>(null);
   const [holidayTarget, setHolidayTarget] = useState<SchoolTerm | null>(null);
-  const [adjustTarget, setAdjustTarget] = useState<SchoolTerm | null>(null);
   const [weekCount, setWeekCount] = useState("18");
   const [days, setDays] = useState("90");
   const [holidayReason, setHolidayReason] = useState("");
-  const [adjustDate, setAdjustDate] = useState("");
-  const [adjustReason, setAdjustReason] = useState("");
 
   const currentCalendarYear = new Date().getFullYear();
   const schoolYearOptions = useMemo(
@@ -113,13 +109,12 @@ function YearPage() {
       <div className="rounded-xl border border-primary/25 bg-primary/5 p-4">
         <div className="flex items-center gap-3"><CalendarRange className="size-5 text-primary" /><div>
           <p className="text-sm">Ngữ cảnh đang áp dụng: <strong>Năm học 2026 - 2027 · Học kỳ I</strong></p>
-          <p className="mt-1 text-xs text-muted-foreground">Admin có thể chọn năm học và học kỳ để xem hoặc thiết lập.</p>
         </div></div>
       </div>
 
       <TableCard>
         <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-end lg:justify-between">
-          <div><h2 className="text-base font-semibold">Chọn năm học và học kỳ</h2><p className="mt-1 text-sm text-muted-foreground">Đã tồn tại thì xem/sửa; chưa tồn tại thì thiết lập thời gian.</p></div>
+          <div><h2 className="text-base font-semibold">Chọn năm học và học kỳ</h2></div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5"><Label>Năm học</Label><Select value={year} onValueChange={setYear}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{years.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent></Select></div>
             <div className="space-y-1.5"><Label>Học kỳ</Label><Select value={term} onValueChange={setTerm}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Học kỳ I">Học kỳ I</SelectItem><SelectItem value="Học kỳ II">Học kỳ II</SelectItem></SelectContent></Select></div>
@@ -145,9 +140,8 @@ function YearPage() {
       </TableCard>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Button variant="outline" className="h-auto justify-start p-4 text-left" disabled={!selected || !canManage} onClick={() => { if (selected) { setWeekCount(String(parseInt(selected.weekSetup, 10) || 18)); setDays(String(selected.schoolDays)); setWeekTarget(selected); } }}><Clock3 className="size-5 text-primary" /><span className="ml-3"><strong className="block text-sm">Thiết lập thời gian tuần học</strong><span className="text-xs text-muted-foreground">Số tuần và số ngày học dự kiến.</span></span></Button>
-        <Button variant="outline" className="h-auto justify-start p-4 text-left" disabled={!selected || !canManage} onClick={() => selected && (setHolidayReason(""), setHolidayTarget(selected))}><CalendarOff className="size-5 text-primary" /><span className="ml-3"><strong className="block text-sm">Quản lý ngày học, ngày nghỉ</strong><span className="text-xs text-muted-foreground">Bổ sung ngày nghỉ và lý do.</span></span></Button>
-        <Button variant="outline" className="h-auto justify-start p-4 text-left" disabled={!selected || !canManage} onClick={() => selected && (setAdjustDate(""), setAdjustReason(""), setAdjustTarget(selected))}><RefreshCw className="size-5 text-primary" /><span className="ml-3"><strong className="block text-sm">Điều chỉnh lịch học</strong><span className="text-xs text-muted-foreground">Ghi nhận điều chỉnh ngày học.</span></span></Button>
+        <Button variant="outline" className="h-auto justify-start p-4 text-left" disabled={!selected || !canManage} onClick={() => { if (selected) { setWeekCount(String(parseInt(selected.weekSetup, 10) || 18)); setDays(String(selected.schoolDays)); setWeekTarget(selected); } }}><Clock3 className="size-5 text-primary" /><span className="ml-3"><strong className="block text-sm">Thiết lập thời gian tuần học</strong><span className="text-xs text-muted-foreground"></span></span></Button>
+        <Button variant="outline" className="h-auto justify-start p-4 text-left" disabled={!selected || !canManage} onClick={() => selected && (setHolidayReason(""), setHolidayTarget(selected))}><CalendarOff className="size-5 text-primary" /><span className="ml-3"><strong className="block text-sm">Quản lý ngày nghỉ</strong><span className="text-xs text-muted-foreground"></span></span></Button>
       </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>{editing && editing.id !== "NEW" ? "Sửa năm học / học kỳ" : "Thiết lập năm học / học kỳ"}</DialogTitle><DialogDescription>Kiểm tra tổ hợp năm học - học kỳ và khoảng thời gian trước khi lưu.</DialogDescription></DialogHeader>
@@ -178,7 +172,6 @@ function YearPage() {
 
       <Dialog open={!!holidayTarget} onOpenChange={(v) => !v && setHolidayTarget(null)}><DialogContent><DialogHeader><DialogTitle>Quản lý ngày học, ngày nghỉ</DialogTitle><DialogDescription>{holidayTarget?.year} · {holidayTarget?.term}</DialogDescription></DialogHeader><div className="space-y-3"><div className="space-y-1.5"><Label>Ngày nghỉ</Label><Input type="date" /></div><div className="space-y-1.5"><Label>Lý do</Label><Textarea value={holidayReason} onChange={(e) => setHolidayReason(e.target.value)} placeholder="Nhập lý do ngày nghỉ..." /></div></div><DialogFooter><Button variant="outline" onClick={() => setHolidayTarget(null)}>Hủy</Button><Button onClick={() => { if (!holidayTarget || !holidayReason.trim()) { toast.error("Vui lòng nhập lý do."); return; } setRows((prev) => prev.map((r) => r.id === holidayTarget.id ? { ...r, holidays: r.holidays + 1 } : r)); setHolidayTarget(null); toast.success("Đã bổ sung ngày nghỉ."); }}>Lưu ngày nghỉ</Button></DialogFooter></DialogContent></Dialog>
 
-      <Dialog open={!!adjustTarget} onOpenChange={(v) => !v && setAdjustTarget(null)}><DialogContent><DialogHeader><DialogTitle>Điều chỉnh lịch học</DialogTitle><DialogDescription>{adjustTarget?.year} · {adjustTarget?.term}</DialogDescription></DialogHeader><div className="space-y-3"><div className="space-y-1.5"><Label>Ngày cần điều chỉnh</Label><Input type="date" value={adjustDate} onChange={(e) => setAdjustDate(e.target.value)} /></div><div className="space-y-1.5"><Label>Nội dung điều chỉnh</Label><Textarea value={adjustReason} onChange={(e) => setAdjustReason(e.target.value)} placeholder="Mô tả nội dung điều chỉnh..." /></div></div><DialogFooter><Button variant="outline" onClick={() => setAdjustTarget(null)}>Hủy</Button><Button onClick={() => { if (!adjustTarget || !adjustDate || !adjustReason.trim()) { toast.error("Vui lòng nhập đầy đủ thông tin điều chỉnh."); return; } setAdjustTarget(null); toast.success("Đã ghi nhận điều chỉnh lịch học."); }}>Lưu điều chỉnh</Button></DialogFooter></DialogContent></Dialog>
     </div>
   );
 }
