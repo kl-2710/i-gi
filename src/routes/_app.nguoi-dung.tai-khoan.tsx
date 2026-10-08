@@ -46,7 +46,9 @@ function AccountsPage() {
       accounts.filter((a) => {
         const text = `${a.code} ${a.fullName} ${a.username} ${a.phone} ${a.position}`.toLowerCase();
         if (q && !text.includes(q.toLowerCase())) return false;
-        if (roleFilter !== "all" && !a.roles.includes(roleFilter as RoleCode)) return false;
+        if (roleFilter === "GVBM" && !(a.roles.includes("GVBM") && !a.roles.includes("GVCN"))) return false;
+        if (roleFilter === "GVBM_GVCN" && !(a.roles.includes("GVBM") && a.roles.includes("GVCN"))) return false;
+        if (["ADMIN", "BGH", "TPT"].includes(roleFilter) && !a.roles.includes(roleFilter as RoleCode)) return false;
         return true;
       }),
     [accounts, q, roleFilter],
@@ -87,6 +89,7 @@ function AccountsPage() {
                 <SelectItem value="ADMIN">Quản trị viên</SelectItem>
                 <SelectItem value="BGH">Ban Giám hiệu</SelectItem>
                 <SelectItem value="TPT">Tổng phụ trách</SelectItem>
+                <SelectItem value="GVBM">Giáo viên bộ môn</SelectItem>
                 <SelectItem value="GVBM_GVCN">Giáo viên chủ nhiệm kiêm giáo viên bộ môn</SelectItem>
               </SelectContent>
             </Select>
@@ -120,7 +123,7 @@ function AccountsPage() {
                     <TableCell className="whitespace-nowrap">{a.position}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        <Pill tone="info">{a.roles.includes("GVBM") && a.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[a.roles[0]!]}</Pill>
+                        <Pill tone="info">{a.roles.includes("GVBM") && a.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : a.roles.includes("GVBM") ? "Giáo viên bộ môn" : ROLE_LABEL[a.roles[0]!]}</Pill>
                       </div>
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-muted-foreground">{a.updatedAt}</TableCell>
@@ -176,7 +179,7 @@ function AccountsPage() {
               <div className="space-y-1.5 sm:col-span-2">
                 <Label>Phân quyền được gán</Label>
                 <div className="flex flex-wrap gap-1.5 rounded-md border border-border p-2">
-                  <Pill tone="info"><ShieldCheck className="size-3" />{detail.roles.includes("GVBM") && detail.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[detail.roles[0]!]}</Pill>
+                  <Pill tone="info"><ShieldCheck className="size-3" />{detail.roles.includes("GVBM") && detail.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : detail.roles.includes("GVBM") ? "Giáo viên bộ môn" : ROLE_LABEL[detail.roles[0]!]}</Pill>
                 </div>
               </div>
             </div>
