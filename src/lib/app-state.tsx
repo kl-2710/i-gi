@@ -23,7 +23,8 @@ interface Ctx {
   audit: AuditEntry[];
   notifications: typeof NOTIFICATIONS;
   accounts: UserAccount[];
-  toggleAccount: (id: string) => void;
+  updateProfile: (patch: Partial<UserAccount>) => void;
+  deleteAccount: (id: string) => void;
   updateBook: (id: string, patch: Partial<LessonBook>, action: string, to: BookStatus, reason?: string) => void;
   confirmGvcnWeek: (className: string, weekNumber: number) => { ok: boolean; message: string };
   weeklyGvcnConfirmations: WeeklyConfirmations;
@@ -68,7 +69,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [tkbUploaded, setTkbUploaded] = useState(true);
 
   const login = useCallback((username: string) => {
-    const found = accounts.find((a) => a.username === username.trim().toLowerCase() && a.active);
+    const found = accounts.find((a) => a.username === username.trim().toLowerCase());
     if (!found) return false;
     setUser(found);
     setRoleState(found.roles[0] ?? null);
@@ -81,14 +82,21 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const can = useCallback(
-    (p: Permission) => (role ? ROLE_PERMISSIONS[role].includes(p) : false),
-    [role],
+    (p: Permission) => {
+      if (!user) return false;
+      if (user.roles.some((r) => ROLE_PERMISSIONS[r].includes(p))) return true;
+      return role ? ROLE_PERMISSIONS[role].includes(p) : false;
+    },
+    [role, user],
   );
 
   const scopedBooks = useMemo(() => {
     if (!user || !role) return [];
-    if (role === "GVBM") return books.filter((b) => b.teacher === user.fullName);
-    if (role === "GVCN") return books.filter((b) => b.className === user.homeroomClass);
+    const isGvbm = user.roles.includes("GVBM") || role === "GVBM";
+    const isGvcn = user.roles.includes("GVCN") || role === "GVCN";
+    if (isGvbm && isGvcn) return books.filter((b) => b.teacher === user.fullName || b.className === user.homeroomClass);
+    if (isGvbm) return books.filter((b) => b.teacher === user.fullName);
+    if (isGvcn) return books.filter((b) => b.className === user.homeroomClass);
     if (role === "ADMIN") return [];
     return books;
   }, [books, user, role]);
@@ -120,7 +128,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const confirmGvcnWeek = useCallback(
     (className: string, weekNumber: number) => {
-      if (role !== "GVCN") return { ok: false, message: "Chỉ GVCN mới được xác nhận theo tuần." };
+      if (!user?.roles.includes("GVCN") && role !== "GVCN") return { ok: false, message: "Chỉ giáo viên chủ nhiệm mới được xác nhận theo tuần." };
       if (user?.homeroomClass !== className) return { ok: false, message: "Bạn chỉ được xác nhận lớp chủ nhiệm của mình." };
 
       const rows = books.filter((b) => b.className === className && b.weekNumber === weekNumber);
@@ -251,8 +259,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return { ok: true, message: "Đã khóa Sổ đầu bài toàn trường." };
   }, [bghConfirmed, role, user]);
 
-  const toggleAccount = useCallback((id: string) => {
-    setAccounts((prev) => prev.map((a) => (a.id === id ? { ...a, active: !a.active } : a)));
+  const updateProfile = useCallback((patch: Partial<UserAccount>) => {
+    if (!user) return;
+    const next = { ...user, ...patch };
+    setUser(next);
+    setAccounts((prev) => prev.map((a) => a.id === user.id ? { ...a, ...patch, updatedAt: new Date().toLocaleDateString("vi-VN") } : a));
+  }, [user]);
+
+  const deleteAccount = useCallback((id: string) => {
+    setAccounts((prev) => prev.filter((a) => a.id !== id));
+    setUser((current) => current?.id === id ? null : current);
   }, []);
 
   const notifications = useMemo(
@@ -274,7 +290,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         audit,
         notifications,
         accounts,
-        toggleAccount,
+        updateProfile,
+        deleteAccount,
         updateBook,
         confirmGvcnWeek,
         weeklyGvcnConfirmations,
