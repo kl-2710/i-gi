@@ -15,5 +15,6 @@ export function getRoutePermissions(
     }
   }
 
+  if (pathname.startsWith("/kiem-soat/")) return ["route.hidden"];
   return null;
 }

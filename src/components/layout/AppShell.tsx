@@ -87,7 +87,7 @@ function SidebarNav({
           {!collapsed && <span>Dashboard</span>}
         </Link>
 
-        {/* 5 MODULES */}
+        {/* 4 MODULES */}
         {NAV_GROUPS.map((g) => (
           <div key={g.label} className="space-y-1">
 

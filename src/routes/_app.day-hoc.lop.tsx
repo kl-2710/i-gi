@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
-import { CLASSES, HOC_KY, NAM_HOC } from "@/lib/mock-data";
+import { CLASSES, NAM_HOC } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/_app/day-hoc/lop")({
   head: () => ({
@@ -86,7 +86,6 @@ function ClassPage() {
                   <TableHead>Khối</TableHead>
                   <TableHead>Giáo viên chủ nhiệm</TableHead>
                   <TableHead>Năm học</TableHead>
-                  <TableHead>Học kỳ</TableHead>
                   <TableHead>Trạng thái</TableHead>
                 </TableRow>
               </TableHeader>
@@ -98,7 +97,6 @@ function ClassPage() {
                     <TableCell>{c.grade}</TableCell>
                     <TableCell className="whitespace-nowrap">{c.gvcn}</TableCell>
                     <TableCell>{NAM_HOC}</TableCell>
-                    <TableCell>{HOC_KY}</TableCell>
                     <TableCell><Pill tone="success">Đang hoạt động</Pill></TableCell>
                   </TableRow>
                 ))}
