@@ -71,7 +71,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const can = useCallback(
-    (p: Permission) => (role ? ROLE_PERMISSIONS[role].includes(p) : false),
+    (p: Permission) => (user && user.permissions ? user.permissions.includes(p) : role ? ROLE_PERMISSIONS[role].includes(p) : false),
     [role],
   );
 
