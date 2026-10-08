@@ -338,7 +338,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <div className="space-y-1.5"><Label>Họ và tên</Label><Input value={profileName} onChange={(e) => setProfileName(e.target.value)} /></div>
               <div className="space-y-1.5"><Label>Tên đăng nhập</Label><Input value={user.username} disabled /></div>
               <div className="space-y-1.5"><Label>Số điện thoại</Label><Input value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} /></div>
-              <div className="space-y-1.5"><Label>Phân quyền</Label><Input value={ROLE_LABEL[role]} disabled /></div>
+              <div className="space-y-1.5"><Label>Phân quyền</Label><Input value={user.roles.includes("GVBM") && user.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[role]} disabled /></div>
             </div>
             <DialogFooter><Button variant="outline" onClick={() => setProfileOpen(false)}>Hủy</Button><Button onClick={() => { updateProfile({ fullName: profileName.trim(), phone: profilePhone.trim() }); setProfileOpen(false); }}>Lưu thay đổi</Button></DialogFooter>
           </DialogContent>
