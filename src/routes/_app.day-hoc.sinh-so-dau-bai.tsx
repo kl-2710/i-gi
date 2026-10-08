@@ -52,7 +52,7 @@ function GeneratePage() {
 
   const handleGenerate = () => {
     if (!ppctUploaded || !tkbUploaded) {
-      toast.error("Chưa đủ dữ liệu để hình thành tiết dạy. Vui lòng kiểm tra PPCT và TKB.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
     setGenerated(true);
