@@ -6,7 +6,6 @@ import {
   FileSpreadsheet,
   GraduationCap,
   KeyRound,
-  LayoutDashboard,
   Library,
   Sparkles,
   ShieldCheck,
@@ -27,13 +26,6 @@ export interface NavGroup {
   items: NavItem[];
   perms: Permission[];
 }
-
-export const DASHBOARD_ITEM: NavItem = {
-  label: "Dashboard",
-  to: "/dashboard",
-  icon: LayoutDashboard,
-  perms: [],
-};
 
 export const NAV_GROUPS: NavGroup[] = [
   {
