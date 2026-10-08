@@ -247,6 +247,71 @@ function CombinedTeacherBookList({
 }
 
 
+function GvbmBookList({ books }: { books: LessonBook[] }) {
+  const teachingClasses = Array.from(
+    new Map(
+      books.map((book) => [
+        book.className,
+        {
+          name: book.className,
+          grade: book.grade,
+          year: book.year,
+          count: books.filter((item) => item.className === book.className).length,
+        },
+      ]),
+    ).values(),
+  );
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        title="Quản lý Sổ đầu bài"
+        description="Danh sách Sổ đầu bài của các lớp được phân công giảng dạy."
+        crumbs={[{ label: "Quản lý Sổ đầu bài" }]}
+      />
+      <TableCard>
+        <div className="border-b border-border p-4">
+          <h2 className="text-base font-semibold">Sổ đầu bài các lớp được phân công giảng dạy</h2>
+        </div>
+        {teachingClasses.length === 0 ? (
+          <EmptyState title="Chưa có lớp được phân công giảng dạy" />
+        ) : (
+          <ScrollTable>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Sổ đầu bài</TableHead>
+                  <TableHead>Khối</TableHead>
+                  <TableHead>Năm học</TableHead>
+                  <TableHead>Số tiết của giáo viên</TableHead>
+                  <TableHead className="text-right">Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {teachingClasses.map((item) => (
+                  <TableRow key={item.name}>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell>{item.grade}</TableCell>
+                    <TableCell>{item.year}</TableCell>
+                    <TableCell>{item.count}</TableCell>
+                    <TableCell className="text-right">
+                      <Button asChild variant="outline" size="sm">
+                        <Link to="/so-dau-bai/giang-day/$className" params={{ className: item.name }}>
+                          <Eye className="size-4" />Xem Sổ đầu bài
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </ScrollTable>
+        )}
+      </TableCard>
+    </div>
+  );
+}
+
 function BookListPage() {
   const {
     can,
@@ -331,6 +396,13 @@ function BookListPage() {
     ? isBghConfirmed(selectedClass)
     : false;
 
+
+  const isGvbmOnly =
+    Boolean(user?.roles.includes("GVBM") && !user?.roles.includes("GVCN"));
+
+  if (isGvbmOnly) {
+    return <GvbmBookList books={scopedBooks} />;
+  }
 
   const isCombinedTeacher =
     Boolean(user?.roles.includes("GVBM") && user?.roles.includes("GVCN"));
