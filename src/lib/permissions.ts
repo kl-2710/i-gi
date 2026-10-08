@@ -53,13 +53,11 @@ export const ROLE_PERMISSIONS: Record<RoleCode, Permission[]> = {
     "book.view.own",
     "book.edit",
     "book.confirm.gvbm",
-    "report.view",
   ],
   GVCN: [
     "setup.view",
     "book.view.class",
     "book.confirm.gvcn",
-    "report.view",
   ],
 };
 
