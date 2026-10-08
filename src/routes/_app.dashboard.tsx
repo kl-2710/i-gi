@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Archive,
   BookOpen,
   CheckCircle2,
   ClipboardList,
@@ -27,116 +26,66 @@ import { ROLE_LABEL, type BookStatus } from "@/lib/types";
 export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Hệ thống quản lý sổ đầu bài" },
-      { name: "description", content: "Tổng quan tình trạng sổ đầu bài theo vai trò người dùng." },
-      { property: "og:title", content: "Dashboard — Hệ thống quản lý sổ đầu bài" },
-      { property: "og:description", content: "Tổng quan tình trạng sổ đầu bài Trường THCS Khương Mai." },
+      { title: "Dashboard — Hệ thống quản lý Sổ đầu bài" },
+      { name: "description", content: "Tổng quan tình trạng Sổ đầu bài theo vai trò người dùng." },
     ],
   }),
   component: DashboardPage,
 });
 
 function DashboardPage() {
-  const { user, role, scopedBooks, books, notifications } = useApp();
+  const { user, role, scopedBooks, books, notifications, weeklyGvcnConfirmations, bghConfirmed, yearEndReached } = useApp();
   if (!user || !role) return null;
 
-  const count = (...s: BookStatus[]) => scopedBooks.filter((b) => s.includes(b.status)).length;
+  const count = (...statuses: BookStatus[]) => scopedBooks.filter((b) => statuses.includes(b.status)).length;
   const attention = scopedBooks
-    .filter((b) =>
-      ["chua_hoan_thien", "yeu_cau_chinh_sua", "cho_kiem_tra", "cho_duyet", "he_thong_tao"].includes(
-        b.status,
-      ),
-    )
+    .filter((b) => ["he_thong_tao", "chua_hoan_thien", "da_cap_nhat", "yeu_cau_chinh_sua"].includes(b.status))
     .slice(0, 8);
+
+  const weeks = Array.from(
+    new Set(scopedBooks.map((b) => b.weekNumber)),
+  ).sort((a, b) => a - b);
 
   const cards = () => {
     switch (role) {
       case "GVBM":
         return [
-          { label: "Tiết chưa hoàn thiện", value: count("chua_hoan_thien", "he_thong_tao"), icon: TriangleAlert, tone: "warning" as const },
+          { label: "Tiết chưa hoàn thiện", value: count("he_thong_tao", "chua_hoan_thien"), icon: TriangleAlert, tone: "warning" as const },
           { label: "Tiết đã cập nhật", value: count("da_cap_nhat"), icon: BookOpen, tone: "info" as const },
           { label: "Tiết chờ xác nhận", value: count("da_cap_nhat"), icon: ListChecks, tone: "primary" as const },
-          { label: "Sổ đã xác nhận", value: count("xac_nhan_gvbm", "xac_nhan_gvcn", "da_kiem_tra", "da_duyet", "da_khoa"), icon: CheckCircle2, tone: "success" as const },
+          { label: "Tiết đã xác nhận", value: count("xac_nhan_gvbm", "xac_nhan_gvcn", "xac_nhan_bgh", "da_khoa"), icon: CheckCircle2, tone: "success" as const },
           { label: "Yêu cầu chỉnh sửa", value: count("yeu_cau_chinh_sua"), icon: TriangleAlert, tone: "danger" as const },
         ];
       case "GVCN":
         return [
           { label: "Lớp chủ nhiệm", value: user.homeroomClass ?? "-", icon: GraduationCap, tone: "primary" as const },
-          { label: "Sổ đầu bài của lớp", value: scopedBooks.length, icon: BookOpen, tone: "info" as const },
-          { label: "Sổ chờ xác nhận GVCN", value: count("xac_nhan_gvbm"), icon: ListChecks, tone: "warning" as const },
-          { label: "Sổ đã xác nhận GVCN", value: count("xac_nhan_gvcn", "cho_kiem_tra", "da_kiem_tra", "da_duyet", "da_khoa"), icon: CheckCircle2, tone: "success" as const },
+          { label: "Tổng số tiết của lớp", value: scopedBooks.length, icon: BookOpen, tone: "info" as const },
+          { label: "Tuần đủ điều kiện xác nhận", value: weeks.filter((w) => scopedBooks.filter((b) => b.weekNumber === w).every((b) => !!b.gvbmConfirm)).length, icon: ListChecks, tone: "warning" as const },
+          { label: "Tuần đã xác nhận", value: weeks.filter((w) => !!weeklyGvcnConfirmations[`${scopedBooks.find((b) => b.weekNumber === w)?.year}|${user.homeroomClass}|W${w}`]).length, icon: CheckCircle2, tone: "success" as const },
+        ];
+      case "BGH":
+        return [
+          { label: "PPCT", value: "Đã nhập", icon: ClipboardList, tone: "success" as const },
+          { label: "TKB", value: "Đã nhập", icon: FileSpreadsheet, tone: "success" as const },
+          { label: "Dữ liệu tiết dạy", value: books.length, icon: BookOpen, tone: "primary" as const },
+          { label: "Đã xác nhận GVBM", value: books.filter((b) => b.gvbmConfirm).length, icon: ListChecks, tone: "info" as const },
+          { label: "Tuần đã xác nhận GVCN", value: Object.keys(weeklyGvcnConfirmations).length, icon: CheckCircle2, tone: "info" as const },
+          { label: "Trạng thái BGH", value: bghConfirmed ? "Đã xác nhận" : yearEndReached ? "Chờ xác nhận" : "Chưa đến thời điểm", icon: ShieldCheck, tone: bghConfirmed ? "success" as const : "warning" as const },
+          { label: "Sổ đã khóa", value: books.filter((b) => b.status === "da_khoa").length, icon: Lock, tone: "neutral" as const },
+          { label: "Tổng số lớp", value: CLASSES.length, icon: Layers, tone: "neutral" as const },
         ];
       case "TPT":
         return [
           { label: "Tổng số lớp", value: CLASSES.length, icon: Layers, tone: "primary" as const },
-          { label: "Sổ cần kiểm tra", value: count("cho_kiem_tra", "xac_nhan_gvcn"), icon: ListChecks, tone: "warning" as const },
-          { label: "Sổ cần duyệt", value: count("cho_duyet", "da_kiem_tra"), icon: CheckCircle2, tone: "info" as const },
-          { label: "Sổ đã khóa", value: count("da_khoa"), icon: Lock, tone: "neutral" as const },
-          { label: "Sổ đã lưu trữ", value: count("da_luu_tru"), icon: Archive, tone: "neutral" as const },
-        ];
-      case "BGH":
-        return [
-          {
-            label: "Trạng thái PPCT",
-            value: "Đã nhập",
-            icon: ClipboardList,
-            tone: "success" as const,
-            hint: "PPCT học kỳ hiện tại",
-          },
-          {
-            label: "Trạng thái TKB",
-            value: "Đã nhập",
-            icon: FileSpreadsheet,
-            tone: "success" as const,
-            hint: "TKB học kỳ hiện tại",
-          },
-          {
-            label: "Tệp đã tải lên",
-            value: 2,
-            icon: FileSpreadsheet,
-            tone: "info" as const,
-          },
-          {
-            label: "Kiểm tra dữ liệu",
-            value: "13 dòng cảnh báo",
-            icon: TriangleAlert,
-            tone: "warning" as const,
-          },
-          {
-            label: "Bản ghi sổ đã sinh",
-            value: books.length,
-            icon: BookOpen,
-            tone: "primary" as const,
-          },
-          {
-            label: "Sổ cần kiểm tra",
-            value: count("cho_kiem_tra", "xac_nhan_gvcn"),
-            icon: ListChecks,
-            tone: "warning" as const,
-          },
-          {
-            label: "Sổ cần duyệt",
-            value: count("cho_duyet", "da_kiem_tra"),
-            icon: CheckCircle2,
-            tone: "info" as const,
-          },
-          {
-            label: "Tổng số sổ toàn trường",
-            value: books.length,
-            icon: BookOpen,
-            tone: "primary" as const,
-          },
-          {
-            label: "Sổ đã duyệt",
-            value: count("da_duyet", "da_khoa", "da_luu_tru"),
-            icon: ShieldCheck,
-            tone: "success" as const,
-          },
+          { label: "Tổng số tiết", value: books.length, icon: BookOpen, tone: "info" as const },
+          { label: "Đã xác nhận GVBM", value: books.filter((b) => b.gvbmConfirm).length, icon: ListChecks, tone: "info" as const },
+          { label: "Đã xác nhận GVCN", value: books.filter((b) => b.status === "xac_nhan_gvcn" || b.status === "xac_nhan_bgh" || b.status === "da_khoa").length, icon: CheckCircle2, tone: "success" as const },
+          { label: "Đã khóa", value: count("da_khoa"), icon: Lock, tone: "neutral" as const },
         ];
       default:
         return [
           { label: "Tổng số tài khoản", value: 10, icon: Users, tone: "primary" as const },
-          { label: "Tổng số vai trò", value: 6, icon: ShieldCheck, tone: "info" as const },
+          { label: "Tổng số vai trò", value: 5, icon: ShieldCheck, tone: "info" as const },
           { label: "Tổng số lớp", value: CLASSES.length, icon: Layers, tone: "neutral" as const },
           { label: "Tổng số môn học", value: SUBJECTS.length, icon: BookOpen, tone: "neutral" as const },
         ];
@@ -151,7 +100,7 @@ function DashboardPage() {
         crumbs={[{ label: "Dashboard" }]}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards().map((c) => (
           <DashboardCard key={c.label} {...c} />
         ))}
@@ -159,12 +108,12 @@ function DashboardPage() {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h2 className="mb-3 text-base font-semibold">Bản ghi cần xử lý</h2>
+          <h2 className="mb-3 text-base font-semibold">Dữ liệu cần xử lý</h2>
           <TableCard>
             {role === "ADMIN" ? (
               <EmptyState
-                title="Quản trị hệ thống không tham gia nghiệp vụ sổ đầu bài"
-                description="Vai trò Admin tập trung vào quản lý tài khoản, vai trò và phân quyền."
+                title="Quản trị hệ thống không tham gia nghiệp vụ Sổ đầu bài"
+                description="Vai trò Admin tập trung vào tài khoản, vai trò và phân quyền."
                 action={
                   <Button asChild size="sm" className="mt-2">
                     <Link to="/nguoi-dung/tai-khoan">Tới quản lý tài khoản</Link>
@@ -172,7 +121,7 @@ function DashboardPage() {
                 }
               />
             ) : attention.length === 0 ? (
-              <EmptyState title="Không có bản ghi cần xử lý" description="Tất cả sổ đầu bài trong phạm vi của bạn đã được xử lý." />
+              <EmptyState title="Không có dữ liệu cần xử lý" description="Các bản ghi trong phạm vi của bạn đã được cập nhật hoặc xác nhận." />
             ) : (
               <ScrollTable>
                 <Table>
@@ -195,14 +144,10 @@ function DashboardPage() {
                         <TableCell className="font-medium">{b.className}</TableCell>
                         <TableCell>{b.subject}</TableCell>
                         <TableCell className="whitespace-nowrap">{b.teacher}</TableCell>
-                        <TableCell>
-                          <StatusBadge status={b.status} />
-                        </TableCell>
+                        <TableCell><StatusBadge status={b.status} /></TableCell>
                         <TableCell className="text-right">
                           <Button asChild variant="outline" size="sm">
-                            <Link to="/so-dau-bai/$id" params={{ id: b.id }}>
-                              Xem
-                            </Link>
+                            <Link to="/so-dau-bai/$id" params={{ id: b.id }}>Xem</Link>
                           </Button>
                         </TableCell>
                       </TableRow>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
+import { CheckCircle2, FileWarning, Layers, Sparkles, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ScrollTable, TableCard } from "@/components/common/DataTable";
@@ -11,22 +11,19 @@ import { ActionDialog } from "@/components/common/ActionDialog";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
-import { CheckCircle2, FileWarning, Layers, TriangleAlert } from "lucide-react";
 
 export const Route = createFileRoute("/_app/day-hoc/sinh-so-dau-bai")({
   head: () => ({
     meta: [
-      { title: "Xem trước dữ liệu sổ đầu bài được sinh — THCS Khương Mai" },
-      { name: "description", content: "Khớp PPCT và TKB, xem trước và xác nhận sinh dữ liệu sổ đầu bài tự động." },
-      { property: "og:title", content: "Sinh dữ liệu sổ đầu bài" },
-      { property: "og:description", content: "Xem trước bản ghi sổ đầu bài được hệ thống sinh từ PPCT và TKB." },
+      { title: "Hình thành dữ liệu tiết dạy — Sổ đầu bài THCS Khương Mai" },
+      { name: "description", content: "Đối soát PPCT và TKB, loại ngày nghỉ và hình thành dữ liệu tiết dạy phục vụ Sổ đầu bài." },
     ],
   }),
   component: GeneratePage,
 });
 
 function GeneratePage() {
-  const { can, books, generated, setGenerated } = useApp();
+  const { can, books, generated, setGenerated, ppctUploaded, tkbUploaded } = useApp();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const preview = books.slice(0, 15);
@@ -34,41 +31,52 @@ function GeneratePage() {
   if (!can("gen.confirm")) {
     return (
       <div>
-        <PageHeader title="Sinh dữ liệu sổ đầu bài" crumbs={[{ label: "Thiết lập dạy học" }, { label: "Sinh dữ liệu sổ đầu bài" }]} />
-        <NoPermissionState message="Chỉ Phó Hiệu trưởng được phép xác nhận sinh dữ liệu sổ đầu bài." />
+        <PageHeader title="Hình thành dữ liệu tiết dạy" crumbs={[{ label: "Quản lý danh mục và dữ liệu dạy học" }, { label: "Hình thành dữ liệu tiết dạy" }]} />
+        <NoPermissionState message="Chỉ BGH được phép hình thành dữ liệu tiết dạy." />
       </div>
     );
   }
 
+  const ready = ppctUploaded && tkbUploaded;
+
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Xem trước dữ liệu sổ đầu bài được sinh"
-        description="Hệ thống khớp năm học, học kỳ, lớp, môn, giáo viên, ngày, tiết và tiết PPCT để tạo bản ghi sổ đầu bài."
-        crumbs={[{ label: "Thiết lập dạy học" }, { label: "Sinh dữ liệu sổ đầu bài" }]}
+        title="Hình thành dữ liệu tiết dạy"
+        description="Hệ thống tự động đối soát PPCT và TKB, xác định ngày dạy từ lịch học, loại ngày nghỉ và hình thành dữ liệu tiết dạy; sau đó tạo Sổ đầu bài."
+        crumbs={[{ label: "Quản lý danh mục và dữ liệu dạy học" }, { label: "Hình thành dữ liệu tiết dạy" }]}
       />
 
-      <div className="rounded-xl border border-border bg-card p-4 text-sm shadow-card">
+      <div className="rounded-xl border border-border bg-card p-4 text-sm shadow-card sm:p-6">
         <p className="font-medium">Luồng xử lý</p>
         <p className="mt-1 text-muted-foreground">
-          Upload PPCT + Upload TKB → Kiểm tra dữ liệu → Khớp dữ liệu → Xem trước → Phó Hiệu trưởng xác nhận → Hệ thống tự động tạo bản ghi sổ đầu bài.
+          PPCT + TKB → Đối soát theo năm học/học kỳ/khối/lớp/môn → Xác định ngày dạy → Loại ngày nghỉ → Xác định tiết PPCT → Hình thành dữ liệu tiết dạy → Sinh Sổ đầu bài.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <DashboardCard label="Tổng số bản ghi dự kiến" value={books.length} icon={Layers} tone="primary" />
-        <DashboardCard label="Tạo thành công" value={books.length - 9} icon={CheckCircle2} tone="success" />
-        <DashboardCard label="Cần kiểm tra" value={5} icon={TriangleAlert} tone="warning" />
-        <DashboardCard label="Không khớp" value={3} icon={FileWarning} tone="danger" />
-        <DashboardCard label="Thiếu dữ liệu" value={1} icon={FileWarning} tone="neutral" />
+        <DashboardCard label="PPCT" value={ppctUploaded ? "Đã nhập" : "Chưa nhập"} icon={CheckCircle2} tone={ppctUploaded ? "success" : "warning"} />
+        <DashboardCard label="TKB" value={tkbUploaded ? "Đã nhập" : "Chưa nhập"} icon={CheckCircle2} tone={tkbUploaded ? "success" : "warning"} />
+        <DashboardCard label="Bản ghi tiết dạy dự kiến" value={books.length} icon={Layers} tone="primary" />
+        <DashboardCard label="Cần xử lý đối soát" value={9} icon={TriangleAlert} tone="warning" />
+        <DashboardCard label="Bản ghi không thể hình thành" value={0} icon={FileWarning} tone="neutral" />
+      </div>
+
+      <div className="rounded-xl border border-primary/25 bg-primary/5 p-4 text-sm">
+        <p className="font-medium">Kiểm tra trước khi hình thành</p>
+        <div className="mt-2 grid gap-2 sm:grid-cols-3">
+          <div><Pill tone={ppctUploaded ? "success" : "warning"}>{ppctUploaded ? "✓" : "!"}</Pill> PPCT hợp lệ</div>
+          <div><Pill tone={tkbUploaded ? "success" : "warning"}>{tkbUploaded ? "✓" : "!"}</Pill> TKB hợp lệ</div>
+          <div><Pill tone="success">✓</Pill> Có thể đối soát</div>
+        </div>
       </div>
 
       <TableCard>
         <div className="flex flex-col gap-2 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="flex items-center gap-2 text-base font-semibold"><Sparkles className="size-4 text-primary" />Bản ghi sổ đầu bài dự kiến</h2>
+          <h2 className="flex items-center gap-2 text-base font-semibold"><Sparkles className="size-4 text-primary" />Bản ghi tiết dạy dự kiến hình thành</h2>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate({ to: "/day-hoc/tkb" })}>Hủy</Button>
-            <Button size="sm" onClick={() => setOpen(true)}>Xác nhận tạo sổ đầu bài</Button>
+            <Button variant="outline" size="sm" onClick={() => navigate({ to: "/day-hoc/tkb" })}>Quay lại TKB</Button>
+            <Button size="sm" disabled={!ready} onClick={() => setOpen(true)}>Hình thành dữ liệu</Button>
           </div>
         </div>
         <ScrollTable>
@@ -76,26 +84,26 @@ function GeneratePage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Ngày</TableHead>
+                <TableHead>Thứ</TableHead>
                 <TableHead>Tiết</TableHead>
                 <TableHead>Lớp</TableHead>
                 <TableHead>Môn</TableHead>
                 <TableHead>Giáo viên</TableHead>
                 <TableHead>Tiết PPCT</TableHead>
-                <TableHead>Nội dung dự kiến</TableHead>
-                <TableHead>Trạng thái</TableHead>
+                <TableHead>Nội dung PPCT</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {preview.map((b) => (
                 <TableRow key={b.id}>
                   <TableCell className="whitespace-nowrap">{b.date}</TableCell>
+                  <TableCell>{b.weekday}</TableCell>
                   <TableCell>Tiết {b.period}</TableCell>
                   <TableCell className="font-medium">{b.className}</TableCell>
                   <TableCell className="whitespace-nowrap">{b.subject}</TableCell>
                   <TableCell className="whitespace-nowrap">{b.teacher}</TableCell>
-                  <TableCell>PPCT {b.ppctNo}</TableCell>
+                  <TableCell>Tiết {b.ppctNo}</TableCell>
                   <TableCell>{b.plannedContent}</TableCell>
-                  <TableCell><Pill tone={generated ? "success" : "info"}>{generated ? "Đã tạo" : "Dự kiến tạo"}</Pill></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -106,15 +114,19 @@ function GeneratePage() {
       <ActionDialog
         open={open}
         onOpenChange={setOpen}
-        title="Xác nhận tạo sổ đầu bài"
-        description={`Hệ thống sẽ tạo ${books.length} bản ghi sổ đầu bài từ dữ liệu PPCT và TKB đã kiểm tra.`}
-        confirmLabel="Xác nhận tạo sổ đầu bài"
+        title="Xác nhận hình thành dữ liệu tiết dạy"
+        description={`Hệ thống sẽ hình thành ${books.length} bản ghi tiết dạy từ PPCT và TKB đã kiểm tra, đồng thời tạo Sổ đầu bài tương ứng.`}
+        confirmLabel="Xác nhận hình thành"
         onConfirm={() => {
           setGenerated(true);
-          toast.success("Hệ thống đã tạo bản ghi sổ đầu bài thành công");
+          toast.success("Đã hình thành dữ liệu tiết dạy và Sổ đầu bài");
           navigate({ to: "/so-dau-bai" });
         }}
       />
+
+      {!generated && (
+        <p className="text-sm text-muted-foreground">Dữ liệu đang ở trạng thái dự kiến, chưa được hình thành chính thức.</p>
+      )}
     </div>
   );
 }

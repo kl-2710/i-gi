@@ -16,9 +16,7 @@ export const Route = createFileRoute("/_app/day-hoc/tkb")({
   head: () => ({
     meta: [
       { title: "TKB — Sổ đầu bài THCS Khương Mai" },
-      { name: "description", content: "Nhập, kiểm tra và xác nhận thời khóa biểu từ tệp Excel." },
-      { property: "og:title", content: "Thời khóa biểu (TKB)" },
-      { property: "og:description", content: "Nhập dữ liệu TKB phục vụ sinh sổ đầu bài tự động." },
+      { name: "description", content: "Nhập và kiểm tra thời khóa biểu toàn trường theo học kỳ." },
     ],
   }),
   component: TkbPage,
@@ -28,13 +26,12 @@ function TkbPage() {
   const { can, setTkbUploaded } = useApp();
   const [file, setFile] = useState<string | null>("TKB_HK1_2026_2027.xlsx");
   const [validated, setValidated] = useState(true);
-  const [confirmed, setConfirmed] = useState(true);
 
   if (!can("tkb.upload")) {
     return (
       <div>
-        <PageHeader title="TKB" crumbs={[{ label: "Thiết lập dạy học" }, { label: "TKB" }]} />
-        <NoPermissionState message="Chỉ Phó Hiệu trưởng được phép nhập và xác nhận dữ liệu TKB." />
+        <PageHeader title="TKB" crumbs={[{ label: "Quản lý danh mục và dữ liệu dạy học" }, { label: "TKB" }]} />
+        <NoPermissionState message="Chỉ BGH được phép nhập TKB." />
       </div>
     );
   }
@@ -43,9 +40,14 @@ function TkbPage() {
     <div className="space-y-5">
       <PageHeader
         title="TKB - Thời khóa biểu"
-        description="TKB cung cấp ngày, tiết, lớp, môn và giáo viên để khớp với PPCT khi sinh sổ đầu bài."
-        crumbs={[{ label: "Thiết lập dạy học" }, { label: "TKB" }]}
+        description="Một học kỳ chỉ có một TKB áp dụng cho toàn trường. TKB không được quản lý theo tuần; dữ liệu tuần/ngày được hình thành từ lịch học khi sinh tiết dạy."
+        crumbs={[{ label: "Quản lý danh mục và dữ liệu dạy học" }, { label: "TKB" }]}
       />
+
+      <div className="rounded-xl border border-primary/25 bg-primary/5 p-4 text-sm">
+        <p className="font-medium">Quy tắc TKB</p>
+        <p className="mt-1 text-muted-foreground">TKB chứa lịch dạy từ Thứ Hai đến Thứ Sáu, 5 tiết buổi sáng. Mỗi dòng chi tiết xác định Thứ + Tiết + Lớp + Môn học + Giáo viên.</p>
+      </div>
 
       <div className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
         <h2 className="mb-3 text-base font-semibold">Tải tệp TKB</h2>
@@ -54,7 +56,6 @@ function TkbPage() {
           onUploaded={(name) => {
             setFile(name);
             setValidated(false);
-            setConfirmed(false);
             setTkbUploaded(true);
             toast.success("Tải tệp TKB thành công");
           }}
@@ -63,14 +64,14 @@ function TkbPage() {
 
       {file && (
         <div className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
-          <h2 className="mb-3 text-base font-semibold">Thông tin tệp</h2>
+          <h2 className="mb-3 text-base font-semibold">Thông tin TKB</h2>
           <dl className="grid gap-3 text-sm sm:grid-cols-3">
             <div><dt className="text-muted-foreground">Tên tệp</dt><dd className="flex items-center gap-1.5 font-medium"><FileSpreadsheet className="size-4 text-success" />{file}</dd></div>
-            <div><dt className="text-muted-foreground">Người tải lên</dt><dd className="font-medium">Trần Quốc Bảo - Phó Hiệu trưởng</dd></div>
-            <div><dt className="text-muted-foreground">Thời gian</dt><dd className="font-medium">18/09/2026 09:40</dd></div>
             <div><dt className="text-muted-foreground">Năm học</dt><dd className="font-medium">{NAM_HOC}</dd></div>
             <div><dt className="text-muted-foreground">Học kỳ</dt><dd className="font-medium">{HOC_KY}</dd></div>
-            <div><dt className="text-muted-foreground">Trạng thái</dt><dd><Pill tone={confirmed ? "success" : validated ? "info" : "warning"}>{confirmed ? "Đã xác nhận nhập dữ liệu" : validated ? "Đã kiểm tra dữ liệu" : "Chờ kiểm tra dữ liệu"}</Pill></dd></div>
+            <div><dt className="text-muted-foreground">Ngày áp dụng</dt><dd className="font-medium">19/08/2026</dd></div>
+            <div><dt className="text-muted-foreground">Phạm vi</dt><dd className="font-medium">Toàn trường</dd></div>
+            <div><dt className="text-muted-foreground">Trạng thái</dt><dd><Pill tone={validated ? "success" : "warning"}>{validated ? "Đã kiểm tra dữ liệu" : "Chờ kiểm tra dữ liệu"}</Pill></dd></div>
           </dl>
         </div>
       )}
@@ -87,7 +88,7 @@ function TkbPage() {
               "3 dòng không khớp giáo viên trong danh mục",
               "2 dòng không khớp lớp",
               "2 dòng không khớp môn học",
-              "1 dòng trùng bản ghi (ngày - tiết - lớp)",
+              "1 dòng trùng (TKB - lớp - thứ - tiết)",
             ]}
           />
         </div>
@@ -95,24 +96,18 @@ function TkbPage() {
 
       <TableCard>
         <div className="flex flex-col gap-2 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-base font-semibold">Xem trước dữ liệu TKB</h2>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => toast.info("Đang hiển thị bản xem trước dữ liệu TKB")}>Xem trước</Button>
-            <Button variant="outline" size="sm" onClick={() => { setValidated(true); toast.success("Kiểm tra dữ liệu hoàn tất: 952/960 dòng hợp lệ"); }}>Kiểm tra dữ liệu</Button>
-            <Button size="sm" disabled={!validated} onClick={() => { setConfirmed(true); toast.success("Đã xác nhận nhập dữ liệu TKB"); }}>Xác nhận nhập dữ liệu</Button>
-          </div>
+          <h2 className="text-base font-semibold">Xem trước chi tiết TKB</h2>
+          <Button variant="outline" size="sm" onClick={() => { setValidated(true); toast.success("Kiểm tra dữ liệu TKB hoàn tất"); }}>Kiểm tra dữ liệu</Button>
         </div>
         <ScrollTable>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Thứ</TableHead>
-                <TableHead>Ngày</TableHead>
                 <TableHead>Tiết</TableHead>
                 <TableHead>Lớp</TableHead>
                 <TableHead>Môn</TableHead>
                 <TableHead>Giáo viên</TableHead>
-                <TableHead>Phòng học</TableHead>
                 <TableHead>Năm học</TableHead>
                 <TableHead>Học kỳ</TableHead>
                 <TableHead>Ghi chú</TableHead>
@@ -122,12 +117,10 @@ function TkbPage() {
               {TKB_ROWS.map((r, i) => (
                 <TableRow key={i}>
                   <TableCell className="whitespace-nowrap">{r.weekday}</TableCell>
-                  <TableCell className="whitespace-nowrap">{r.date}</TableCell>
                   <TableCell>Tiết {r.period}</TableCell>
                   <TableCell className="font-medium">{r.className}</TableCell>
                   <TableCell className="whitespace-nowrap">{r.subject}</TableCell>
                   <TableCell className="whitespace-nowrap">{r.teacher}</TableCell>
-                  <TableCell>{r.room}</TableCell>
                   <TableCell className="whitespace-nowrap">{r.year}</TableCell>
                   <TableCell className="whitespace-nowrap">{r.semester}</TableCell>
                   <TableCell>{r.error ? <Pill tone="danger">{r.error}</Pill> : <Pill tone="success">Hợp lệ</Pill>}</TableCell>
@@ -138,10 +131,10 @@ function TkbPage() {
         </ScrollTable>
       </TableCard>
 
-      {confirmed && (
+      {validated && (
         <div className="flex flex-col gap-3 rounded-xl border border-primary/25 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm">PPCT và TKB đã sẵn sàng để khớp dữ liệu và sinh sổ đầu bài.</p>
-          <Button asChild size="sm"><Link to="/day-hoc/sinh-so-dau-bai">Xem trước dữ liệu sổ được sinh<ArrowRight className="size-4" /></Link></Button>
+          <p className="text-sm">PPCT và TKB đã sẵn sàng để đối soát và hình thành dữ liệu tiết dạy.</p>
+          <Button asChild size="sm"><Link to="/day-hoc/sinh-so-dau-bai">Hình thành dữ liệu tiết dạy<ArrowRight className="size-4" /></Link></Button>
         </div>
       )}
     </div>

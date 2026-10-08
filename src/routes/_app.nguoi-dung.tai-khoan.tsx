@@ -44,7 +44,7 @@ function AccountsPage() {
   const filtered = useMemo(
     () =>
       accounts.filter((a) => {
-        const text = `${a.code} ${a.fullName} ${a.username} ${a.email} ${a.position}`.toLowerCase();
+        const text = `${a.code} ${a.fullName} ${a.username} ${a.phone} ${a.position}`.toLowerCase();
         if (q && !text.includes(q.toLowerCase())) return false;
         if (roleFilter !== "all" && !a.roles.includes(roleFilter as RoleCode)) return false;
         if (statusFilter === "active" && !a.active) return false;
@@ -80,7 +80,7 @@ function AccountsPage() {
 
       <TableCard>
         <TableToolbar>
-          <SearchBar value={q} onChange={(v) => { setQ(v); setPage(1); }} placeholder="Tìm theo tên, tên đăng nhập, email..." />
+          <SearchBar value={q} onChange={(v) => { setQ(v); setPage(1); }} placeholder="Tìm theo tên, tên đăng nhập, số điện thoại..." />
           <FilterField label="Vai trò">
             <Select value={roleFilter} onValueChange={(v) => { setRoleFilter(v); setPage(1); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -114,7 +114,7 @@ function AccountsPage() {
                   <TableHead>Mã tài khoản</TableHead>
                   <TableHead>Họ và tên</TableHead>
                   <TableHead>Tên đăng nhập</TableHead>
-                  <TableHead>Email</TableHead>
+                  <TableHead>Số điện thoại</TableHead>
                   <TableHead>Chức vụ</TableHead>
                   <TableHead>Vai trò</TableHead>
                   <TableHead>Trạng thái</TableHead>
@@ -128,7 +128,7 @@ function AccountsPage() {
                     <TableCell className="font-mono text-xs">{a.code}</TableCell>
                     <TableCell className="whitespace-nowrap font-medium">{a.fullName}</TableCell>
                     <TableCell>{a.username}</TableCell>
-                    <TableCell className="text-muted-foreground">{a.email}</TableCell>
+                    <TableCell className="text-muted-foreground">{a.phone}</TableCell>
                     <TableCell className="whitespace-nowrap">{a.position}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
@@ -191,8 +191,8 @@ function AccountsPage() {
                 <Input defaultValue={detail.username} disabled />
               </div>
               <div className="space-y-1.5 sm:col-span-2">
-                <Label>Email</Label>
-                <Input defaultValue={detail.email} maxLength={255} />
+                <Label>Số điện thoại</Label>
+                <Input defaultValue={detail.phone} maxLength={255} />
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <Label>Chức vụ</Label>
@@ -224,7 +224,7 @@ function AccountsPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5"><Label>Họ và tên</Label><Input placeholder="Nguyễn Văn A" maxLength={100} /></div>
             <div className="space-y-1.5"><Label>Tên đăng nhập</Label><Input placeholder="a.nguyen" maxLength={64} /></div>
-            <div className="space-y-1.5 sm:col-span-2"><Label>Email</Label><Input placeholder="a.nguyen@thcskhuongmai.edu.vn" maxLength={255} /></div>
+            <div className="space-y-1.5 sm:col-span-2"><Label>Số điện thoại</Label><Input placeholder="a.nguyen" maxLength={255} /></div>
             <div className="space-y-1.5 sm:col-span-2"><Label>Chức vụ</Label><Input placeholder="Giáo viên Toán" maxLength={120} /></div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label>Vai trò</Label>
@@ -253,7 +253,7 @@ function AccountsPage() {
         confirmLabel="Đặt lại mật khẩu"
         requireReason
         reasonLabel="Lý do đặt lại"
-        onConfirm={() => toast.success("Đã gửi mật khẩu mới tới email người dùng")}
+        onConfirm={() => toast.success("Đã đặt lại mật khẩu cho tài khoản")}
       />
     </div>
   );

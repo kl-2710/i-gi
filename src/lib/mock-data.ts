@@ -1,10 +1,4 @@
-import type {
-  AppNotification,
-  AuditEntry,
-  LessonBook,
-  BookStatus,
-  UserAccount,
-} from "./types";
+import type { AppNotification, AuditEntry, BookStatus, LessonBook, UserAccount } from "./types";
 
 export const NAM_HOC = "2026 - 2027";
 export const HOC_KY = "Học kỳ I";
@@ -58,8 +52,8 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK001",
     fullName: "Quản trị hệ thống",
     username: "admin",
-    email: "admin@thcskhuongmai.edu.vn",
-    position: "Quản trị viên",
+    phone: "0243 888 0001",
+    position: "Quản trị hệ thống",
     roles: ["ADMIN"],
     active: true,
     updatedAt: "15/09/2026",
@@ -69,7 +63,7 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK002",
     fullName: "Nguyễn Thị Thanh Hà",
     username: "hieutruong",
-    email: "ha.nguyen@thcskhuongmai.edu.vn",
+    phone: "0912 345 601",
     position: "Hiệu trưởng",
     roles: ["BGH"],
     active: true,
@@ -80,7 +74,7 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK003",
     fullName: "Trần Quốc Bảo",
     username: "phohieutruong",
-    email: "bao.tran@thcskhuongmai.edu.vn",
+    phone: "0912 345 602",
     position: "Phó Hiệu trưởng",
     roles: ["BGH"],
     active: true,
@@ -91,7 +85,7 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK004",
     fullName: "Phan Thị Kim Oanh",
     username: "tongphutrach",
-    email: "oanh.phan@thcskhuongmai.edu.vn",
+    phone: "0912 345 603",
     position: "Tổng phụ trách Đội",
     roles: ["TPT"],
     active: true,
@@ -102,7 +96,8 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK005",
     fullName: "Nguyễn Văn An",
     username: "an.nguyen",
-    email: "an.nguyen@thcskhuongmai.edu.vn",
+    phone: "0912 345 604",
+    teacherId: "GV01",
     position: "Giáo viên Toán",
     roles: ["GVBM"],
     active: true,
@@ -114,7 +109,8 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK006",
     fullName: "Lê Thị Minh Thu",
     username: "thu.le",
-    email: "thu.le@thcskhuongmai.edu.vn",
+    phone: "0912 345 605",
+    teacherId: "GV03",
     position: "Giáo viên Tiếng Anh - GVCN 7A1",
     roles: ["GVBM", "GVCN"],
     active: true,
@@ -127,7 +123,8 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK007",
     fullName: "Trần Thị Bích Ngọc",
     username: "ngoc.tran",
-    email: "ngoc.tran@thcskhuongmai.edu.vn",
+    phone: "0912 345 606",
+    teacherId: "GV02",
     position: "Giáo viên Ngữ văn - GVCN 6A1",
     roles: ["GVBM", "GVCN"],
     active: true,
@@ -140,7 +137,8 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK008",
     fullName: "Đỗ Văn Hùng",
     username: "hung.do",
-    email: "hung.do@thcskhuongmai.edu.vn",
+    phone: "0912 345 607",
+    teacherId: "GV05",
     position: "Giáo viên Hóa học - GVCN 7A2",
     roles: ["GVBM", "GVCN"],
     active: true,
@@ -153,7 +151,8 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK009",
     fullName: "Vũ Quang Huy",
     username: "huy.vu",
-    email: "huy.vu@thcskhuongmai.edu.vn",
+    phone: "0912 345 608",
+    teacherId: "GV07",
     position: "Giáo viên Lịch sử và Địa lý",
     roles: ["GVBM"],
     active: false,
@@ -165,7 +164,8 @@ export const ACCOUNTS: UserAccount[] = [
     code: "TK010",
     fullName: "Hoàng Thị Mai",
     username: "mai.hoang",
-    email: "mai.hoang@thcskhuongmai.edu.vn",
+    phone: "0912 345 609",
+    teacherId: "GV08",
     position: "Giáo viên GDCD - GVCN 9A1",
     roles: ["GVBM", "GVCN"],
     active: true,
@@ -191,7 +191,7 @@ const CONTENTS: Record<string, string[]> = {
   "Vật lý": ["Đo chiều dài", "Đo khối lượng", "Lực và biểu diễn lực", "Thực hành đo lực", "Ôn tập chương I"],
   "Hóa học": ["Chất và sự biến đổi của chất", "Nguyên tử", "Nguyên tố hóa học", "Thực hành thí nghiệm", "Luyện tập"],
   "Sinh học": ["Tế bào - đơn vị cơ sở của sự sống", "Cấu tạo tế bào", "Sự lớn lên và sinh sản của tế bào", "Thực hành quan sát tế bào", "Ôn tập"],
-  "Lịch sử và Địa lý": ["Lịch sử là gì?", "Thời gian trong lịch sử", "Bản đồ và phương hướng", "Trái Đất trong hệ Mặt Trời", "Ôn tập chủ đề 1"],
+  "Lịch sử và Địa lý": ["Lịch sử là gì?", "Thời gian trong lịch sử", "Bản đồ và phương hướng", "Trái Đất trong Hệ Mặt Trời", "Ôn tập chủ đề 1"],
   GDCD: ["Tự hào về truyền thống gia đình", "Yêu thương con người", "Siêng năng, kiên trì", "Thực hành tình huống", "Ôn tập"],
   "Tin học": ["Thông tin và dữ liệu", "Mạng máy tính", "Soạn thảo văn bản", "Thực hành trên máy", "Ôn tập"],
   "Công nghệ": ["Nhà ở đối với con người", "Xây dựng nhà ở", "Vật liệu xây dựng", "Thực hành thiết kế", "Ôn tập"],
@@ -205,53 +205,61 @@ const STATUS_CYCLE: BookStatus[] = [
   "chua_hoan_thien",
   "da_cap_nhat",
   "xac_nhan_gvbm",
-  "xac_nhan_gvcn",
-  "cho_kiem_tra",
-  "da_kiem_tra",
-  "cho_duyet",
-  "da_duyet",
-  "da_khoa",
-  "da_luu_tru",
   "yeu_cau_chinh_sua",
 ];
 
-const WEEKDAYS = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-const ABSENT_NAMES = ["Nguyễn Gia Bảo", "Trần Khánh Linh", "Lê Hoàng Nam", "Phạm Ngọc Diệp", "Vũ Minh Quân"];
-const REASONS = ["Có phép - ốm", "Không phép", "Có phép - việc gia đình"];
+const WEEKDAYS = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu"];
 
 function pad(n: number) {
   return n < 10 ? `0${n}` : `${n}`;
 }
 
+function dateLabel(day: number) {
+  return `${pad(day)}/09/2026`;
+}
+
 export function buildLessonBooks(): LessonBook[] {
   const list: LessonBook[] = [];
-  let seed = 7;
+  let seed = 19;
   const rnd = () => {
     seed = (seed * 1103515245 + 12345) % 2147483648;
     return seed / 2147483648;
   };
   let idx = 0;
-  for (let day = 14; day <= 26; day++) {
-    const wd = WEEKDAYS[(day - 14) % 6];
-    if (wd === undefined) continue;
+
+  for (let dayOffset = 0; dayOffset < 10; dayOffset++) {
+    const day = 14 + dayOffset + Math.floor(dayOffset / 5);
+    const weekNumber = Math.floor(dayOffset / 5) + 1;
+    const weekdayIndex = dayOffset % 5;
+    const weekday = WEEKDAYS[weekdayIndex]!;
+    const weekStart = dateLabel(14 + (weekNumber - 1) * 6);
+    const weekEnd = dateLabel(18 + (weekNumber - 1) * 6);
+
     for (const cls of CLASSES) {
       for (let period = 1; period <= 3; period++) {
-        const subj = SUBJECTS[Math.floor(rnd() * SUBJECTS.length)]!;
+        idx++;
+        const subj = SUBJECTS[(idx + weekNumber + period) % SUBJECTS.length]!;
         const teacher = TEACHERS.find((t) => t.subject === subj.name) ?? TEACHERS[0]!;
         const contents = CONTENTS[subj.name] ?? ["Nội dung bài học"];
-        const ppctNo = (idx % 5) + 1;
-        const planned = contents[ppctNo - 1] ?? contents[0]!;
-        const status = STATUS_CYCLE[idx % STATUS_CYCLE.length]!;
-        const advanced = STATUS_CYCLE.indexOf(status) >= 2 && status !== "yeu_cau_chinh_sua";
-        const nAbs = Math.floor(rnd() * 3);
-        const date = `${pad(day)}/09/2026`;
-        const time = `${date} ${pad(7 + period)}:${pad(Math.floor(rnd() * 59))}`;
-        idx++;
+        const ppctNo = ((idx - 1) % 5) + 1;
+        const readyForGvcnDemo = cls.name === "7A1" && weekNumber === 1;
+        const status = readyForGvcnDemo
+          ? "xac_nhan_gvbm"
+          : STATUS_CYCLE[(idx - 1) % STATUS_CYCLE.length]!;
+        const completed = ["da_cap_nhat", "xac_nhan_gvbm", "xac_nhan_gvcn"].includes(status);
+        const confirmedGvbm = completed && status !== "yeu_cau_chinh_sua";
+        const confirmedGvcn = false;
+        const date = dateLabel(day);
+        const at = `${date} ${pad(7 + period)}:30`;
+
         list.push({
           id: `SDB${pad(idx)}`,
           code: `SDB-2026-${pad(idx)}`,
           date,
-          weekday: wd,
+          weekday,
+          weekNumber,
+          weekStart,
+          weekEnd,
           period,
           className: cls.name,
           grade: cls.grade,
@@ -259,91 +267,23 @@ export function buildLessonBooks(): LessonBook[] {
           teacher: teacher.name,
           teacherId: teacher.id,
           ppctNo,
-          plannedContent: planned,
-          actualContent: advanced ? planned : "",
-          room: `P.${cls.name}`,
+          plannedContent: contents[ppctNo - 1] ?? contents[0]!,
           totalStudents: cls.size,
-          absents: advanced
-            ? Array.from({ length: nAbs }, (_, i) => ({
-                name: ABSENT_NAMES[(idx + i) % ABSENT_NAMES.length]!,
-                reason: REASONS[(idx + i) % REASONS.length]!,
-              }))
-            : [],
-          comment: advanced ? "Lớp học nghiêm túc, học sinh tích cực phát biểu." : "",
-          score: advanced ? 8 + Math.round(rnd() * 2) : null,
-          rank: advanced ? (["A", "A", "B", "C"][idx % 4] as "A" | "B" | "C") : null,
-          attachments: advanced && idx % 5 === 0
-            ? [
-                {
-                  id: `F${idx}`,
-                  name: `Phieu_hoc_tap_${cls.name}.pdf`,
-                  type: "PDF",
-                  size: "412 KB",
-                  uploadedBy: teacher.name,
-                  uploadedAt: time,
-                },
-              ]
-            : [],
+          absentCount: completed ? Math.floor(rnd() * 3) : null,
+          comment: completed ? "Lớp học nghiêm túc, học sinh tích cực phát biểu." : "",
+          score: completed ? 8 + Math.round(rnd() * 2) : null,
+          rank: completed ? (["A", "A", "B"][idx % 3] as "A" | "B" | "C") : null,
           status,
-          ...(STATUS_CYCLE.indexOf(status) >= 3 && status !== "yeu_cau_chinh_sua"
-            ? {
-              gvbmConfirm: {
-              by: teacher.name,
-              at: time,
-              },
-            }
-            : {}),
-          ...(STATUS_CYCLE.indexOf(status) >= 4 && status !== "yeu_cau_chinh_sua"
-              ? {
-              gvcnConfirm: {
-              by: cls.gvcn,
-              at: time,
-              },
-            }
-            : {}),
-          ...(STATUS_CYCLE.indexOf(status) >= 6 && status !== "yeu_cau_chinh_sua"
-              ? {
-              checkedBy: {
-              by: "Ban Giám hiệu",
-              at: time,
-              },
-            }
-            : {}),
-          ...(STATUS_CYCLE.indexOf(status) >= 8 && status !== "yeu_cau_chinh_sua"
-             ? {
-            approvedBy: {
-            by: "Nguyễn Thị Thanh Hà", 
-            at: time,
-            },
-          }
-        : {}),
-          ...(STATUS_CYCLE.indexOf(status) >= 9 && status !== "yeu_cau_chinh_sua"
-              ? {
-              lockedBy: {
-              by: "Phan Thị Kim Oanh", 
-              at: time,
-              },
-            }
-            : {}),
-          ...(status === "da_luu_tru"
-          ? {
-              archivedBy: {
-                by: "Phan Thi Kim Oanh",
-                at: time,
-              },
-            }
-          : {}),
-          ...(status === "yeu_cau_chinh_sua"
-          ? {
-              fixReason: "Thiếu nội dung thực tế của tiết học.",
-            }
-          : {}),
+          gvbmConfirm: confirmedGvbm ? { by: teacher.name, at } : undefined,
+          gvcnConfirm: confirmedGvcn ? { by: cls.gvcn, at } : undefined,
+          fixReason: status === "yeu_cau_chinh_sua" ? "Thông tin tiết dạy cần được cập nhật lại." : undefined,
           year: NAM_HOC,
           semester: HOC_KY,
         });
       }
     }
   }
+
   return list;
 }
 
@@ -353,8 +293,8 @@ export const INITIAL_AUDIT: AuditEntry[] = [
     at: "18/09/2026 08:12",
     actor: "Trần Quốc Bảo",
     role: "BGH",
-    action: "Upload PPCT",
-    target: "PPCT_HK1_2026_2027.xlsx",
+    action: "Nhập PPCT",
+    target: "PPCT học kỳ I năm học 2026 - 2027",
     recordCode: "PPCT-HK1",
     from: "-",
     to: "Đã nhập dữ liệu",
@@ -365,8 +305,8 @@ export const INITIAL_AUDIT: AuditEntry[] = [
     at: "18/09/2026 09:40",
     actor: "Trần Quốc Bảo",
     role: "BGH",
-    action: "Upload TKB",
-    target: "TKB_HK1_2026_2027.xlsx",
+    action: "Nhập TKB",
+    target: "TKB học kỳ I năm học 2026 - 2027",
     recordCode: "TKB-HK1",
     from: "-",
     to: "Đã nhập dữ liệu",
@@ -377,19 +317,19 @@ export const INITIAL_AUDIT: AuditEntry[] = [
     at: "18/09/2026 10:05",
     actor: "Hệ thống",
     role: "BGH",
-    action: "Tự động tạo dữ liệu sổ đầu bài",
-    target: "Sổ đầu bài HK I",
+    action: "Hình thành dữ liệu tiết dạy",
+    target: "Dữ liệu tiết dạy HK I",
     recordCode: "GEN-0918",
     from: "-",
-    to: "Được hệ thống tạo",
-    reason: "PPCT + TKB khớp dữ liệu",
+    to: "Đã hình thành",
+    reason: "PPCT + TKB hợp lệ",
   },
   {
     id: "A004",
     at: "21/09/2026 15:32",
     actor: "Nguyễn Văn An",
     role: "GVBM",
-    action: "Xác nhận GVBM",
+    action: "Xác nhận tiết học",
     target: "Tiết 1 - 7A1 - Toán",
     recordCode: "SDB-2026-07",
     from: "Đã cập nhật",
@@ -401,94 +341,51 @@ export const INITIAL_AUDIT: AuditEntry[] = [
     at: "21/09/2026 16:10",
     actor: "Lê Thị Minh Thu",
     role: "GVCN",
-    action: "Xác nhận GVCN",
-    target: "Tiết 1 - 7A1 - Toán",
-    recordCode: "SDB-2026-07",
-    from: "Đã xác nhận GVBM",
+    action: "Xác nhận Sổ đầu bài theo tuần",
+    target: "Lớp 7A1 - Tuần 1",
+    recordCode: "SDBT-7A1-W1",
+    from: "Các tiết đã được GVBM xác nhận",
     to: "Đã xác nhận GVCN",
-    reason: "-",
-  },
-  {
-    id: "A006",
-    at: "22/09/2026 09:00",
-    actor: "Nguyễn Thị Thanh Hà",
-    role: "BGH",
-    action: "Duyệt sổ đầu bài",
-    target: "Tiết 2 - 8A1 - Vật lý",
-    recordCode: "SDB-2026-21",
-    from: "Đã kiểm tra",
-    to: "Đã duyệt",
-    reason: "-",
-  },
-  {
-    id: "A007",
-    at: "22/09/2026 14:25",
-    actor: "Phan Thị Kim Oanh",
-    role: "TPT",
-    action: "Khóa sổ",
-    target: "Tiết 3 - 9A1 - GDCD",
-    recordCode: "SDB-2026-33",
-    from: "Đã duyệt",
-    to: "Đã khóa",
-    reason: "Hoàn tất quy trình tuần 3",
-  },
-  {
-    id: "A008",
-    at: "23/09/2026 08:45",
-    actor: "Phan Thị Kim Oanh",
-    role: "TPT",
-    action: "Mở khóa",
-    target: "Tiết 1 - 6A2 - Ngữ văn",
-    recordCode: "SDB-2026-12",
-    from: "Đã khóa",
-    to: "Đã duyệt",
-    reason: "Bổ sung học sinh vắng còn thiếu",
+    reason: "Tất cả tiết trong tuần đã được GVBM xác nhận",
   },
 ];
 
 export const NOTIFICATIONS: AppNotification[] = [
-  { id: "N1", roles: ["GVBM"], title: "Bạn có 2 tiết chưa hoàn thiện.", time: "Hôm nay 07:30", type: "warning" },
-  { id: "N2", roles: ["GVBM"], title: "Sổ đầu bài đã được yêu cầu chỉnh sửa.", time: "Hôm qua 16:20", type: "warning" },
-  { id: "N3", roles: ["GVCN"], title: "Có 3 sổ đầu bài lớp 7A1 chờ xác nhận.", time: "Hôm nay 08:05", type: "info" },
-  { id: "N4", roles: ["BGH"], title: "Có 15 sổ đầu bài chờ kiểm tra.", time: "Hôm nay 07:50", type: "info" },
-  { id: "N5", roles: ["BGH"], title: "Có 8 sổ đầu bài chờ duyệt.", time: "Hôm nay 07:50", type: "info" },
-  { id: "N6", roles: ["TPT"], title: "Có 10 sổ đầu bài cần kiểm tra.", time: "Hôm nay 08:15", type: "info" },
-  { id: "N7", roles: ["TPT"], title: "Có 4 sổ đã duyệt chờ khóa.", time: "Hôm nay 08:15", type: "warning" },
-  { id: "N8", roles: ["BGH"], title: "PPCT đã được upload thành công.", time: "18/09/2026 08:12", type: "success" },
-  { id: "N9", roles: ["BGH"], title: "Có 8 dòng TKB cần kiểm tra.", time: "18/09/2026 09:41", type: "warning" },
-  { id: "N10", roles: ["BGH"], title: "Dữ liệu sổ đầu bài đã sẵn sàng để sinh.", time: "18/09/2026 09:55", type: "info" },
-  { id: "N11", roles: ["ADMIN"], title: "2 tài khoản đang ở trạng thái tạm khóa.", time: "Hôm nay 06:00", type: "info" },
+  { id: "N1", roles: ["GVBM"], title: "Bạn có các tiết chưa hoàn thiện.", time: "Hôm nay 07:30", type: "warning" },
+  { id: "N2", roles: ["GVBM"], title: "Có Sổ đầu bài cần cập nhật lại.", time: "Hôm qua 16:20", type: "warning" },
+  { id: "N3", roles: ["GVCN"], title: "Có tuần đã đủ điều kiện để xác nhận.", time: "Hôm nay 08:05", type: "info" },
+  { id: "N4", roles: ["BGH"], title: "Theo dõi tình trạng hoàn thiện Sổ đầu bài toàn trường.", time: "Hôm nay 07:50", type: "info" },
+  { id: "N5", roles: ["BGH"], title: "PPCT và TKB học kỳ hiện tại đã sẵn sàng.", time: "Hôm nay 07:50", type: "success" },
+  { id: "N6", roles: ["TPT"], title: "Có dữ liệu Sổ đầu bài cần theo dõi.", time: "Hôm nay 08:15", type: "info" },
+  { id: "N7", roles: ["ADMIN"], title: "2 tài khoản đang ở trạng thái tạm khóa.", time: "Hôm nay 06:00", type: "info" },
 ];
 
-export const PPCT_ROWS = Array.from({ length: 12 }, (_, i) => {
+export const PPCT_ROWS = Array.from({ length: 15 }, (_, i) => {
   const subj = SUBJECTS[i % SUBJECTS.length]!;
   const contents = CONTENTS[subj.name] ?? ["Nội dung bài học"];
   return {
-    week: Math.floor(i / 3) + 1,
-    ppct: (i % 5) + 1,
+    soThuTuTiet: i + 1,
     subject: subj.name,
     grade: `Khối ${6 + (i % 4)}`,
     content: contents[i % contents.length]!,
     year: NAM_HOC,
     semester: HOC_KY,
-    error: i === 4 ? "Thiếu số tiết PPCT" : i === 9 ? "Trùng bản ghi" : "",
+    error: i === 7 ? "Trùng số thứ tự tiết trong cùng PPCT" : "",
   };
 });
 
-export const TKB_ROWS = Array.from({ length: 12 }, (_, i) => {
+export const TKB_ROWS = Array.from({ length: 25 }, (_, i) => {
   const cls = CLASSES[i % CLASSES.length]!;
-  const subj = SUBJECTS[(i * 3) % SUBJECTS.length]!;
+  const subj = SUBJECTS[(i * 2 + 1) % SUBJECTS.length]!;
   const teacher = TEACHERS.find((t) => t.subject === subj.name) ?? TEACHERS[0]!;
   return {
-    weekday: WEEKDAYS[i % 6]!,
-    date: `${pad(14 + (i % 6))}/09/2026`,
+    weekday: WEEKDAYS[i % WEEKDAYS.length]!,
     period: (i % 5) + 1,
     className: cls.name,
     subject: subj.name,
     teacher: teacher.name,
-    room: `P.${cls.name}`,
     year: NAM_HOC,
     semester: HOC_KY,
-    error: i === 3 ? "Không khớp giáo viên" : i === 8 ? "Không khớp lớp" : "",
+    error: i === 8 ? "Không khớp giáo viên trong danh mục" : "",
   };
 });
