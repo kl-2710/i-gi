@@ -252,29 +252,18 @@ function BookDetailPage() {
         </div>
       )}
 
-      <div className="space-y-5">
-        <div className="space-y-5">
-          <section className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
-            <div className="mb-3 flex items-center gap-2">
-              <Cpu className="size-4 text-primary" />
-              <h2 className="text-base font-semibold">Thông tin do hệ thống hình thành</h2>
-              <Pill tone="info">Nguồn: TKB + PPCT</Pill>
-            </div>
-            {systemInfo}
-          </section>
-
-          <section className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
-            <div className="mb-3 flex items-center gap-2">
-              <UserCheck className="size-4 text-success" />
-              <h2 className="text-base font-semibold">Thông tin GVBM cập nhật</h2>
-              <Pill tone="info">Chỉ xem</Pill>
-            </div>
-            {updateForm}
-          </section>
+      <section className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <Cpu className="size-4 text-primary" />
+          <h2 className="text-base font-semibold">Thông tin tiết dạy</h2>
         </div>
-
-
-      </div>
+        <div className="space-y-6">
+          {systemInfo}
+          <div className="border-t border-border pt-5">
+            {updateForm}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
