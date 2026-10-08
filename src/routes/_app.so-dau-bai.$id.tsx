@@ -219,10 +219,6 @@ function BookDetailPage() {
           <div className="space-y-6">
             {systemInfo}
             <div className="border-t border-border pt-5">
-              <div className="mb-3 flex items-center gap-2">
-                <UserCheck className="size-4 text-success" />
-                <h3 className="text-sm font-semibold">Thông tin tiết dạy</h3>
-              </div>
               {updateForm}
             </div>
           </div>
