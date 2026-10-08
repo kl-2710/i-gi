@@ -53,7 +53,6 @@ function ClassPage() {
   const [q, setQ] = useState("");
   const [grade, setGrade] = useState("all");
   const [open, setOpen] = useState(false);
-  const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
   const [classGrade, setClassGrade] = useState("Khối 6");
 
@@ -78,7 +77,6 @@ function ClassPage() {
   );
 
   const resetForm = () => {
-    setClassCode("");
     setClassName("");
     setClassGrade("Khối 6");
   };
@@ -89,16 +87,15 @@ function ClassPage() {
   };
 
   const saveClass = () => {
-    const code = classCode.trim().toUpperCase();
     const name = className.trim();
+    const gradeNumber = classGrade.replace(/\D/g, "");
+    const normalizedName = name.replace(/\s+/g, "").toUpperCase();
+    const code = normalizedName.startsWith(gradeNumber)
+      ? `L${normalizedName}`
+      : `L${gradeNumber}${normalizedName}`;
 
-    if (!code || !name || !classGrade) {
-      toast.error("Vui lòng nhập đầy đủ mã lớp, tên lớp và khối.");
-      return;
-    }
-
-    if (!/^L(?:6|7|8|9)[A-Z0-9]{1,4}$/.test(code)) {
-      toast.error("Mã lớp không đúng định dạng mẫu, ví dụ L6A1 hoặc L9A2.");
+    if (!name || !classGrade) {
+      toast.error("Vui lòng nhập đầy đủ tên lớp và khối.");
       return;
     }
 
@@ -191,18 +188,9 @@ function ClassPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Thêm lớp</DialogTitle>
-            <DialogDescription>
-              Tạo lớp học thuộc năm học hiện hành. GVCN không nhập tại đây; thông tin GVCN được hình thành từ dữ liệu TKB theo quy ước của nhà trường.
-            </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="class-code">Mã lớp</Label>
-              <Input id="class-code" value={classCode} onChange={(e) => setClassCode(e.target.value)} placeholder="Ví dụ: L6A3" maxLength={10} />
-              <p className="text-xs text-muted-foreground">Mã lớp phải là duy nhất trong năm học.</p>
-            </div>
-
             <div className="space-y-1.5">
               <Label htmlFor="class-name">Tên lớp</Label>
               <Input id="class-name" value={className} onChange={(e) => setClassName(e.target.value)} placeholder="Ví dụ: 6A3" maxLength={20} />
@@ -224,13 +212,6 @@ function ClassPage() {
               <Label>Năm học</Label>
               <Input value={NAM_HOC} disabled />
             </div>
-          </div>
-
-          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
-            <p className="font-medium">GVCN</p>
-            <p className="mt-1 text-muted-foreground">
-              Hệ thống không yêu cầu nhập GVCN khi thêm lớp. Thông tin GVCN được lấy theo dữ liệu TKB.
-            </p>
           </div>
 
           <DialogFooter>
