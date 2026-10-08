@@ -72,7 +72,7 @@ export const PERMISSION_GROUPS: {
     items: [
       { key: "user.manage", label: "Quản lý tài khoản", roles: ["ADMIN"] },
       { key: "role.manage", label: "Quản lý phân quyền", roles: ["ADMIN"] },
-      { key: "perm.manage", label: "Cấu hình quyền", roles: ["ADMIN"] },
+      { key: "perm.manage", label: "Quản lý quyền", roles: ["ADMIN"] },
       { key: "system.info", label: "Xem thông tin hệ thống", roles: ["ADMIN"] },
     ],
   },
