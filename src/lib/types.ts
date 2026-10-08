@@ -1,9 +1,8 @@
-export type RoleCode = "ADMIN" | "BGH" | "PHT" | "TPT" | "GVBM" | "GVCN";
+export type RoleCode = "ADMIN" | "BGH" | "TPT" | "GVBM" | "GVCN";
 
 export const ROLE_LABEL: Record<RoleCode, string> = {
   ADMIN: "Quản trị hệ thống",
   BGH: "Ban Giám hiệu",
-  PHT: "Phó Hiệu trưởng",
   TPT: "Tổng phụ trách",
   GVBM: "Giáo viên bộ môn",
   GVCN: "Giáo viên chủ nhiệm",
@@ -12,7 +11,6 @@ export const ROLE_LABEL: Record<RoleCode, string> = {
 export const ROLE_SHORT: Record<RoleCode, string> = {
   ADMIN: "Admin",
   BGH: "BGH",
-  PHT: "PHT",
   TPT: "TPT",
   GVBM: "GVBM",
   GVCN: "GVCN",
@@ -47,6 +45,8 @@ export interface UserAccount {
   email: string;
   position: string;
   roles: RoleCode[];
+  /** Quyền bổ sung/điều chỉnh ở cấp tài khoản; dùng khi cùng một vai trò có chức vụ khác nhau. */
+  permissions?: Permission[];
   active: boolean;
   updatedAt: string;
   homeroomClass?: string;
