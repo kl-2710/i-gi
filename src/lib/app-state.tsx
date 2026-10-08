@@ -97,7 +97,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (isGvbm && isGvcn) return books.filter((b) => b.teacher === user.fullName || b.className === user.homeroomClass);
     if (isGvbm) return books.filter((b) => b.teacher === user.fullName);
     if (isGvcn) return books.filter((b) => b.className === user.homeroomClass);
-    if (role === "ADMIN") return [];
+    if (role === "ADMIN" || role === "BGH" || role === "TPT") return books;
     return books;
   }, [books, user, role]);
 
