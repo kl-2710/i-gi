@@ -579,8 +579,10 @@ function BookListPage() {
     bghConfirmed,
     bghConfirmations,
     confirmBgh,
+    confirmBghBulk,
     isBghConfirmed,
     lockAllBooks,
+    lockBooksByClasses,
     yearEndReached,
   } = useApp();
 
