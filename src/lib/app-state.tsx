@@ -35,6 +35,7 @@ interface Ctx {
   confirmBgh: (className: string) => { ok: boolean; message: string };
   isBghConfirmed: (className: string) => boolean;
   lockAllBooks: () => { ok: boolean; message: string };
+  lockBooksByClasses: (classNames: string[]) => { ok: boolean; message: string };
   generated: boolean;
   setGenerated: (v: boolean) => void;
   ppctUploaded: boolean;
@@ -258,6 +259,53 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     ]);
     return { ok: true, message: "Đã khóa Sổ đầu bài toàn trường." };
   }, [bghConfirmed, role, user]);
+
+  const lockBooksByClasses = useCallback(
+    (classNames: string[]) => {
+      if (role !== "BGH") return { ok: false, message: "Chỉ BGH được phép khóa Sổ đầu bài." };
+      const uniqueClasses = [...new Set(classNames)].filter(Boolean);
+      if (uniqueClasses.length === 0) return { ok: false, message: "Chưa chọn lớp cần khóa." };
+
+      const notConfirmed = uniqueClasses.filter((name) => !bghConfirmations[name]);
+      if (notConfirmed.length > 0) {
+        return { ok: false, message: `Chưa thể khóa: ${notConfirmed.join(", ")} chưa được BGH xác nhận.` };
+      }
+
+      const existing = books.filter((b) => uniqueClasses.includes(b.className));
+      if (existing.length === 0) return { ok: false, message: "Không tìm thấy Sổ đầu bài của các lớp đã chọn." };
+
+      const now = new Date().toLocaleString("vi-VN", { hour12: false });
+      const by = user?.fullName ?? "Ban Giám hiệu";
+      setBooks((prev) =>
+        prev.map((b) =>
+          uniqueClasses.includes(b.className)
+            ? { ...b, status: "da_khoa", lockedBy: { by, at: now } }
+            : b,
+        ),
+      );
+      setAudit((prev) => [
+        {
+          id: `A${Date.now()}`,
+          at: now,
+          actor: by,
+          role: "BGH",
+          action: "Khóa Sổ đầu bài",
+          target: uniqueClasses.length === 1
+            ? `Lớp ${uniqueClasses[0]} - Năm học ${NAM_HOC}`
+            : `Các lớp ${uniqueClasses.join(", ")} - Năm học ${NAM_HOC}`,
+          recordCode: `SDB-${NAM_HOC}-LOCK`,
+          from: "Đã xác nhận BGH",
+          to: "Đã khóa",
+          reason: "Thực hiện khóa sau khi BGH xác nhận",
+        },
+        ...prev,
+      ]);
+      return { ok: true, message: uniqueClasses.length === 1
+        ? `Đã khóa Sổ đầu bài lớp ${uniqueClasses[0]}.`
+        : `Đã khóa Sổ đầu bài ${uniqueClasses.length} lớp đã chọn.` };
+    },
+    [books, role, user, bghConfirmations],
+  );
 
   const updateProfile = useCallback((patch: Partial<UserAccount>) => {
     if (!user) return;
