@@ -8,11 +8,10 @@ import { Pagination } from "@/components/common/Pagination";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
 import { StatusBadge, Pill } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
-import { CLASSES, SUBJECTS, TEACHERS } from "@/lib/mock-data";
+import { CLASSES } from "@/lib/mock-data";
 import { STATUS_LABEL, type BookStatus, type LessonBook } from "@/lib/types";
 
 export const Route = createFileRoute("/_app/so-dau-bai/")({
@@ -49,16 +48,15 @@ function BookListPage() {
     confirmGvcnWeek,
     bghConfirmed,
     bghConfirmAt,
+    bghConfirmations,
     confirmBgh,
+    isBghConfirmed,
     lockAllBooks,
     yearEndReached,
   } = useApp();
   const [q, setQ] = useState("");
   const [cls, setCls] = useState("all");
-  const [subject, setSubject] = useState("all");
-  const [teacher, setTeacher] = useState("all");
   const [status, setStatus] = useState("all");
-  const [from, setFrom] = useState("");
   const [page, setPage] = useState(1);
 
   const canView = can("book.view.all") || can("book.view.own") || can("book.view.class");
@@ -68,13 +66,12 @@ function BookListPage() {
       scopedBooks.filter((b) => {
         if (q && !`${b.code} ${b.className} ${b.subject} ${b.teacher} ${b.plannedContent}`.toLowerCase().includes(q.toLowerCase())) return false;
         if (cls !== "all" && b.className !== cls) return false;
-        if (subject !== "all" && b.subject !== subject) return false;
-        if (teacher !== "all" && b.teacher !== teacher) return false;
-        if (status !== "all" && b.status !== status) return false;
-        if (from && b.date.slice(0, 2) < from.slice(8, 10)) return false;
+        if (status === "xac_nhan_gvcn" && !weeklyGvcnConfirmations[`${b.year}|${b.className}|W${b.weekNumber}`]) return false;
+        if (status === "xac_nhan_bgh" && !isBghConfirmed(b.className)) return false;
+        if (status === "da_khoa" && b.status !== "da_khoa") return false;
         return true;
       }),
-    [scopedBooks, q, cls, subject, teacher, status, from],
+    [scopedBooks, q, cls, status, weeklyGvcnConfirmations, isBghConfirmed],
   );
 
   const weeks = getWeeks(scopedBooks);
@@ -102,7 +99,7 @@ function BookListPage() {
     <div className="space-y-5">
       <PageHeader
         title="Quản lý Sổ đầu bài"
-        description="Sổ đầu bài được hình thành từ dữ liệu tiết dạy; GVBM cập nhật và xác nhận từng tiết, GVCN xác nhận theo tuần, BGH xác nhận sau khi kết thúc năm học rồi thực hiện khóa."
+        description="Danh sách Sổ đầu bài của nhà trường."
         crumbs={[{ label: "Quản lý Sổ đầu bài" }]}
       />
 
@@ -156,6 +153,69 @@ function BookListPage() {
       {(role === "BGH" || role === "TPT" || role === "ADMIN") && (
         <TableCard>
           <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold">Xác nhận Sổ đầu bài</h2>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                <span className="text-muted-foreground">Lớp:</span>
+                <Select value={cls === "all" ? CLASSES[0]?.name ?? "" : cls} onValueChange={(v) => setCls(v)}>
+                  <SelectTrigger className="w-[150px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CLASSES.map((c) => <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <span className="text-muted-foreground">Năm học: 2026 - 2027</span>
+              </div>
+              {(() => {
+                const selectedClass = cls === "all" ? CLASSES[0]?.name : cls;
+                const confirmed = selectedClass ? isBghConfirmed(selectedClass) : false;
+                const classWeeks = selectedClass ? getWeeks(scopedBooks.filter((b) => b.className === selectedClass)) : [];
+                const ready = yearEndReached && classWeeks.length > 0 && classWeeks.every(([, items]) => items.every((b) => Boolean(b.gvcnConfirm)));
+                return (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {confirmed
+                      ? `Đã xác nhận bởi ${bghConfirmations[selectedClass!]?.by} · ${bghConfirmations[selectedClass!]?.at}`
+                      : ready
+                        ? "Sổ đầu bài của lớp đã đủ điều kiện xác nhận."
+                        : yearEndReached
+                          ? "Chưa đủ điều kiện: vẫn còn tuần chưa được GVCN xác nhận."
+                          : "Chưa đến thời điểm xác nhận."}
+                  </p>
+                );
+              })()}
+            </div>
+            <div className="flex gap-2">
+              {can("book.confirm.bgh") && (() => {
+                const selectedClass = cls === "all" ? CLASSES[0]?.name : cls;
+                const classWeeks = selectedClass ? getWeeks(scopedBooks.filter((b) => b.className === selectedClass)) : [];
+                const ready = Boolean(selectedClass) && yearEndReached && classWeeks.length > 0 && classWeeks.every(([, items]) => items.every((b) => Boolean(b.gvcnConfirm)));
+                return (
+                  <Button
+                    disabled={!ready || isBghConfirmed(selectedClass ?? "")}
+                    onClick={() => {
+                      if (!selectedClass) return;
+                      const result = confirmBgh(selectedClass);
+                      result.ok ? toast.success(result.message) : toast.error(result.message);
+                    }}
+                  >
+                    <Check className="size-4" />Xác nhận Sổ đầu bài
+                  </Button>
+                );
+              })()}
+              {can("book.lock") && (
+                <Button variant="outline" disabled={!bghConfirmed} onClick={() => {
+                  const result = lockAllBooks();
+                  result.ok ? toast.success(result.message) : toast.error(result.message);
+                }}>
+                  <Lock className="size-4" />Khóa Sổ đầu bài
+                </Button>
+              )}
+            </div>
+          </div>
+        </TableCard>
+      )}
+
+      <TableCard>
+          <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-semibold">Trạng thái xác nhận Sổ đầu bài</h2>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -192,10 +252,7 @@ function BookListPage() {
 
       <TableCard>
         <TableToolbar>
-          <SearchBar value={q} onChange={(v) => { setQ(v); setPage(1); }} placeholder="Tìm theo mã sổ, lớp, môn, giáo viên..." />
-          <FilterField label="Từ ngày">
-            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-          </FilterField>
+          <SearchBar value={q} onChange={(v) => { setQ(v); setPage(1); }} placeholder="Tìm theo mã sổ hoặc lớp..." />
           <FilterField label="Lớp">
             <Select value={cls} onValueChange={(v) => { setCls(v); setPage(1); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -205,36 +262,18 @@ function BookListPage() {
               </SelectContent>
             </Select>
           </FilterField>
-          <FilterField label="Môn">
-            <Select value={subject} onValueChange={(v) => { setSubject(v); setPage(1); }}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả môn</SelectItem>
-                {SUBJECTS.map((s) => <SelectItem key={s.code} value={s.name}>{s.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </FilterField>
-          <FilterField label="Giáo viên">
-            <Select value={teacher} onValueChange={(v) => { setTeacher(v); setPage(1); }}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả giáo viên</SelectItem>
-                {TEACHERS.map((t) => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </FilterField>
           <FilterField label="Trạng thái">
             <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                {(Object.keys(STATUS_LABEL) as BookStatus[]).filter((s) => ["he_thong_tao", "chua_hoan_thien", "da_cap_nhat", "xac_nhan_gvbm", "xac_nhan_gvcn", "xac_nhan_bgh", "da_khoa", "yeu_cau_chinh_sua"].includes(s)).map((s) => (
-                  <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
-                ))}
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="xac_nhan_gvcn">GVCN đã xác nhận</SelectItem>
+                <SelectItem value="xac_nhan_bgh">BGH đã xác nhận</SelectItem>
+                <SelectItem value="da_khoa">Đã khóa</SelectItem>
               </SelectContent>
             </Select>
-            </FilterField>
-          </TableToolbar>
+          </FilterField>
+        </TableToolbar>Toolbar>
 
         {pageRows.length === 0 ? (
           <EmptyState />
@@ -270,7 +309,7 @@ function BookListPage() {
                     <TableCell className="max-w-[260px] truncate">{b.plannedContent}</TableCell>
                     <TableCell className="text-center"><YesNo ok={!!b.gvbmConfirm} /></TableCell>
                     <TableCell className="text-center"><YesNo ok={!!weeklyGvcnConfirmations[`${b.year}|${b.className}|W${b.weekNumber}`]} /></TableCell>
-                    <TableCell className="text-center"><YesNo ok={bghConfirmed || b.status === "xac_nhan_bgh"} /></TableCell>
+                    <TableCell className="text-center"><YesNo ok={isBghConfirmed(b.className)} /></TableCell>
                     <TableCell className="text-center"><YesNo ok={b.status === "da_khoa"} /></TableCell>
                     <TableCell><StatusBadge status={b.status} /></TableCell>
                     <TableCell className="text-right">

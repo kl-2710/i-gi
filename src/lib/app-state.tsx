@@ -28,9 +28,11 @@ interface Ctx {
   confirmGvcnWeek: (className: string, weekNumber: number) => { ok: boolean; message: string };
   weeklyGvcnConfirmations: WeeklyConfirmations;
   isGvcnWeekConfirmed: (className: string, weekNumber: number) => boolean;
+  bghConfirmations: Record<string, Confirmation>;
   bghConfirmed: boolean;
   bghConfirmAt: Confirmation | null;
-  confirmBgh: () => { ok: boolean; message: string };
+  confirmBgh: (className: string) => { ok: boolean; message: string };
+  isBghConfirmed: (className: string) => boolean;
   lockAllBooks: () => { ok: boolean; message: string };
   generated: boolean;
   setGenerated: (v: boolean) => void;
@@ -60,8 +62,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     });
     return seed;
   });
-  const [bghConfirmed, setBghConfirmed] = useState(false);
-  const [bghConfirmAt, setBghConfirmAt] = useState<Confirmation | null>(null);
+  const [bghConfirmations, setBghConfirmations] = useState<Record<string, Confirmation>>({});
   const [generated, setGenerated] = useState(false);
   const [ppctUploaded, setPpctUploaded] = useState(true);
   const [tkbUploaded, setTkbUploaded] = useState(true);
@@ -171,42 +172,66 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return new Date() >= end;
   }, []);
 
-  const confirmBgh = useCallback(() => {
-    if (role !== "BGH") return { ok: false, message: "Chỉ BGH được phép xác nhận Sổ đầu bài." };
-    if (!yearEndReached) return { ok: false, message: "Chỉ được xác nhận Sổ đầu bài sau khi kết thúc năm học." };
+  const classesWithBooks = useMemo(
+    () => Array.from(new Set(books.map((b) => b.className))),
+    [books],
+  );
 
-    const weeks = new Set(books.map((b) => weekKey(b.className, b.weekNumber)));
-    const missing = [...weeks].filter((key) => !weeklyGvcnConfirmations[key]);
-    if (missing.length > 0) {
-      return { ok: false, message: "Chưa thể xác nhận: vẫn còn tuần chưa được GVCN xác nhận." };
-    }
+  const bghConfirmed = useMemo(
+    () => classesWithBooks.length > 0 && classesWithBooks.every((className) => Boolean(bghConfirmations[className])),
+    [classesWithBooks, bghConfirmations],
+  );
 
-    const now = new Date().toLocaleString("vi-VN", { hour12: false });
-    const by = user?.fullName ?? "Ban Giám hiệu";
-    setBghConfirmed(true);
-    setBghConfirmAt({ by, at: now });
-    setBooks((prev) => prev.map((b) => ({ ...b, status: "xac_nhan_bgh" })));
-    setAudit((prev) => [
-      {
-        id: `A${Date.now()}`,
-        at: now,
-        actor: by,
-        role: "BGH",
-        action: "Xác nhận Sổ đầu bài",
-        target: `Sổ đầu bài năm học ${NAM_HOC}`,
-        recordCode: `SDB-${NAM_HOC}`,
-        from: "Đã xác nhận GVCN đầy đủ",
-        to: "Đã xác nhận BGH",
-        reason: "Kết thúc năm học và các tuần đã được GVCN xác nhận",
-      },
-      ...prev,
-    ]);
-    return { ok: true, message: "Đã xác nhận Sổ đầu bài toàn trường." };
-  }, [books, role, user, weeklyGvcnConfirmations, yearEndReached]);
+  const bghConfirmAt = useMemo(() => {
+    const confirmations = Object.values(bghConfirmations);
+    return confirmations.length > 0 ? confirmations[confirmations.length - 1] ?? null : null;
+  }, [bghConfirmations]);
+
+  const isBghConfirmed = useCallback(
+    (className: string) => Boolean(bghConfirmations[className]),
+    [bghConfirmations],
+  );
+
+  const confirmBgh = useCallback(
+    (className: string) => {
+      if (role !== "BGH") return { ok: false, message: "Chỉ BGH được phép xác nhận Sổ đầu bài." };
+      if (!yearEndReached) return { ok: false, message: "Chỉ được xác nhận Sổ đầu bài sau khi kết thúc năm học." };
+      const rows = books.filter((b) => b.className === className);
+      if (rows.length === 0) return { ok: false, message: "Không tìm thấy Sổ đầu bài của lớp được chọn." };
+      const weeks = new Set(rows.map((b) => weekKey(b.className, b.weekNumber)));
+      const missing = [...weeks].filter((key) => !weeklyGvcnConfirmations[key]);
+      if (missing.length > 0) return { ok: false, message: "Chưa thể xác nhận: vẫn còn tuần chưa được GVCN xác nhận." };
+      if (bghConfirmations[className]) return { ok: false, message: "Sổ đầu bài của lớp này đã được BGH xác nhận." };
+
+      const now = new Date().toLocaleString("vi-VN", { hour12: false });
+      const by = user?.fullName ?? "Ban Giám hiệu";
+      setBghConfirmations((prev) => ({ ...prev, [className]: { by, at: now } }));
+      setBooks((prev) =>
+        prev.map((b) => (b.className === className ? { ...b, status: "xac_nhan_bgh" } : b)),
+      );
+      setAudit((prev) => [
+        {
+          id: `A${Date.now()}`,
+          at: now,
+          actor: by,
+          role: "BGH",
+          action: "Xác nhận Sổ đầu bài",
+          target: `Lớp ${className} - Năm học ${NAM_HOC}`,
+          recordCode: `SDB-${NAM_HOC}-${className}`,
+          from: "Đã xác nhận GVCN đầy đủ",
+          to: "Đã xác nhận BGH",
+          reason: "Kết thúc năm học và các tuần đã được GVCN xác nhận",
+        },
+        ...prev,
+      ]);
+      return { ok: true, message: `Đã xác nhận Sổ đầu bài lớp ${className}.` };
+    },
+    [books, role, user, weeklyGvcnConfirmations, yearEndReached, bghConfirmations],
+  );
 
   const lockAllBooks = useCallback(() => {
     if (role !== "BGH") return { ok: false, message: "Chỉ BGH được phép khóa Sổ đầu bài." };
-    if (!bghConfirmed) return { ok: false, message: "Cần xác nhận Sổ đầu bài bởi BGH trước khi khóa." };
+    if (!bghConfirmed) return { ok: false, message: "Cần BGH xác nhận đầy đủ Sổ đầu bài của các lớp trước khi khóa." };
 
     const now = new Date().toLocaleString("vi-VN", { hour12: false });
     const by = user?.fullName ?? "Ban Giám hiệu";
@@ -220,9 +245,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         action: "Khóa Sổ đầu bài",
         target: `Sổ đầu bài năm học ${NAM_HOC}`,
         recordCode: `SDB-${NAM_HOC}`,
-        from: "Đã xác nhận BGH",
+        from: "Đã xác nhận BGH đầy đủ",
         to: "Đã khóa",
-        reason: "Thực hiện khóa sau khi BGH xác nhận",
+        reason: "Thực hiện khóa sau khi BGH xác nhận đầy đủ",
       },
       ...prev,
     ]);
@@ -257,9 +282,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         confirmGvcnWeek,
         weeklyGvcnConfirmations,
         isGvcnWeekConfirmed,
+        bghConfirmations,
         bghConfirmed,
         bghConfirmAt,
         confirmBgh,
+        isBghConfirmed,
         lockAllBooks,
         generated,
         setGenerated,
