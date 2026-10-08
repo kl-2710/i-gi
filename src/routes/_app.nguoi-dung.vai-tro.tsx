@@ -35,7 +35,6 @@ const DESCRIPTIONS: Record<RoleCode, string> = {
   TPT: "Kiểm tra, duyệt, khóa/mở khóa, lưu trữ/khôi phục sổ đầu bài.",
   GVBM: "Cập nhật và xác nhận thông tin tiết dạy của mình.",
   GVCN: "Theo dõi và xác nhận sổ đầu bài lớp chủ nhiệm.",
-  PHT: "Quản lý danh mục dữ liệu dạy học, nhập PPCT/TKB và hình thành tiết học.",
 };
 
 function RolesPage() {
