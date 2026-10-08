@@ -101,7 +101,7 @@ export const PERMISSION_GROUPS: {
   {
     module: "4. Báo cáo và thống kê",
     items: [
-      { key: "report.view", label: "Xem báo cáo và thống kê", roles: ["ADMIN", "BGH", "TPT", "GVBM", "GVCN"] },
+      { key: "report.view", label: "Xem báo cáo và thống kê", roles: ["ADMIN", "BGH", "TPT"] },
     ],
   },
 ];
