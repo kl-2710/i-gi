@@ -46,7 +46,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Năm học / Học kỳ", to: "/day-hoc/nam-hoc", icon: CalendarRange, perms: ["setup.view"] },
       { label: "Lớp", to: "/day-hoc/lop", icon: Library, perms: ["setup.view"] },
       { label: "Môn học", to: "/day-hoc/mon-hoc", icon: BookOpen, perms: ["setup.view"] },
-      { label: "Giáo viên", to: "/day-hoc/giao-vien", icon: Users, perms: ["setup.view"] },
+      { label: "Theo dõi giáo viên", to: "/day-hoc/giao-vien", icon: Users, perms: ["setup.view"] },
       { label: "PPCT", to: "/day-hoc/ppct", icon: ClipboardList, perms: ["ppct.upload"] },
       { label: "TKB", to: "/day-hoc/tkb", icon: FileSpreadsheet, perms: ["tkb.upload"] },
       { label: "Hình thành dữ liệu tiết dạy", to: "/day-hoc/sinh-so-dau-bai", icon: Sparkles, perms: ["gen.confirm"] },
