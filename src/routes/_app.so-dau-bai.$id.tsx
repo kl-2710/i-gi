@@ -32,6 +32,13 @@ function BookDetailPage() {
   const { id } = useParams({ from: "/_app/so-dau-bai/$id" });
   const { mode, className } = Route.useSearch();
   const { books, can, user, role, updateBook } = useApp();
+  const book = books.find((b) => b.id === id);
+
+  const [comment, setComment] = useState(book?.comment ?? "");
+  const [score, setScore] = useState(book?.score?.toString() ?? "");
+  const [rank, setRank] = useState(book?.rank ?? "");
+  const [absentCount, setAbsentCount] = useState(book?.absentCount?.toString() ?? "");
+  const [confirmGvbm, setConfirmGvbm] = useState(false);
 
   if (mode === "class") {
     const classBooks = books
@@ -116,14 +123,6 @@ function BookDetailPage() {
       </div>
     );
   }
-
-  const book = books.find((b) => b.id === id);
-
-  const [comment, setComment] = useState(book?.comment ?? "");
-  const [score, setScore] = useState(book?.score?.toString() ?? "");
-  const [rank, setRank] = useState(book?.rank ?? "");
-  const [absentCount, setAbsentCount] = useState(book?.absentCount?.toString() ?? "");
-  const [confirmGvbm, setConfirmGvbm] = useState(false);
 
   if (!book) {
     return (
