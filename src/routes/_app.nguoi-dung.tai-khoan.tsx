@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_app/nguoi-dung/tai-khoan")({
   head: () => ({
     meta: [
       { title: "Quản lý tài khoản — Sổ đầu bài THCS Khương Mai" },
-      { name: "description", content: "Quản lý tài khoản người dùng, trạng thái và vai trò trong hệ thống sổ đầu bài." },
+      { name: "description", content: "Quản lý tài khoản người dùng và phân quyền trong hệ thống sổ đầu bài." },
       { property: "og:title", content: "Quản lý tài khoản" },
       { property: "og:description", content: "Danh sách tài khoản người dùng hệ thống sổ đầu bài." },
     ],
@@ -66,7 +66,7 @@ function AccountsPage() {
     <div>
       <PageHeader
         title="Quản lý tài khoản"
-        description="Tài khoản → Vai trò → Phân quyền → Chức năng được phép thực hiện"
+        description="Tài khoản → Phân quyền → Quyền → Chức năng được phép thực hiện"
         crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý tài khoản" }]}
         actions={
           <Button onClick={() => setCreateOpen(true)}>
