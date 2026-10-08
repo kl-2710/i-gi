@@ -152,7 +152,19 @@ function YearPage() {
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>{editing && editing.id !== "NEW" ? "Sửa năm học / học kỳ" : "Thiết lập năm học / học kỳ"}</DialogTitle><DialogDescription>Kiểm tra tổ hợp năm học - học kỳ và khoảng thời gian trước khi lưu.</DialogDescription></DialogHeader>
         {editing && <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1.5"><Label>Năm học</Label><Input value={editing.year} onChange={(e) => setEditing({ ...editing, year: e.target.value })} /></div>
+          <div className="space-y-1.5">
+            <Label>Năm học</Label>
+            <Select value={editing.year} onValueChange={(v) => setEditing({ ...editing, year: v })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn năm học" />
+              </SelectTrigger>
+              <SelectContent>
+                {schoolYearOptions.map((option) => (
+                  <SelectItem key={option} value={option}>{option}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-1.5"><Label>Học kỳ</Label><Select value={editing.term} onValueChange={(v) => setEditing({ ...editing, term: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Học kỳ I">Học kỳ I</SelectItem><SelectItem value="Học kỳ II">Học kỳ II</SelectItem></SelectContent></Select></div>
           <div className="space-y-1.5"><Label>Ngày bắt đầu</Label><Input value={editing.from} onChange={(e) => setEditing({ ...editing, from: e.target.value })} placeholder="dd/mm/yyyy" /></div>
           <div className="space-y-1.5"><Label>Ngày kết thúc</Label><Input value={editing.to} onChange={(e) => setEditing({ ...editing, to: e.target.value })} placeholder="dd/mm/yyyy" /></div>
