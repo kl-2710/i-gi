@@ -46,13 +46,18 @@ function DashboardPage() {
           { label: "Đã xác nhận GVCN", value: count("xac_nhan_gvcn", "xac_nhan_bgh", "da_khoa"), icon: CheckCircle2, tone: "success" as const },
         ];
       case "BGH":
+        if (user.position === "Phó Hiệu trưởng") return [
+          { label: "Trạng thái PPCT", value: "Đã nhập", icon: ClipboardList, tone: "success" as const },
+          { label: "Trạng thái TKB", value: "Đã nhập", icon: FileSpreadsheet, tone: "success" as const },
+          { label: "Bản ghi tiết học", value: books.length, icon: BookOpen, tone: "primary" as const },
+          { label: "Cần hoàn thiện", value: count("he_thong_tao", "chua_hoan_thien"), icon: TriangleAlert, tone: "warning" as const },
+        ];
         return [
           { label: "Tổng số sổ/tiết", value: books.length, icon: BookOpen, tone: "primary" as const },
           { label: "Chờ BGH xác nhận", value: count("xac_nhan_gvcn"), icon: ListChecks, tone: "warning" as const },
           { label: "Đã xác nhận BGH", value: count("xac_nhan_bgh", "da_khoa"), icon: CheckCircle2, tone: "success" as const },
           { label: "Đã khóa", value: count("da_khoa"), icon: Lock, tone: "neutral" as const },
         ];
-      case "PHT":
         return [
           { label: "Trạng thái PPCT", value: "Đã nhập", icon: ClipboardList, tone: "success" as const },
           { label: "Trạng thái TKB", value: "Đã nhập", icon: FileSpreadsheet, tone: "success" as const },
