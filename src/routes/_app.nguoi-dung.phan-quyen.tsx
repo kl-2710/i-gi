@@ -18,9 +18,9 @@ export const Route = createFileRoute("/_app/nguoi-dung/phan-quyen")({
   head: () => ({
     meta: [
       { title: "Quản lý phân quyền — Sổ đầu bài THCS Khương Mai" },
-      { name: "description", content: "Cấu hình quyền theo vai trò cho từng phân hệ và chức năng của hệ thống." },
+      { name: "description", content: "Cấu hình quyền theo phân quyền cho từng phân hệ và chức năng của hệ thống." },
       { property: "og:title", content: "Quản lý phân quyền" },
-      { property: "og:description", content: "Ma trận phân quyền theo vai trò và phân hệ." },
+      { property: "og:description", content: "Ma trận quyền theo phân quyền và phân hệ." },
     ],
   }),
   component: PermissionsPage,
@@ -62,7 +62,7 @@ function PermissionsPage() {
 
       <TableCard>
         <TableToolbar>
-          <FilterField label="Vai trò áp dụng">
+          <FilterField label="Phân quyền áp dụng">
             <Select value={role} onValueChange={(v) => setRole(v as RoleCode)}>
               <SelectTrigger className="min-w-[220px]"><SelectValue /></SelectTrigger>
               <SelectContent>
