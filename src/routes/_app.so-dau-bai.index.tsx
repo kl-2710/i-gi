@@ -307,6 +307,267 @@ function GvbmBookList({ books }: { books: LessonBook[] }) {
   );
 }
 
+function SchoolBookList({
+  books,
+  isBgh,
+  confirmBghBulk,
+  lockBooksByClasses,
+  weeklyGvcnConfirmations,
+  isBghConfirmed,
+}: {
+  books: LessonBook[];
+  isBgh: boolean;
+  confirmBghBulk: (classNames: string[]) => { ok: boolean; message: string };
+  lockBooksByClasses: (classNames: string[]) => { ok: boolean; message: string };
+  weeklyGvcnConfirmations: Record<string, { by: string; at: string }>;
+  isBghConfirmed: (className: string) => boolean;
+}) {
+  const [q, setQ] = useState("");
+  const [grade, setGrade] = useState("all");
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const classRows = useMemo(() => {
+    const map = new Map<string, LessonBook[]>();
+    for (const book of books) {
+      const rows = map.get(book.className) ?? [];
+      rows.push(book);
+      map.set(book.className, rows);
+    }
+
+    return Array.from(map.entries())
+      .map(([className, rows]) => {
+        const weeks = [...new Set(rows.map((book) => book.weekNumber))].sort((a, b) => a - b);
+        const confirmedWeeks = weeks.filter((weekNumber) =>
+          Boolean(weeklyGvcnConfirmations[`${rows[0]?.year}|${className}|W${weekNumber}`]),
+        ).length;
+        return {
+          className,
+          grade: rows[0]?.grade ?? "-",
+          year: rows[0]?.year ?? "-",
+          weeks,
+          confirmedWeeks,
+          allWeeksConfirmed: weeks.length > 0 && confirmedWeeks === weeks.length,
+          bghConfirmed: isBghConfirmed(className),
+          locked: rows.every((book) => book.status === "da_khoa"),
+        };
+      })
+      .filter((row) => {
+        const haystack = `${row.className} ${row.grade} ${row.year}`.toLowerCase();
+        return (!q || haystack.includes(q.toLowerCase()))
+          && (grade === "all" || row.grade === grade);
+      })
+      .sort((a, b) => a.className.localeCompare(b.className));
+  }, [books, q, grade, weeklyGvcnConfirmations, isBghConfirmed]);
+
+  const visibleNames = classRows.map((row) => row.className);
+  const allVisibleSelected = visibleNames.length > 0 && visibleNames.every((name) => selected.includes(name));
+  const selectedVisible = visibleNames.filter((name) => selected.includes(name));
+
+  const toggleAll = () => {
+    if (allVisibleSelected) {
+      setSelected((prev) => prev.filter((name) => !visibleNames.includes(name)));
+    } else {
+      setSelected((prev) => [...new Set([...prev, ...visibleNames])]);
+    }
+  };
+
+  const doConfirm = (names: string[]) => {
+    const result = confirmBghBulk(names);
+    result.ok ? toast.success(result.message) : toast.error(result.message);
+    if (result.ok) setSelected((prev) => prev.filter((name) => !names.includes(name)));
+  };
+
+  const doLock = (names: string[]) => {
+    const result = lockBooksByClasses(names);
+    result.ok ? toast.success(result.message) : toast.error(result.message);
+    if (result.ok) setSelected((prev) => prev.filter((name) => !names.includes(name)));
+  };
+
+  const gradeOptions = Array.from(new Set(books.map((book) => book.grade))).sort();
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        title="Quản lý Sổ đầu bài"
+        description="Danh sách Sổ đầu bài của tất cả các lớp trong trường."
+        crumbs={[{ label: "Quản lý Sổ đầu bài" }]}
+      />
+
+      {isBgh && selected.length > 0 && (
+        <TableCard>
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div className="text-sm">
+              <span className="font-medium">{selected.length} lớp</span>
+              <span className="text-muted-foreground"> đã được chọn</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                disabled={!selectedVisible.every((name) => {
+                  const row = classRows.find((item) => item.className === name);
+                  return Boolean(row?.allWeeksConfirmed && !row.bghConfirmed);
+                })}
+                onClick={() => doConfirm(selected)}
+              >
+                <Check className="size-4" />Xác nhận Sổ đầu bài
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!selectedVisible.every((name) => {
+                  const row = classRows.find((item) => item.className === name);
+                  return Boolean(row?.bghConfirmed && !row.locked);
+                })}
+                onClick={() => doLock(selected)}
+              >
+                <Lock className="size-4" />Khóa Sổ đầu bài
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setSelected([])}>
+                Bỏ chọn
+              </Button>
+            </div>
+          </div>
+        </TableCard>
+      )}
+
+      <TableCard>
+        <TableToolbar>
+          <SearchBar
+            value={q}
+            onChange={setQ}
+            placeholder="Tìm theo lớp..."
+          />
+          <FilterField label="Khối">
+            <Select value={grade} onValueChange={setGrade}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả khối</SelectItem>
+                {gradeOptions.map((item) => (
+                  <SelectItem key={item} value={item}>{item}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FilterField>
+        </TableToolbar>
+
+        {classRows.length === 0 ? (
+          <EmptyState title="Chưa có Sổ đầu bài" />
+        ) : (
+          <ScrollTable>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {isBgh && (
+                    <TableHead className="w-12 text-center">
+                      <input
+                        type="checkbox"
+                        aria-label="Chọn tất cả lớp đang hiển thị"
+                        checked={allVisibleSelected}
+                        onChange={toggleAll}
+                        className="size-4 rounded border-border"
+                      />
+                    </TableHead>
+                  )}
+                  <TableHead>Lớp</TableHead>
+                  <TableHead>Khối</TableHead>
+                  <TableHead>Năm học</TableHead>
+                  <TableHead>GVCN</TableHead>
+                  <TableHead>BGH</TableHead>
+                  <TableHead>Khóa</TableHead>
+                  <TableHead className="text-right">Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {classRows.map((row) => {
+                  const selectedRow = selected.includes(row.className);
+                  const canConfirm = isBgh && row.allWeeksConfirmed && !row.bghConfirmed;
+                  const canLock = isBgh && row.bghConfirmed && !row.locked;
+                  return (
+                    <TableRow key={row.className}>
+                      {isBgh && (
+                        <TableCell className="text-center">
+                          <input
+                            type="checkbox"
+                            aria-label={`Chọn lớp ${row.className}`}
+                            checked={selectedRow}
+                            onChange={() =>
+                              setSelected((prev) =>
+                                selectedRow
+                                  ? prev.filter((name) => name !== row.className)
+                                  : [...prev, row.className],
+                              )
+                            }
+                            className="size-4 rounded border-border"
+                          />
+                        </TableCell>
+                      )}
+                      <TableCell className="font-medium">{row.className}</TableCell>
+                      <TableCell>{row.grade}</TableCell>
+                      <TableCell>{row.year}</TableCell>
+                      <TableCell>
+                        <Pill tone={row.allWeeksConfirmed ? "success" : "warning"}>
+                          {row.weeks.length === 0
+                            ? "Chưa có dữ liệu"
+                            : row.allWeeksConfirmed
+                              ? "Đã xác nhận đủ"
+                              : `${row.confirmedWeeks}/${row.weeks.length} tuần`}
+                        </Pill>
+                      </TableCell>
+                      <TableCell>
+                        <Pill tone={row.bghConfirmed ? "success" : "warning"}>
+                          {row.bghConfirmed ? "Đã xác nhận" : "-"}
+                        </Pill>
+                      </TableCell>
+                      <TableCell>
+                        <Pill tone={row.locked ? "success" : "warning"}>
+                          {row.locked ? "Đã khóa" : "-"}
+                        </Pill>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex flex-wrap justify-end gap-1">
+                          <Button asChild variant="outline" size="sm" title="Xem danh sách tiết dạy">
+                            <Link to="/so-dau-bai/truong/$className" params={{ className: row.className }}>
+                              <Eye className="size-4" />Xem tiết dạy
+                            </Link>
+                          </Button>
+                          {isBgh && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title={canConfirm ? "Xác nhận Sổ đầu bài" : "Chưa đủ điều kiện xác nhận"}
+                                disabled={!canConfirm}
+                                onClick={() => doConfirm([row.className])}
+                              >
+                                <Check className="size-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title={canLock ? "Khóa Sổ đầu bài" : "Chưa đủ điều kiện khóa"}
+                                disabled={!canLock}
+                                onClick={() => doLock([row.className])}
+                              >
+                                <Lock className="size-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </ScrollTable>
+        )}
+      </TableCard>
+    </div>
+  );
+}
+
 function BookListPage() {
   const {
     can,
@@ -391,6 +652,21 @@ function BookListPage() {
     ? isBghConfirmed(selectedClass)
     : false;
 
+
+  const isSchoolViewer = role === "BGH" || role === "TPT" || role === "ADMIN";
+
+  if (isSchoolViewer) {
+    return (
+      <SchoolBookList
+        books={scopedBooks}
+        isBgh={role === "BGH"}
+        confirmBghBulk={confirmBghBulk}
+        lockBooksByClasses={lockBooksByClasses}
+        weeklyGvcnConfirmations={weeklyGvcnConfirmations}
+        isBghConfirmed={isBghConfirmed}
+      />
+    );
+  }
 
   const isGvbmOnly =
     Boolean(user?.roles.includes("GVBM") && !user?.roles.includes("GVCN"));
