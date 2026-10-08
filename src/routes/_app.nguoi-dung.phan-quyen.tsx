@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_app/nguoi-dung/phan-quyen")({
 
 function PermissionsPage() {
   const { can } = useApp();
-  const [role, setRole] = useState<RoleCode>("GVBM");
+  const [role, setRole] = useState<RoleCode | "GVBM_GVCN">("GVBM_GVCN");
   const [overrides, setOverrides] = useState<Record<string, boolean>>({});
 
   if (!can("perm.manage")) {
@@ -46,7 +46,7 @@ function PermissionsPage() {
     <div>
       <PageHeader
         title="Quản lý phân quyền"
-        description="Phân quyền được cấu hình tập trung theo vai trò, áp dụng cho toàn bộ hệ thống."
+        description="Phân quyền được cấu hình tập trung, áp dụng cho toàn bộ hệ thống."
         crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý phân quyền" }]}
         actions={<Button onClick={() => toast.success("Đã lưu cấu hình phân quyền")}><Save className="size-4" />Lưu cấu hình</Button>}
       />
@@ -66,9 +66,10 @@ function PermissionsPage() {
             <Select value={role} onValueChange={(v) => setRole(v as RoleCode)}>
               <SelectTrigger className="min-w-[220px]"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {(Object.keys(ROLE_LABEL) as RoleCode[]).map((r) => (
-                  <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>
-                ))}
+                <SelectItem value="ADMIN">Quản trị viên</SelectItem>
+                <SelectItem value="BGH">Ban Giám hiệu</SelectItem>
+                <SelectItem value="TPT">Tổng phụ trách</SelectItem>
+                <SelectItem value="GVBM_GVCN">Giáo viên chủ nhiệm kiêm giáo viên bộ môn</SelectItem>
               </SelectContent>
             </Select>
           </FilterField>
@@ -90,7 +91,7 @@ function PermissionsPage() {
                     <TableCell colSpan={3} className="font-semibold">{g.module}</TableCell>
                   </TableRow>
                   {g.items.map((i) => {
-                    const base = i.roles.includes(role);
+                    const base = role === "GVBM_GVCN" ? (i.roles.includes("GVBM") || i.roles.includes("GVCN")) : i.roles.includes(role);
                     const checked = value(i.key, base);
                     return (
                       <TableRow key={`${g.module}-${i.key}`}>
