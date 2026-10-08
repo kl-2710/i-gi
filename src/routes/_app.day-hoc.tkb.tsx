@@ -176,17 +176,17 @@ function TkbPage() {
 
   const saveImport = () => {
     if (!uploadedFile) {
-      toast.error("Vui lòng tải tệp TKB trước khi lưu.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
     if (!/\.(xlsx|xls)$/i.test(uploadedFile)) {
-      toast.error("Tệp TKB không hợp lệ. Vui lòng tải tệp Excel (.xlsx hoặc .xls).");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
 
     const duplicate = datasets.some((d) => d.year === importYear && d.semester === importSemester);
     if (duplicate) {
-      toast.error("TKB của năm học và học kỳ này đã tồn tại. Hãy xem TKB đã nhập thay vì nhập trùng.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
 

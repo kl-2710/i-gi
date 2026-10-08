@@ -29,7 +29,7 @@ import { useApp } from "@/lib/app-state";
 import { ROLE_LABEL, ROLE_SHORT } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { AccessDeniedDialog } from "@/components/common/AccessDeniedDialog";
-import { DASHBOARD_ITEM, NAV_GROUPS } from "./nav-config";
+import { NAV_GROUPS } from "./nav-config";
 
 function Brand({ compact }: { compact?: boolean }) {
   return (
@@ -75,17 +75,6 @@ function SidebarNav({
   return (
     <ScrollArea className="h-full">
       <nav className="space-y-5 p-3">
-
-        {/* Dashboard */}
-        <Link
-          to={DASHBOARD_ITEM.to}
-          onClick={onNavigate}
-          className={itemCls(pathname === "/dashboard")}
-          title="Dashboard"
-        >
-          <DASHBOARD_ITEM.icon className="size-4 shrink-0" />
-          {!collapsed && <span>Dashboard</span>}
-        </Link>
 
         {/* 4 MODULES */}
         {NAV_GROUPS.map((g) => (
@@ -271,7 +260,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   value={role}
                   onValueChange={(v) => {
                     setRole(v as typeof role);
-                    navigate({ to: "/dashboard" });
+                    navigate({ to: "/day-hoc/nam-hoc" });
                   }}
                 >
                   {user.roles.map((r) => (

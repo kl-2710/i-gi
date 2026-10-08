@@ -84,10 +84,10 @@ function YearPage() {
   };
 
   const save = () => {
-    if (!editing || !editing.year.trim() || !editing.from || !editing.to) { toast.error("Vui lòng nhập đầy đủ thông tin."); return; }
-    if (editing.from >= editing.to) { toast.error("Ngày kết thúc phải sau ngày bắt đầu."); return; }
+    if (!editing || !editing.year.trim() || !editing.from || !editing.to) { toast.error("Thông tin không hợp lệ"); return; }
+    if (editing.from >= editing.to) { toast.error("Thông tin không hợp lệ"); return; }
     const duplicate = rows.some((r) => r.id !== editing.id && r.year === editing.year && r.term === editing.term);
-    if (duplicate) { toast.error("Tổ hợp năm học - học kỳ đã tồn tại."); return; }
+    if (duplicate) { toast.error("Thông tin không hợp lệ"); return; }
     setRows((prev) => editing.id === "NEW" ? [...prev, { ...editing, id: "HK-" + Date.now() }] : prev.map((r) => r.id === editing.id ? editing : r));
     setYear(editing.year);
     setTerm(editing.term);
@@ -169,7 +169,7 @@ function YearPage() {
 
       <Dialog open={!!weekTarget} onOpenChange={(v) => !v && setWeekTarget(null)}><DialogContent><DialogHeader><DialogTitle>Thiết lập thời gian tuần học</DialogTitle><DialogDescription>{weekTarget?.year} · {weekTarget?.term}</DialogDescription></DialogHeader><div className="grid gap-3 sm:grid-cols-2"><div className="space-y-1.5"><Label>Số tuần học</Label><Input type="number" min={1} max={25} value={weekCount} onChange={(e) => setWeekCount(e.target.value)} /></div><div className="space-y-1.5"><Label>Số ngày học dự kiến</Label><Input type="number" min={0} value={days} onChange={(e) => setDays(e.target.value)} /></div></div><DialogFooter><Button variant="outline" onClick={() => setWeekTarget(null)}>Hủy</Button><Button onClick={() => { if (!weekTarget) return; setRows((prev) => prev.map((r) => r.id === weekTarget.id ? { ...r, weekSetup: weekCount + " tuần", schoolDays: Number(days) || 0 } : r)); setWeekTarget(null); toast.success("Đã lưu thiết lập thời gian tuần học."); }}>Lưu thiết lập</Button></DialogFooter></DialogContent></Dialog>
 
-      <Dialog open={!!holidayTarget} onOpenChange={(v) => !v && setHolidayTarget(null)}><DialogContent><DialogHeader><DialogTitle>Quản lý ngày nghỉ</DialogTitle><DialogDescription>{holidayTarget?.year} · {holidayTarget?.term}</DialogDescription></DialogHeader><div className="space-y-3"><div className="space-y-1.5"><Label>Ngày nghỉ</Label><Input type="date" /></div><div className="space-y-1.5"><Label>Lý do</Label><Textarea value={holidayReason} onChange={(e) => setHolidayReason(e.target.value)} placeholder="Nhập lý do ngày nghỉ..." /></div></div><DialogFooter><Button variant="outline" onClick={() => setHolidayTarget(null)}>Hủy</Button><Button onClick={() => { if (!holidayTarget || !holidayReason.trim()) { toast.error("Vui lòng nhập lý do."); return; } setRows((prev) => prev.map((r) => r.id === holidayTarget.id ? { ...r, holidays: r.holidays + 1 } : r)); setHolidayTarget(null); toast.success("Đã bổ sung ngày nghỉ."); }}>Lưu ngày nghỉ</Button></DialogFooter></DialogContent></Dialog>
+      <Dialog open={!!holidayTarget} onOpenChange={(v) => !v && setHolidayTarget(null)}><DialogContent><DialogHeader><DialogTitle>Quản lý ngày nghỉ</DialogTitle><DialogDescription>{holidayTarget?.year} · {holidayTarget?.term}</DialogDescription></DialogHeader><div className="space-y-3"><div className="space-y-1.5"><Label>Ngày nghỉ</Label><Input type="date" /></div><div className="space-y-1.5"><Label>Lý do</Label><Textarea value={holidayReason} onChange={(e) => setHolidayReason(e.target.value)} placeholder="Nhập lý do ngày nghỉ..." /></div></div><DialogFooter><Button variant="outline" onClick={() => setHolidayTarget(null)}>Hủy</Button><Button onClick={() => { if (!holidayTarget || !holidayReason.trim()) { toast.error("Thông tin không hợp lệ"); return; } setRows((prev) => prev.map((r) => r.id === holidayTarget.id ? { ...r, holidays: r.holidays + 1 } : r)); setHolidayTarget(null); toast.success("Đã bổ sung ngày nghỉ."); }}>Lưu ngày nghỉ</Button></DialogFooter></DialogContent></Dialog>
 
     </div>
   );

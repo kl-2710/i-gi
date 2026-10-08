@@ -122,12 +122,12 @@ function ClassPage() {
       : `L${gradeNumber}${normalizedName}`;
 
     if (!name || !classGrade) {
-      toast.error("Vui lòng nhập đầy đủ tên lớp và khối.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
 
     if (availableClassNames.includes(name.toLowerCase()) || rows.some((r) => r.code.toLowerCase() === code.toLowerCase())) {
-      toast.error("Mã lớp hoặc tên lớp đã tồn tại trong năm học hiện tại.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
 
