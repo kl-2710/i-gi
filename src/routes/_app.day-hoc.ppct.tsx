@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ClipboardList, Eye, FileSpreadsheet, Plus, Upload } from "lucide-react";
+import { ArrowRight, ClipboardList, Eye, FileSpreadsheet, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterField, ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
 import { Pill } from "@/components/common/StatusBadge";
-import { FileUpload, ValidationResult } from "@/components/common/FileUpload";
+import { FileUpload } from "@/components/common/FileUpload";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -36,7 +36,7 @@ type PpctDetail = {
 const INITIAL_DATASETS: PpctDataset[] = [
   {
     id: "PPCT001",
-    code: "PPCT-2024-2025-K7-TOAN",
+    code: "PPCT000001",
     year: "2024 - 2025",
     grade: "Khối 7",
     subject: "Toán",
@@ -47,7 +47,7 @@ const INITIAL_DATASETS: PpctDataset[] = [
   },
   {
     id: "PPCT002",
-    code: "PPCT-2025-2026-K8-NGVAN",
+    code: "PPCT000002",
     year: "2025 - 2026",
     grade: "Khối 8",
     subject: "Ngữ văn",
@@ -58,7 +58,7 @@ const INITIAL_DATASETS: PpctDataset[] = [
   },
   {
     id: "PPCT003",
-    code: "PPCT-2025-2026-K7-TOAN",
+    code: "PPCT000003",
     year: "2025 - 2026",
     grade: "Khối 7",
     subject: "Toán",
@@ -122,7 +122,6 @@ function PpctPage() {
   const [importGrade, setImportGrade] = useState("Khối 6");
   const [importSubject, setImportSubject] = useState(SUBJECTS[0]?.name ?? "Toán");
   const [uploadedFile, setUploadedFile] = useState<string | null>(null);
-  const [validated, setValidated] = useState(false);
 
   const filtered = useMemo(
     () =>
@@ -149,22 +148,16 @@ function PpctPage() {
     setImportGrade("Khối 6");
     setImportSubject(SUBJECTS[0]?.name ?? "Toán");
     setUploadedFile(null);
-    setValidated(false);
     setImportOpen(true);
   };
 
-  const validateFile = () => {
+  const saveImport = () => {
     if (!uploadedFile) {
-      toast.error("Vui lòng tải tệp PPCT trước khi kiểm tra.");
+      toast.error("Vui lòng tải tệp PPCT trước khi lưu.");
       return;
     }
-    setValidated(true);
-    toast.success("Đã nhận diện và chuẩn hóa cấu trúc PPCT.");
-  };
-
-  const saveImport = () => {
-    if (!uploadedFile || !validated) {
-      toast.error("Vui lòng tải và kiểm tra tệp PPCT trước khi lưu.");
+    if (!/\.pdf$/i.test(uploadedFile)) {
+      toast.error("Tệp PPCT không hợp lệ. Vui lòng tải tệp PDF.");
       return;
     }
 
@@ -176,10 +169,12 @@ function PpctPage() {
       return;
     }
 
-    const id = `PPCT${String(datasets.length + 1).padStart(3, "0")}`;
+    const sequence = datasets.length + 1;
+    const code = `PPCT${String(sequence).padStart(6, "0")}`;
+    const id = code;
     const created: PpctDataset = {
       id,
-      code: `PPCT-${importYear.replace(" - ", "-")}-${importGrade.replace("Khối ", "K")}-${importSubject.toUpperCase().replace(/\s+/g, "")}`,
+      code,
       year: importYear,
       grade: importGrade,
       subject: importSubject,
@@ -258,7 +253,6 @@ function PpctPage() {
                   <TableHead>Năm học</TableHead>
                   <TableHead>Khối</TableHead>
                   <TableHead>Môn học</TableHead>
-                  <TableHead>Phạm vi</TableHead>
                   <TableHead>Tệp nguồn</TableHead>
                   <TableHead>Số tiết</TableHead>
                   <TableHead>Trạng thái</TableHead>
@@ -272,7 +266,6 @@ function PpctPage() {
                     <TableCell>{row.year}</TableCell>
                     <TableCell>{row.grade}</TableCell>
                     <TableCell className="font-medium">{row.subject}</TableCell>
-                    <TableCell>Cả năm (HK I + HK II)</TableCell>
                     <TableCell className="max-w-[260px]"><div className="flex items-center gap-2"><FileSpreadsheet className="size-4 shrink-0 text-success" /><span className="truncate">{row.file}</span></div></TableCell>
                     <TableCell>{row.totalLessons}</TableCell>
                     <TableCell><Pill tone={row.status === "Đã nhập" ? "success" : "danger"}>{row.status}</Pill></TableCell>
@@ -293,7 +286,6 @@ function PpctPage() {
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Nhập PPCT</DialogTitle>
-            <DialogDescription>Chọn năm học, khối, môn học và tải tệp PPCT lên. Một tệp áp dụng cho cả hai học kỳ.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
@@ -309,14 +301,13 @@ function PpctPage() {
               <Select value={importSubject} onValueChange={setImportSubject}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{SUBJECTS.map((s) => <SelectItem key={s.code} value={s.name}>{s.name}</SelectItem>)}</SelectContent></Select>
             </div>
           </div>
-          <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm">
-            <span className="font-medium">Phạm vi PPCT:</span> Cả năm học, gồm Học kỳ I và Học kỳ II.
-          </div>
           <div className="space-y-3">
             <Label>Tệp PPCT</Label>
             <FileUpload
+              accept=".pdf"
+              hint="Chỉ hỗ trợ tệp PDF, dung lượng tối đa 10MB"
               suggestedName={`PPCT_${importSubject.replace(/\s+/g, "_")}_${importGrade.replace("Khối ", "K")}_${importYear.replace(/\s/g, "")}.pdf`}
-              onUploaded={(name) => { setUploadedFile(name); setValidated(false); }}
+              onUploaded={(name) => setUploadedFile(name)}
             />
             {uploadedFile && validated && (
               <ValidationResult total={140} valid={140} errors={0} warnings={0} issues={[]} />
@@ -324,8 +315,7 @@ function PpctPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setImportOpen(false)}>Hủy</Button>
-            <Button variant="outline" disabled={!uploadedFile} onClick={validateFile}><Upload className="size-4" />Nhận diện & kiểm tra</Button>
-            <Button disabled={!uploadedFile || !validated} onClick={saveImport}><ClipboardList className="size-4" />Lưu PPCT</Button>
+            <Button disabled={!uploadedFile} onClick={saveImport}><ClipboardList className="size-4" />Lưu PPCT</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -335,7 +325,7 @@ function PpctPage() {
           <DialogHeader>
             <DialogTitle>{selected?.subject} · {selected?.grade} · {selected?.year}</DialogTitle>
             <DialogDescription>
-              Chi tiết dữ liệu đã được hệ thống chuẩn hóa từ tệp {selected?.file}. Phạm vi: cả năm học.
+              Chi tiết dữ liệu đã được hệ thống chuẩn hóa từ tệp {selected?.file}.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-4">
