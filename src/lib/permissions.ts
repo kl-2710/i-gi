@@ -80,7 +80,7 @@ export const PERMISSION_GROUPS: {
     module: "2. Quản lý danh mục và dữ liệu dạy học",
     items: [
       { key: "setup.view", label: "Xem dữ liệu dạy học", roles: ["ADMIN", "BGH", "TPT", "GVBM", "GVCN"] },
-      { key: "setup.manage", label: "Quản lý năm học, học kỳ, lớp, môn học", roles: ["ADMIN", "BGH"] },
+      { key: "setup.manage", label: "Quản lý năm học, học kỳ, lớp", roles: ["ADMIN", "BGH"] },
       { key: "ppct.upload", label: "Nhập PPCT", roles: ["ADMIN", "BGH"] },
       { key: "tkb.upload", label: "Nhập TKB", roles: ["ADMIN", "BGH"] },
       { key: "gen.confirm", label: "Hình thành dữ liệu tiết dạy và Sổ đầu bài", roles: ["ADMIN", "BGH"] },
