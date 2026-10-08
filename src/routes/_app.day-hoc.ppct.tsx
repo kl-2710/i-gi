@@ -124,15 +124,6 @@ function PpctPage() {
   const [uploadedFile, setUploadedFile] = useState<string | null>(null);
   const [validated, setValidated] = useState(false);
 
-  if (!can("ppct.upload")) {
-    return (
-      <div>
-        <PageHeader title="PPCT" crumbs={[{ label: "Quản lý danh mục và dữ liệu dạy học" }, { label: "PPCT" }]} />
-        <NoPermissionState message="Chỉ BGH được phép nhập PPCT." />
-      </div>
-    );
-  }
-
   const filtered = useMemo(
     () =>
       datasets.filter((row) => {
@@ -143,6 +134,15 @@ function PpctPage() {
       }),
     [datasets, yearFilter, gradeFilter, subjectFilter, query],
   );
+
+  if (!can("ppct.upload")) {
+    return (
+      <div>
+        <PageHeader title="PPCT" crumbs={[{ label: "Quản lý danh mục và dữ liệu dạy học" }, { label: "PPCT" }]} />
+        <NoPermissionState message="Chỉ BGH được phép nhập PPCT." />
+      </div>
+    );
+  }
 
   const openImport = () => {
     setImportYear(NAM_HOC);
