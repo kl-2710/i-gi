@@ -28,7 +28,8 @@ const PROFILES: PermissionProfile[] = [
   { key: "ADMIN", label: "Quản trị viên", description: "Quản lý tài khoản, phân quyền và quyền của hệ thống.", roles: ["ADMIN"] },
   { key: "BGH", label: "Ban Giám hiệu", description: "Thiết lập dữ liệu dạy học, hình thành và xác nhận Sổ đầu bài.", roles: ["BGH"] },
   { key: "TPT", label: "Tổng phụ trách", description: "Theo dõi Sổ đầu bài và báo cáo, thống kê theo phạm vi được phân quyền.", roles: ["TPT"] },
-  { key: "GVBM_GVCN", label: "Giáo viên chủ nhiệm kiêm giáo viên bộ môn", description: "Cập nhật, xác nhận tiết dạy và xác nhận Sổ đầu bài theo tuần của lớp chủ nhiệm.", roles: ["GVBM", "GVCN"] },
+  { key: "GVBM", label: "Giáo viên bộ môn", description: "Xem, cập nhật và xác nhận các tiết dạy do giáo viên bộ môn thực hiện.", roles: ["GVBM"] },
+  { key: "GVBM_GVCN", label: "Giáo viên chủ nhiệm kiêm giáo viên bộ môn", description: "Có toàn bộ quyền của Giáo viên bộ môn và bổ sung quyền của giáo viên chủ nhiệm.", roles: ["GVBM", "GVCN"] },
 ];
 
 export const Route = createFileRoute("/_app/nguoi-dung/vai-tro")({
