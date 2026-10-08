@@ -33,6 +33,7 @@ interface Ctx {
   bghConfirmed: boolean;
   bghConfirmAt: Confirmation | null;
   confirmBgh: (className: string) => { ok: boolean; message: string };
+  confirmBghBulk: (classNames: string[]) => { ok: boolean; message: string };
   isBghConfirmed: (className: string) => boolean;
   lockAllBooks: () => { ok: boolean; message: string };
   lockBooksByClasses: (classNames: string[]) => { ok: boolean; message: string };
@@ -235,6 +236,78 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     },
     [books, role, user, weeklyGvcnConfirmations, yearEndReached, bghConfirmations],
   );
+  const confirmBghBulk = useCallback(
+    (classNames: string[]) => {
+      if (role !== "BGH") return { ok: false, message: "Chỉ BGH được phép xác nhận Sổ đầu bài." };
+      if (!yearEndReached) return { ok: false, message: "Chỉ được xác nhận Sổ đầu bài sau khi kết thúc năm học." };
+      const uniqueClasses = [...new Set(classNames)].filter(Boolean);
+      if (uniqueClasses.length === 0) return { ok: false, message: "Chưa chọn lớp cần xác nhận." };
+
+      const allRows = books.filter((b) => uniqueClasses.includes(b.className));
+      if (allRows.length === 0) return { ok: false, message: "Không tìm thấy Sổ đầu bài của các lớp đã chọn." };
+
+      const missingClasses = uniqueClasses.filter((className) => {
+        const rows = allRows.filter((b) => b.className === className);
+        if (rows.length === 0) return true;
+        const weekKeys = [...new Set(rows.map((b) => weekKey(b.className, b.weekNumber)))];
+        return weekKeys.some((key) => !weeklyGvcnConfirmations[key]);
+      });
+      if (missingClasses.length > 0) {
+        return {
+          ok: false,
+          message: `Chưa thể xác nhận: ${missingClasses.join(", ")} chưa hoàn tất xác nhận GVCN theo tuần.`,
+        };
+      }
+
+      const already = uniqueClasses.filter((className) => Boolean(bghConfirmations[className]));
+      if (already.length === uniqueClasses.length) {
+        return { ok: false, message: "Các Sổ đầu bài đã chọn đều đã được BGH xác nhận." };
+      }
+
+      const now = new Date().toLocaleString("vi-VN", { hour12: false });
+      const by = user?.fullName ?? "Ban Giám hiệu";
+      const targets = uniqueClasses.filter((className) => !bghConfirmations[className]);
+
+      setBghConfirmations((prev) => {
+        const next = { ...prev };
+        for (const className of targets) next[className] = { by, at: now };
+        return next;
+      });
+      setBooks((prev) =>
+        prev.map((b) =>
+          targets.includes(b.className)
+            ? { ...b, status: "xac_nhan_bgh" }
+            : b,
+        ),
+      );
+      setAudit((prev) => [
+        {
+          id: `A${Date.now()}`,
+          at: now,
+          actor: by,
+          role: "BGH",
+          action: "Xác nhận Sổ đầu bài",
+          target: targets.length === 1
+            ? `Lớp ${targets[0]} - Năm học ${NAM_HOC}`
+            : `Các lớp ${targets.join(", ")} - Năm học ${NAM_HOC}`,
+          recordCode: `SDB-${NAM_HOC}-BGH`,
+          from: "Đã xác nhận GVCN đầy đủ",
+          to: "Đã xác nhận BGH",
+          reason: "BGH xác nhận theo lớp được chọn",
+        },
+        ...prev,
+      ]);
+
+      return {
+        ok: true,
+        message: targets.length === 1
+          ? `Đã xác nhận Sổ đầu bài lớp ${targets[0]}.`
+          : `Đã xác nhận Sổ đầu bài cho ${targets.length} lớp đã chọn.`,
+      };
+    },
+    [books, role, user, weeklyGvcnConfirmations, yearEndReached, bghConfirmations],
+  );
+
   const lockAllBooks = useCallback(() => {
     if (role !== "BGH") return { ok: false, message: "Chỉ BGH được phép khóa Sổ đầu bài." };
     if (!bghConfirmed) return { ok: false, message: "Cần xác nhận Sổ đầu bài bởi BGH trước khi khóa." };
@@ -348,8 +421,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         bghConfirmed,
         bghConfirmAt,
         confirmBgh,
+        confirmBghBulk,
         isBghConfirmed,
         lockAllBooks,
+        lockBooksByClasses,
         generated,
         setGenerated,
         ppctUploaded,
