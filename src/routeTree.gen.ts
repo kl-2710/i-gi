@@ -30,7 +30,6 @@ import { Route as AppNguoiDungTaiKhoanRouteImport } from './routes/_app.nguoi-du
 import { Route as AppNguoiDungVaiTroRouteImport } from './routes/_app.nguoi-dung.vai-tro'
 import { Route as AppSoDauBaiIndexRouteImport } from './routes/_app.so-dau-bai.index'
 import { Route as AppSoDauBaiIdRouteImport } from './routes/_app.so-dau-bai.$id'
-import { Route as AppSoDauBaiTruongClassNameRouteImport } from './routes/_app.so-dau-bai.truong.$className'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -136,11 +135,6 @@ const AppSoDauBaiIdRoute = AppSoDauBaiIdRouteImport.update({
   path: '/so-dau-bai/$id',
   getParentRoute: () => AppRoute,
 } as any)
-const AppSoDauBaiTruongClassNameRoute = AppSoDauBaiTruongClassNameRouteImport.update({
-  id: '/so-dau-bai/truong/$className',
-  path: '/so-dau-bai/truong/$className',
-  getParentRoute: () => AppRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,7 +156,6 @@ export interface FileRoutesByFullPath {
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
   '/so-dau-bai/$id': typeof AppSoDauBaiIdRoute
-  '/so-dau-bai/truong/$className': typeof AppSoDauBaiTruongClassNameRoute
   '/so-dau-bai/': typeof AppSoDauBaiIndexRoute
 }
 export interface FileRoutesByTo {
@@ -210,7 +203,6 @@ export interface FileRoutesById {
   '/_app/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/_app/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
   '/_app/so-dau-bai/$id': typeof AppSoDauBaiIdRoute
-  '/_app/so-dau-bai/truong/$className': typeof AppSoDauBaiTruongClassNameRoute
   '/_app/so-dau-bai/': typeof AppSoDauBaiIndexRoute
 }
 export interface FileRouteTypes {
@@ -439,13 +431,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSoDauBaiIdRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/so-dau-bai/truong/$className': {
-      id: '/_app/so-dau-bai/truong/$className'
-      path: '/so-dau-bai/truong/$className'
-      fullPath: '/so-dau-bai/truong/$className'
-      preLoaderRoute: typeof AppSoDauBaiTruongClassNameRouteImport
-      parentRoute: typeof AppRoute
-    }
   }
 }
 
@@ -468,7 +453,6 @@ interface AppRouteChildren {
   AppNguoiDungTaiKhoanRoute: typeof AppNguoiDungTaiKhoanRoute
   AppNguoiDungVaiTroRoute: typeof AppNguoiDungVaiTroRoute
   AppSoDauBaiIdRoute: typeof AppSoDauBaiIdRoute
-  AppSoDauBaiTruongClassNameRoute: typeof AppSoDauBaiTruongClassNameRoute
   AppSoDauBaiIndexRoute: typeof AppSoDauBaiIndexRoute
 }
 
@@ -491,7 +475,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppNguoiDungTaiKhoanRoute: AppNguoiDungTaiKhoanRoute,
   AppNguoiDungVaiTroRoute: AppNguoiDungVaiTroRoute,
   AppSoDauBaiIdRoute: AppSoDauBaiIdRoute,
-  AppSoDauBaiTruongClassNameRoute: AppSoDauBaiTruongClassNameRoute,
   AppSoDauBaiIndexRoute: AppSoDauBaiIndexRoute,
 }
 
