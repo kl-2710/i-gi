@@ -131,7 +131,7 @@ function CombinedTeacherBookList({
                   <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
                       <Link to="/so-dau-bai/lop/$className" params={{ className: homeroomClass }}>
-                        <Eye className="size-4" />Xem Sổ đầu bài
+                        <Eye className="size-4" />Xem tiết dạy
                       </Link>
                     </Button>
                   </TableCell>
@@ -227,7 +227,6 @@ function CombinedTeacherBookList({
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>{item.grade}</TableCell>
                     <TableCell>{item.year}</TableCell>
-                    <TableCell>{item.count}</TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm">
                         <Link to="/so-dau-bai/giang-day/$className" params={{ className: item.name }}>
