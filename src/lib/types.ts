@@ -1,7 +1,7 @@
 export type RoleCode = "ADMIN" | "BGH" | "TPT" | "GVBM" | "GVCN";
 
 export const ROLE_LABEL: Record<RoleCode, string> = {
-  ADMIN: "Quản trị hệ thống",
+  ADMIN: "Quản trị viên",
   BGH: "Ban Giám hiệu",
   TPT: "Tổng phụ trách",
   GVBM: "Giáo viên bộ môn",
@@ -56,7 +56,6 @@ export interface UserAccount {
   teacherId?: string;
   position: string;
   roles: RoleCode[];
-  active: boolean;
   updatedAt: string;
   homeroomClass?: string;
   subjects?: string[];
