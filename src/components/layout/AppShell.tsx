@@ -260,7 +260,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </span>
                 <span className="hidden leading-tight sm:block">
                   <span className="block text-xs font-medium text-navy-foreground">{user.fullName}</span>
-                  <span className="block text-[11px] text-navy-foreground/70">{ROLE_LABEL[role]}</span>
                 </span>
                 <ChevronDown className="size-4 text-navy-foreground/70" />
               </button>
