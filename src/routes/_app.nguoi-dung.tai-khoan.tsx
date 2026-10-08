@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { KeyRound, Pencil, Plus, ShieldCheck, ToggleLeft, ToggleRight, Eye } from "lucide-react";
+import { KeyRound, Pencil, Plus, ShieldCheck, Eye, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterField, ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
@@ -32,13 +32,13 @@ export const Route = createFileRoute("/_app/nguoi-dung/tai-khoan")({
 const PAGE_SIZE = 8;
 
 function AccountsPage() {
-  const { can, accounts, toggleAccount } = useApp();
+  const { can, accounts, deleteAccount } = useApp();
   const [q, setQ] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [detail, setDetail] = useState<UserAccount | null>(null);
   const [resetTarget, setResetTarget] = useState<UserAccount | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserAccount | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
   const filtered = useMemo(
@@ -47,11 +47,9 @@ function AccountsPage() {
         const text = `${a.code} ${a.fullName} ${a.username} ${a.phone} ${a.position}`.toLowerCase();
         if (q && !text.includes(q.toLowerCase())) return false;
         if (roleFilter !== "all" && !a.roles.includes(roleFilter as RoleCode)) return false;
-        if (statusFilter === "active" && !a.active) return false;
-        if (statusFilter === "locked" && a.active) return false;
         return true;
       }),
-    [accounts, q, roleFilter, statusFilter],
+    [accounts, q, roleFilter],
   );
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
@@ -81,24 +79,14 @@ function AccountsPage() {
       <TableCard>
         <TableToolbar>
           <SearchBar value={q} onChange={(v) => { setQ(v); setPage(1); }} placeholder="Tìm theo tên, tên đăng nhập, số điện thoại..." />
-          <FilterField label="Vai trò">
+          <FilterField label="Phân quyền">
             <Select value={roleFilter} onValueChange={(v) => { setRoleFilter(v); setPage(1); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tất cả vai trò</SelectItem>
+                <SelectItem value="all">Tất cả phân quyền</SelectItem>
                 {(Object.keys(ROLE_LABEL) as RoleCode[]).map((r) => (
                   <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-          </FilterField>
-          <FilterField label="Trạng thái">
-            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả</SelectItem>
-                <SelectItem value="active">Hoạt động</SelectItem>
-                <SelectItem value="locked">Tạm khóa</SelectItem>
               </SelectContent>
             </Select>
           </FilterField>
@@ -116,8 +104,7 @@ function AccountsPage() {
                   <TableHead>Tên đăng nhập</TableHead>
                   <TableHead>Số điện thoại</TableHead>
                   <TableHead>Chức vụ</TableHead>
-                  <TableHead>Vai trò</TableHead>
-                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Phân quyền</TableHead>
                   <TableHead>Ngày cập nhật</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
@@ -132,13 +119,8 @@ function AccountsPage() {
                     <TableCell className="whitespace-nowrap">{a.position}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {a.roles.map((r) => (
-                          <Pill key={r} tone="info">{ROLE_SHORT[r]}</Pill>
-                        ))}
+                        <Pill tone="info">{a.roles.includes("GVBM") && a.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[a.roles[0]!]}</Pill>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Pill tone={a.active ? "success" : "danger"}>{a.active ? "Hoạt động" : "Tạm khóa"}</Pill>
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-muted-foreground">{a.updatedAt}</TableCell>
                     <TableCell>
@@ -152,16 +134,8 @@ function AccountsPage() {
                         <Button variant="ghost" size="icon" title="Đặt lại mật khẩu" onClick={() => setResetTarget(a)}>
                           <KeyRound className="size-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title={a.active ? "Tạm khóa" : "Kích hoạt"}
-                          onClick={() => {
-                            toggleAccount(a.id);
-                            toast.success(a.active ? "Đã tạm khóa tài khoản" : "Đã kích hoạt tài khoản");
-                          }}
-                        >
-                          {a.active ? <ToggleRight className="size-4 text-success" /> : <ToggleLeft className="size-4 text-muted-foreground" />}
+                        <Button variant="ghost" size="icon" title="Xóa tài khoản" onClick={() => setDeleteTarget(a)}>
+                          <Trash2 className="size-4 text-destructive" />
                         </Button>
                       </div>
                     </TableCell>
@@ -178,7 +152,7 @@ function AccountsPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Thông tin tài khoản</DialogTitle>
-            <DialogDescription>Cập nhật thông tin và gán vai trò cho tài khoản.</DialogDescription>
+            <DialogDescription>Cập nhật thông tin tài khoản và phân quyền được gán.</DialogDescription>
           </DialogHeader>
           {detail && (
             <div className="grid gap-3 sm:grid-cols-2">
@@ -199,7 +173,7 @@ function AccountsPage() {
                 <Input defaultValue={detail.position} maxLength={120} />
               </div>
               <div className="space-y-1.5 sm:col-span-2">
-                <Label>Vai trò được gán</Label>
+                <Label>Phân quyền được gán</Label>
                 <div className="flex flex-wrap gap-1.5 rounded-md border border-border p-2">
                   {detail.roles.map((r) => (
                     <Pill key={r} tone="info"><ShieldCheck className="size-3" />{ROLE_LABEL[r]}</Pill>
@@ -219,7 +193,7 @@ function AccountsPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Thêm tài khoản mới</DialogTitle>
-            <DialogDescription>Tài khoản mới sẽ được gán vai trò trước khi sử dụng hệ thống.</DialogDescription>
+            <DialogDescription>Gán một phân quyền cho tài khoản trước khi sử dụng hệ thống.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5"><Label>Họ và tên</Label><Input placeholder="Nguyễn Văn A" maxLength={100} /></div>
@@ -227,13 +201,14 @@ function AccountsPage() {
             <div className="space-y-1.5 sm:col-span-2"><Label>Số điện thoại</Label><Input placeholder="a.nguyen" maxLength={255} /></div>
             <div className="space-y-1.5 sm:col-span-2"><Label>Chức vụ</Label><Input placeholder="Giáo viên Toán" maxLength={120} /></div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label>Vai trò</Label>
-              <Select defaultValue="GVBM">
+              <Label>Phân quyền</Label>
+              <Select defaultValue="GVBM_GVCN">
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {(Object.keys(ROLE_LABEL) as RoleCode[]).map((r) => (
-                    <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>
-                  ))}
+                  <SelectItem value="ADMIN">Quản trị viên</SelectItem>
+                  <SelectItem value="BGH">Ban Giám hiệu</SelectItem>
+                  <SelectItem value="TPT">Tổng phụ trách</SelectItem>
+                  <SelectItem value="GVBM_GVCN">Giáo viên chủ nhiệm kiêm giáo viên bộ môn</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -244,6 +219,17 @@ function AccountsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ActionDialog
+        open={!!deleteTarget}
+        onOpenChange={(v) => !v && setDeleteTarget(null)}
+        title="Xóa tài khoản"
+        description={`Xóa tài khoản ${deleteTarget?.fullName ?? ""} khỏi hệ thống?`}
+        confirmLabel="Xóa tài khoản"
+        requireReason
+        reasonLabel="Lý do xóa"
+        onConfirm={() => { if (deleteTarget) { deleteAccount(deleteTarget.id); setDeleteTarget(null); toast.success("Đã xóa tài khoản"); } }}
+      />
 
       <ActionDialog
         open={!!resetTarget}
