@@ -153,11 +153,11 @@ function PpctPage() {
 
   const saveImport = () => {
     if (!uploadedFile) {
-      toast.error("Vui lòng tải tệp PPCT trước khi lưu.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
     if (!/\.pdf$/i.test(uploadedFile)) {
-      toast.error("Tệp PPCT không hợp lệ. Vui lòng tải tệp PDF.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
 
@@ -165,7 +165,7 @@ function PpctPage() {
       (d) => d.year === importYear && d.grade === importGrade && d.subject === importSubject,
     );
     if (duplicate) {
-      toast.error("PPCT của năm học, khối và môn học đã tồn tại. Hãy xem dữ liệu đã nhập thay vì nhập trùng.");
+      toast.error("Thông tin không hợp lệ");
       return;
     }
 
