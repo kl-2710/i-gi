@@ -217,7 +217,6 @@ function CombinedTeacherBookList({
                   <TableHead>Sổ đầu bài</TableHead>
                   <TableHead>Khối</TableHead>
                   <TableHead>Năm học</TableHead>
-                  <TableHead>Số tiết của giáo viên</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
@@ -255,7 +254,6 @@ function GvbmBookList({ books }: { books: LessonBook[] }) {
           name: book.className,
           grade: book.grade,
           year: book.year,
-          count: books.filter((item) => item.className === book.className).length,
         },
       ]),
     ).values(),
@@ -292,11 +290,10 @@ function GvbmBookList({ books }: { books: LessonBook[] }) {
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>{item.grade}</TableCell>
                     <TableCell>{item.year}</TableCell>
-                    <TableCell>{item.count}</TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm">
                         <Link to="/so-dau-bai/giang-day/$className" params={{ className: item.name }}>
-                          <Eye className="size-4" />Xem Sổ đầu bài
+                          <Eye className="size-4" />Xem tiết dạy
                         </Link>
                       </Button>
                     </TableCell>
