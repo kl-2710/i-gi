@@ -35,7 +35,7 @@ function PermissionsPage() {
     return (
       <div>
         <PageHeader title="Quản lý quyền" crumbs={[{ label: "Quản trị hệ thống" }, { label: "Quản lý quyền" }]} />
-        <NoPermissionState message="Chỉ Quản trị hệ thống được phép cấu hình phân quyền." />
+        <NoPermissionState message="Chỉ Quản trị viên được phép cấu hình quyền." />
       </div>
     );
   }
