@@ -507,9 +507,9 @@ function SchoolBookList({
                       <div className="flex justify-end gap-1">
                         <Button asChild variant="outline" size="sm">
                           <Link
-                            to="/so-dau-bai/giang-day/$className"
-                            params={{ className: row.className }}
-                            search={{ viewer: "school" }}
+                            to="/so-dau-bai/$id"
+                            params={{ id: "class-list" }}
+                            search={{ mode: "class", className: row.className }}
                           >
                             <Eye className="size-4" />Xem tiết dạy
                           </Link>
