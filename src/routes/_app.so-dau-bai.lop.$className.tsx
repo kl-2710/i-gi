@@ -3,7 +3,7 @@ import { Link, createFileRoute, useParams } from "@tanstack/react-router";
 import { ArrowLeft, Check } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
-import { Pill, StatusBadge } from "@/components/common/StatusBadge";
+import { LessonStatusBadge, Pill } from "@/components/common/StatusBadge";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
 import { ScrollTable, TableCard } from "@/components/common/DataTable";
 import { Button } from "@/components/ui/button";
@@ -91,7 +91,7 @@ function HomeroomBookPage() {
                   <TableHead>Tiết</TableHead>
                   <TableHead>Môn</TableHead>
                   <TableHead>Giáo viên</TableHead>
-                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Trạng thái tiết dạy</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
@@ -103,7 +103,7 @@ function HomeroomBookPage() {
                     <TableCell>Tiết {book.period}</TableCell>
                     <TableCell>{book.subject}</TableCell>
                     <TableCell>{book.teacher}</TableCell>
-                    <TableCell><StatusBadge status={book.status} /></TableCell>
+                    <TableCell><LessonStatusBadge status={book.status} /></TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm">
                         <Link to="/so-dau-bai/$id" params={{ id: book.id }}>Xem</Link>
