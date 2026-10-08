@@ -61,7 +61,19 @@ function YearPage() {
   const [adjustDate, setAdjustDate] = useState("");
   const [adjustReason, setAdjustReason] = useState("");
 
-  const years = useMemo(() => Array.from(new Set(rows.map((r) => r.year))), [rows]);
+  const currentCalendarYear = new Date().getFullYear();
+  const schoolYearOptions = useMemo(
+    () =>
+      Array.from({ length: 9 }, (_, index) => {
+        const startYear = currentCalendarYear - 5 + index;
+        return `${startYear} - ${startYear + 1}`;
+      }),
+    [currentCalendarYear],
+  );
+  const years = useMemo(
+    () => Array.from(new Set([...schoolYearOptions, ...rows.map((r) => r.year)])),
+    [schoolYearOptions, rows],
+  );
   const visibleRows = rows.filter((r) => r.year === year);
   const selected = rows.find((r) => r.year === year && r.term === term);
 
