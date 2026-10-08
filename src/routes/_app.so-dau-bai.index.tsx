@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { FilterField, ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
-import { StatusBadge, Pill } from "@/components/common/StatusBadge";
+import { LessonStatusBadge, Pill } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -563,7 +563,7 @@ function BookListPage() {
                   <TableHead className="text-center">GVCN / Tuần</TableHead>
                   <TableHead className="text-center">BGH</TableHead>
                   <TableHead className="text-center">Khóa</TableHead>
-                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Trạng thái tiết dạy</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
@@ -583,7 +583,7 @@ function BookListPage() {
                     </TableCell>
                     <TableCell className="text-center"><YesNo ok={isBghConfirmed(book.className)} /></TableCell>
                     <TableCell className="text-center"><YesNo ok={book.status === "da_khoa"} /></TableCell>
-                    <TableCell><StatusBadge status={book.status} /></TableCell>
+                    <TableCell><LessonStatusBadge status={book.status} /></TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm">
                         <Link to="/so-dau-bai/$id" params={{ id: book.id }}>Xem</Link>
