@@ -48,7 +48,7 @@ export const PERMISSION_GROUPS: {
   {
     module: "3. QUẢN LÝ SỔ ĐẦU BÀI",
     items: [
-      { key: "book.view.all", label: "Xem sổ đầu bài toàn trường", roles: ["BGH", "PHT", "TPT", "ADMIN"] },
+      { key: "book.view.all", label: "Xem sổ đầu bài toàn trường", roles: ["BGH", "TPT", "ADMIN"] },
       { key: "book.view.own", label: "Xem tiết dạy được phân công", roles: ["GVBM", "ADMIN"] },
       { key: "book.view.class", label: "Xem sổ lớp chủ nhiệm", roles: ["GVCN", "ADMIN"] },
       { key: "book.edit", label: "Cập nhật thông tin tiết học", roles: ["GVBM", "ADMIN"] },
@@ -62,7 +62,7 @@ export const PERMISSION_GROUPS: {
   {
     module: "4. BÁO CÁO VÀ THỐNG KÊ",
     items: [
-      { key: "report.view", label: "Xem báo cáo và thống kê", roles: ["BGH", "PHT", "TPT", "ADMIN", "GVBM", "GVCN"] },
+      { key: "report.view", label: "Xem báo cáo và thống kê", roles: ["BGH", "TPT", "ADMIN", "GVBM", "GVCN"] },
     ],
   },
 ];
