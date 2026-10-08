@@ -17,149 +17,66 @@ import { useApp } from "@/lib/app-state";
 import { ROLE_LABEL, type RoleCode } from "@/lib/types";
 import { PERMISSION_GROUPS } from "@/lib/permissions";
 
-export const Route = createFileRoute("/_app/nguoi-dung/vai-tro")({
-  head: () => ({
-    meta: [
-      { title: "Quản lý vai trò — Sổ đầu bài THCS Khương Mai" },
-      { name: "description", content: "Danh sách vai trò hệ thống và các quyền gắn với từng vai trò." },
-      { property: "og:title", content: "Quản lý vai trò" },
-      { property: "og:description", content: "Quản lý vai trò người dùng trong hệ thống sổ đầu bài." },
-    ],
-  }),
-  component: RolesPage,
-});
-
-const DESCRIPTIONS: Record<RoleCode, string> = {
-  ADMIN: "Quản trị hệ thống: tài khoản, vai trò, phân quyền.",
-  BGH: "Thiết lập dạy học, nhập PPCT/TKB, sinh dữ liệu sổ đầu bài, kiểm tra và duyệt sổ đầu bài toàn trường.",
-  TPT: "Theo dõi dữ liệu Sổ đầu bài và báo cáo, thống kê theo phạm vi được phân quyền.",
-  GVBM: "Cập nhật và xác nhận thông tin tiết dạy của mình.",
-  GVCN: "Theo dõi Sổ đầu bài lớp chủ nhiệm và xác nhận theo tuần khi tất cả tiết học trong tuần đã được GVBM xác nhận.",
+type PermissionProfile = {
+  key: string;
+  label: string;
+  description: string;
+  roles: RoleCode[];
 };
 
-function RolesPage() {
+const PROFILES: PermissionProfile[] = [
+  { key: "ADMIN", label: "Quản trị viên", description: "Quản lý tài khoản, phân quyền và quyền của hệ thống.", roles: ["ADMIN"] },
+  { key: "BGH", label: "Ban Giám hiệu", description: "Thiết lập dữ liệu dạy học, hình thành và xác nhận Sổ đầu bài.", roles: ["BGH"] },
+  { key: "TPT", label: "Tổng phụ trách", description: "Theo dõi Sổ đầu bài và báo cáo, thống kê theo phạm vi được phân quyền.", roles: ["TPT"] },
+  { key: "GVBM_GVCN", label: "Giáo viên chủ nhiệm kiêm giáo viên bộ môn", description: "Cập nhật, xác nhận tiết dạy và xác nhận Sổ đầu bài theo tuần của lớp chủ nhiệm.", roles: ["GVBM", "GVCN"] },
+];
+
+export const Route = createFileRoute("/_app/nguoi-dung/vai-tro")({
+  head: () => ({ meta: [{ title: "Quản lý phân quyền — Sổ đầu bài THCS Khương Mai" }, { name: "description", content: "Danh sách các phân quyền và quyền thao tác được gắn với từng phân quyền." }] }),
+  component: PermissionProfilesPage,
+});
+
+function PermissionProfilesPage() {
   const { can, accounts } = useApp();
   const [q, setQ] = useState("");
-  const [detail, setDetail] = useState<RoleCode | null>(null);
+  const [detail, setDetail] = useState<PermissionProfile | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [active, setActive] = useState<Record<string, boolean>>({});
 
   if (!can("role.manage")) {
-    return (
-      <div>
-        <PageHeader title="Quản lý vai trò" crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý vai trò" }]} />
-        <NoPermissionState message="Chỉ Quản trị hệ thống được phép quản lý vai trò." />
-      </div>
-    );
+    return <div><PageHeader title="Quản lý phân quyền" crumbs={[{ label: "Quản trị hệ thống" }, { label: "Quản lý phân quyền" }]} /><NoPermissionState message="Chỉ Quản trị viên được phép quản lý phân quyền." /></div>;
   }
 
-  const roles = (Object.keys(ROLE_LABEL) as RoleCode[]).filter((r) =>
-    `${ROLE_LABEL[r]} ${DESCRIPTIONS[r]}`.toLowerCase().includes(q.toLowerCase()),
-  );
+  const profiles = PROFILES.filter((p) => `${p.label} ${p.description}`.toLowerCase().includes(q.toLowerCase()));
+  const accountCount = (profile: PermissionProfile) => accounts.filter((a) => profile.roles.every((r) => a.roles.includes(r))).length;
 
-  return (
-    <div>
-      <PageHeader
-        title="Quản lý vai trò"
-        description="Mỗi tài khoản được gán một hoặc nhiều vai trò, vai trò quyết định phân quyền."
-        crumbs={[{ label: "Quản lý người dùng & phân quyền" }, { label: "Quản lý vai trò" }]}
-        actions={<Button onClick={() => setCreateOpen(true)}><Plus className="size-4" />Thêm vai trò</Button>}
-      />
+  return <div>
+    <PageHeader title="Quản lý phân quyền" description="Danh sách phân quyền được sử dụng trong hệ thống." crumbs={[{ label: "Quản trị hệ thống" }, { label: "Quản lý phân quyền" }]} actions={<Button onClick={() => setCreateOpen(true)}><Plus className="size-4" />Thêm phân quyền</Button>} />
+    <TableCard>
+      <TableToolbar><SearchBar value={q} onChange={setQ} placeholder="Tìm phân quyền..." /></TableToolbar>
+      {profiles.length === 0 ? <EmptyState /> : <ScrollTable><Table><TableHeader><TableRow>
+        <TableHead>Phân quyền</TableHead><TableHead>Mô tả</TableHead><TableHead>Số tài khoản</TableHead><TableHead>Trạng thái</TableHead><TableHead className="text-right">Thao tác</TableHead>
+      </TableRow></TableHeader><TableBody>
+        {profiles.map((p) => { const enabled = active[p.key] ?? true; return <TableRow key={p.key}>
+          <TableCell className="whitespace-nowrap font-medium"><span className="flex items-center gap-2"><ShieldCheck className="size-4 text-primary" />{p.label}</span></TableCell>
+          <TableCell className="text-muted-foreground">{p.description}</TableCell>
+          <TableCell className="tabular-nums">{accountCount(p)}</TableCell>
+          <TableCell><Pill tone={enabled ? "success" : "danger"}>{enabled ? "Đang áp dụng" : "Ngừng áp dụng"}</Pill></TableCell>
+          <TableCell><div className="flex items-center justify-end gap-2"><Button variant="outline" size="sm" onClick={() => setDetail(p)}>Chi tiết</Button><Switch checked={enabled} onCheckedChange={(v) => { setActive((prev) => ({ ...prev, [p.key]: v })); toast.success(v ? "Đã kích hoạt phân quyền" : "Đã ngừng áp dụng phân quyền"); }} /></div></TableCell>
+        </TableRow>; })}
+      </TableBody></Table></ScrollTable>}
+    </TableCard>
 
-      <TableCard>
-        <TableToolbar>
-          <SearchBar value={q} onChange={setQ} placeholder="Tìm vai trò..." />
-        </TableToolbar>
-        {roles.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <ScrollTable>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tên vai trò</TableHead>
-                  <TableHead>Mô tả</TableHead>
-                  <TableHead>Số tài khoản</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {roles.map((r) => {
-                  const enabled = active[r] ?? true;
-                  return (
-                    <TableRow key={r}>
-                      <TableCell className="whitespace-nowrap font-medium">
-                        <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-primary" />{ROLE_LABEL[r]}</span>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">{DESCRIPTIONS[r]}</TableCell>
-                      <TableCell className="tabular-nums">{accounts.filter((a) => a.roles.includes(r)).length}</TableCell>
-                      <TableCell><Pill tone={enabled ? "success" : "danger"}>{enabled ? "Đang áp dụng" : "Ngừng áp dụng"}</Pill></TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="sm" onClick={() => setDetail(r)}>Chi tiết</Button>
-                          <Switch
-                            checked={enabled}
-                            onCheckedChange={(v) => {
-                              setActive((p) => ({ ...p, [r]: v }));
-                              toast.success(v ? "Đã kích hoạt vai trò" : "Đã ngừng áp dụng vai trò");
-                            }}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </ScrollTable>
-        )}
-      </TableCard>
+    <Dialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}><DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
+      <DialogHeader><DialogTitle>{detail?.label}</DialogTitle><DialogDescription>{detail?.description}</DialogDescription></DialogHeader>
+      <div className="space-y-4">{PERMISSION_GROUPS.map((g) => { const items = g.items.filter((i) => detail?.roles.some((r) => i.roles.includes(r))); return items.length ? <div key={g.module}><p className="text-sm font-medium">{g.module}</p><div className="mt-1.5 flex flex-wrap gap-1.5">{items.map((i) => <Pill key={i.key} tone="success">{i.label}</Pill>)}</div></div> : null; })}</div>
+      <DialogFooter><Button variant="outline" onClick={() => setDetail(null)}>Đóng</Button></DialogFooter>
+    </DialogContent></Dialog>
 
-      <Dialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle>{detail ? ROLE_LABEL[detail] : ""}</DialogTitle>
-            <DialogDescription>{detail ? DESCRIPTIONS[detail] : ""}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            {PERMISSION_GROUPS.map((g) => {
-              const items = g.items.filter((i) => detail && i.roles.includes(detail));
-              if (items.length === 0) return null;
-              return (
-                <div key={g.module}>
-                  <p className="text-sm font-medium">{g.module}</p>
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {items.map((i) => (
-                      <Pill key={i.key} tone="success">{i.label}</Pill>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDetail(null)}>Đóng</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Thêm vai trò</DialogTitle>
-            <DialogDescription>Vai trò mới cần được cấu hình phân quyền sau khi tạo.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="space-y-1.5"><Label>Tên vai trò</Label><Input placeholder="Nhập tên vai trò" maxLength={80} /></div>
-            <div className="space-y-1.5"><Label>Mô tả</Label><Textarea rows={3} placeholder="Mô tả trách nhiệm của vai trò" maxLength={300} /></div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>Hủy</Button>
-            <Button onClick={() => { setCreateOpen(false); toast.success("Đã tạo vai trò mới (dữ liệu mẫu)"); }}>Tạo vai trò</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
+    <Dialog open={createOpen} onOpenChange={setCreateOpen}><DialogContent className="sm:max-w-lg">
+      <DialogHeader><DialogTitle>Thêm phân quyền</DialogTitle><DialogDescription>Tạo phân quyền mới để cấu hình các quyền được phép thực hiện.</DialogDescription></DialogHeader>
+      <div className="space-y-3"><div className="space-y-1.5"><Label>Tên phân quyền</Label><Input placeholder="Nhập tên phân quyền" maxLength={80} /></div><div className="space-y-1.5"><Label>Mô tả</Label><Textarea rows={3} placeholder="Mô tả phạm vi thao tác của phân quyền" maxLength={300} /></div></div>
+      <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Hủy</Button><Button onClick={() => { setCreateOpen(false); toast.success("Đã tạo phân quyền mới (dữ liệu mẫu)"); }}>Tạo phân quyền</Button></DialogFooter>
+    </DialogContent></Dialog>
+  </div>;
 }
