@@ -157,11 +157,9 @@ function BookListPage() {
               <h2 className="text-base font-semibold">Xác nhận Sổ đầu bài</h2>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                 <span className="text-muted-foreground">Lớp:</span>
-                <Select value={cls === "all" ? CLASSES[0]?.name ?? "" : cls} onValueChange={(v) => setCls(v)}>
+                <Select value={cls === "all" ? CLASSES[0]?.name ?? "" : cls} onValueChange={setCls}>
                   <SelectTrigger className="w-[150px]"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CLASSES.map((c) => <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>)}
-                  </SelectContent>
+                  <SelectContent>{CLASSES.map((c) => <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>)}</SelectContent>
                 </Select>
                 <span className="text-muted-foreground">Năm học: 2026 - 2027</span>
               </div>
@@ -170,17 +168,7 @@ function BookListPage() {
                 const confirmed = selectedClass ? isBghConfirmed(selectedClass) : false;
                 const classWeeks = selectedClass ? getWeeks(scopedBooks.filter((b) => b.className === selectedClass)) : [];
                 const ready = yearEndReached && classWeeks.length > 0 && classWeeks.every(([, items]) => items.every((b) => Boolean(b.gvcnConfirm)));
-                return (
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {confirmed
-                      ? `Đã xác nhận bởi ${bghConfirmations[selectedClass!]?.by} · ${bghConfirmations[selectedClass!]?.at}`
-                      : ready
-                        ? "Sổ đầu bài của lớp đã đủ điều kiện xác nhận."
-                        : yearEndReached
-                          ? "Chưa đủ điều kiện: vẫn còn tuần chưa được GVCN xác nhận."
-                          : "Chưa đến thời điểm xác nhận."}
-                  </p>
-                );
+                return <p className="mt-2 text-sm text-muted-foreground">{confirmed ? `Đã xác nhận bởi ${bghConfirmations[selectedClass!]?.by} · ${bghConfirmations[selectedClass!]?.at}` : ready ? "Sổ đầu bài của lớp đã đủ điều kiện xác nhận." : yearEndReached ? "Chưa đủ điều kiện: vẫn còn tuần chưa được GVCN xác nhận." : "Chưa đến thời điểm xác nhận."}</p>;
               })()}
             </div>
             <div className="flex gap-2">
@@ -188,32 +176,13 @@ function BookListPage() {
                 const selectedClass = cls === "all" ? CLASSES[0]?.name : cls;
                 const classWeeks = selectedClass ? getWeeks(scopedBooks.filter((b) => b.className === selectedClass)) : [];
                 const ready = Boolean(selectedClass) && yearEndReached && classWeeks.length > 0 && classWeeks.every(([, items]) => items.every((b) => Boolean(b.gvcnConfirm)));
-                return (
-                  <Button
-                    disabled={!ready || isBghConfirmed(selectedClass ?? "")}
-                    onClick={() => {
-                      if (!selectedClass) return;
-                      const result = confirmBgh(selectedClass);
-                      result.ok ? toast.success(result.message) : toast.error(result.message);
-                    }}
-                  >
-                    <Check className="size-4" />Xác nhận Sổ đầu bài
-                  </Button>
-                );
+                return <Button disabled={!ready || isBghConfirmed(selectedClass ?? "")} onClick={() => { if (!selectedClass) return; const result = confirmBgh(selectedClass); result.ok ? toast.success(result.message) : toast.error(result.message); }}><Check className="size-4" />Xác nhận Sổ đầu bài</Button>;
               })()}
-              {can("book.lock") && (
-                <Button variant="outline" disabled={!bghConfirmed} onClick={() => {
-                  const result = lockAllBooks();
-                  result.ok ? toast.success(result.message) : toast.error(result.message);
-                }}>
-                  <Lock className="size-4" />Khóa Sổ đầu bài
-                </Button>
-              )}
+              {can("book.lock") && <Button variant="outline" disabled={!bghConfirmed} onClick={() => { const result = lockAllBooks(); result.ok ? toast.success(result.message) : toast.error(result.message); }}><Lock className="size-4" />Khóa Sổ đầu bài</Button>}
             </div>
           </div>
         </TableCard>
       )}
-
       <TableCard>
           <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -256,10 +225,7 @@ function BookListPage() {
           <FilterField label="Lớp">
             <Select value={cls} onValueChange={(v) => { setCls(v); setPage(1); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả lớp</SelectItem>
-                {CLASSES.map((c) => <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>)}
-              </SelectContent>
+              <SelectContent><SelectItem value="all">Tất cả lớp</SelectItem>{CLASSES.map((c) => <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>)}</SelectContent>
             </Select>
           </FilterField>
           <FilterField label="Trạng thái">

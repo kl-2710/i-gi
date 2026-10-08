@@ -206,9 +206,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const now = new Date().toLocaleString("vi-VN", { hour12: false });
       const by = user?.fullName ?? "Ban Giám hiệu";
       setBghConfirmations((prev) => ({ ...prev, [className]: { by, at: now } }));
-      setBooks((prev) =>
-        prev.map((b) => (b.className === className ? { ...b, status: "xac_nhan_bgh" } : b)),
-      );
+      setBooks((prev) => prev.map((b) => (b.className === className ? { ...b, status: "xac_nhan_bgh" } : b)));
       setAudit((prev) => [
         {
           id: `A${Date.now()}`,
@@ -228,10 +226,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     },
     [books, role, user, weeklyGvcnConfirmations, yearEndReached, bghConfirmations],
   );
-
   const lockAllBooks = useCallback(() => {
     if (role !== "BGH") return { ok: false, message: "Chỉ BGH được phép khóa Sổ đầu bài." };
-    if (!bghConfirmed) return { ok: false, message: "Cần BGH xác nhận đầy đủ Sổ đầu bài của các lớp trước khi khóa." };
+    if (!bghConfirmed) return { ok: false, message: "Cần xác nhận Sổ đầu bài bởi BGH trước khi khóa." };
 
     const now = new Date().toLocaleString("vi-VN", { hour12: false });
     const by = user?.fullName ?? "Ban Giám hiệu";
@@ -245,9 +242,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         action: "Khóa Sổ đầu bài",
         target: `Sổ đầu bài năm học ${NAM_HOC}`,
         recordCode: `SDB-${NAM_HOC}`,
-        from: "Đã xác nhận BGH đầy đủ",
+        from: "Đã xác nhận BGH",
         to: "Đã khóa",
-        reason: "Thực hiện khóa sau khi BGH xác nhận đầy đủ",
+        reason: "Thực hiện khóa sau khi BGH xác nhận",
       },
       ...prev,
     ]);
