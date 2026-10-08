@@ -11,8 +11,8 @@ import {
   PanelLeftOpen,
   UserCog,
   X,
-  Save,
   UserCircle,
+  KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -149,7 +149,7 @@ function SidebarNav({
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, role, setRole, logout, notifications, year, semester, updateProfile } = useApp();
+  const { user, role, logout, notifications, year, semester, updateProfile } = useApp();
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileName, setProfileName] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
@@ -219,7 +219,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <div className="border-b border-border px-4 py-3">
                 <p className="text-sm font-semibold">Trung tâm thông báo</p>
                 <p className="text-xs text-muted-foreground">
-                  Thông báo dành cho vai trò {ROLE_SHORT[role]}
+                  Thông báo dành cho phân quyền {user.roles.includes("GVBM") && user.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[role]}
                 </p>
               </div>
               <ScrollArea className="max-h-80">
@@ -252,38 +252,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             </PopoverContent>
           </Popover>
 
-          {user.roles.length > 1 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="hidden border-white/25 bg-white/10 text-navy-foreground hover:bg-white/20 hover:text-navy-foreground sm:inline-flex"
-                >
-                  <UserCog className="size-4" />
-                  {ROLE_SHORT[role]}
-                  <ChevronDown className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Chuyển vai trò</DropdownMenuLabel>
-                <DropdownMenuRadioGroup
-                  value={role}
-                  onValueChange={(v) => {
-                    setRole(v as typeof role);
-                    navigate({ to: "/day-hoc/nam-hoc" });
-                  }}
-                >
-                  {user.roles.map((r) => (
-                    <DropdownMenuRadioItem key={r} value={r}>
-                      {ROLE_LABEL[r]}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-left hover:bg-white/10">
@@ -304,23 +272,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                Vai trò hiện tại: {ROLE_LABEL[role]}
+                Phân quyền: {user.roles.includes("GVBM") && user.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[role]}
               </DropdownMenuLabel>
-              {user.roles.length > 1 && (
-                <DropdownMenuRadioGroup
-                  value={role}
-                  onValueChange={(v) => {
-                    setRole(v as typeof role);
-                    navigate({ to: "/dashboard" });
-                  }}
-                >
-                  {user.roles.map((r) => (
-                    <DropdownMenuRadioItem key={r} value={r}>
-                      {ROLE_LABEL[r]}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={openProfile}><UserCircle className="size-4" />Hồ sơ cá nhân</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setPasswordOpen(true)}><KeyRound className="size-4" />Thay đổi mật khẩu</DropdownMenuItem>
