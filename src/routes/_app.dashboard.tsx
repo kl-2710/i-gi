@@ -68,7 +68,7 @@ function DashboardPage() {
       default:
         return [
           { label: "Tổng số tài khoản", value: 10, icon: Users, tone: "primary" as const },
-          { label: "Tổng số vai trò", value: 6, icon: ShieldCheck, tone: "info" as const },
+          { label: "Tổng số vai trò", value: 5, icon: ShieldCheck, tone: "info" as const },
           { label: "Tổng số lớp", value: CLASSES.length, icon: Layers, tone: "neutral" as const },
           { label: "Tổng số môn học", value: SUBJECTS.length, icon: BookOpen, tone: "neutral" as const },
         ];
