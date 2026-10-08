@@ -277,10 +277,9 @@ function GvbmBookList({ books }: { books: LessonBook[] }) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Sổ đầu bài</TableHead>
+                  <TableHead>Lớp</TableHead>
                   <TableHead>Khối</TableHead>
                   <TableHead>Năm học</TableHead>
-                  <TableHead>Số tiết của giáo viên</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
