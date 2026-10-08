@@ -254,7 +254,6 @@ function PpctPage() {
                   <TableHead>Khối</TableHead>
                   <TableHead>Môn học</TableHead>
                   <TableHead>Tệp nguồn</TableHead>
-                  <TableHead>Số tiết</TableHead>
                   <TableHead>Trạng thái</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
@@ -267,7 +266,6 @@ function PpctPage() {
                     <TableCell>{row.grade}</TableCell>
                     <TableCell className="font-medium">{row.subject}</TableCell>
                     <TableCell className="max-w-[260px]"><div className="flex items-center gap-2"><FileSpreadsheet className="size-4 shrink-0 text-success" /><span className="truncate">{row.file}</span></div></TableCell>
-                    <TableCell>{row.totalLessons}</TableCell>
                     <TableCell><Pill tone={row.status === "Đã nhập" ? "success" : "danger"}>{row.status}</Pill></TableCell>
                     <TableCell className="text-right">
                       <Button variant="outline" size="sm" onClick={() => setSelected(row)}>
