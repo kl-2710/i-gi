@@ -179,7 +179,7 @@ export const ACCOUNTS: UserAccount[] = [
 export const DEMO_LOGINS = [
   { username: "admin", role: "Admin" },
   { username: "hieutruong", role: "Ban Giám hiệu" },
-  { username: "phohieutruong", role: "BGH - Phó Hiệu trưởng" },
+  { username: "phohieutruong", role: "Ban Giám hiệu · Phó Hiệu trưởng" },
   { username: "tongphutrach", role: "Tổng phụ trách" },
   { username: "an.nguyen", role: "GVBM" },
   { username: "thu.le", role: "GVBM + GVCN" },
