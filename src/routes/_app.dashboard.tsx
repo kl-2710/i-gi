@@ -58,12 +58,6 @@ function DashboardPage() {
           { label: "Đã xác nhận BGH", value: count("xac_nhan_bgh", "da_khoa"), icon: CheckCircle2, tone: "success" as const },
           { label: "Đã khóa", value: count("da_khoa"), icon: Lock, tone: "neutral" as const },
         ];
-        return [
-          { label: "Trạng thái PPCT", value: "Đã nhập", icon: ClipboardList, tone: "success" as const },
-          { label: "Trạng thái TKB", value: "Đã nhập", icon: FileSpreadsheet, tone: "success" as const },
-          { label: "Bản ghi tiết học", value: books.length, icon: BookOpen, tone: "primary" as const },
-          { label: "Cần hoàn thiện", value: count("he_thong_tao", "chua_hoan_thien"), icon: TriangleAlert, tone: "warning" as const },
-        ];
       case "TPT":
         return [
           { label: "Tổng số lớp", value: CLASSES.length, icon: Layers, tone: "primary" as const },
