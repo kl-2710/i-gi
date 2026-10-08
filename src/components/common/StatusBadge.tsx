@@ -56,3 +56,17 @@ export function Pill({
     </span>
   );
 }
+
+export function LessonStatusBadge({ status }: { status: BookStatus }) {
+  const confirmed = status === "xac_nhan_gvbm" || status === "xac_nhan_gvcn" || status === "xac_nhan_bgh" || status === "da_khoa";
+  return (
+    <span className={cn(
+      "inline-flex items-center whitespace-nowrap rounded-md border px-2 py-0.5 text-xs font-medium",
+      confirmed
+        ? "bg-primary/10 text-primary border-primary/30"
+        : "bg-secondary text-secondary-foreground border-border",
+    )}>
+      {confirmed ? "GVBM đã xác nhận" : "-"}
+    </span>
+  );
+}
