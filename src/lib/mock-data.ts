@@ -228,12 +228,12 @@ export function buildLessonBooks(): LessonBook[] {
   let idx = 0;
 
   for (let dayOffset = 0; dayOffset < 10; dayOffset++) {
-    const day = 14 + dayOffset + Math.floor(dayOffset / 5);
+    const day = 14 + dayOffset;
     const weekNumber = Math.floor(dayOffset / 5) + 1;
     const weekdayIndex = dayOffset % 5;
     const weekday = WEEKDAYS[weekdayIndex]!;
-    const weekStart = dateLabel(14 + (weekNumber - 1) * 6);
-    const weekEnd = dateLabel(18 + (weekNumber - 1) * 6);
+    const weekStart = dateLabel(14 + (weekNumber - 1) * 5);
+    const weekEnd = dateLabel(18 + (weekNumber - 1) * 5);
 
     for (const cls of CLASSES) {
       for (let period = 1; period <= 3; period++) {
