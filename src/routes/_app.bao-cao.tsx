@@ -1,14 +1,12 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BarChart3, Download, FileText, Target } from "lucide-react";
-import { toast } from "sonner";
+import { BarChart3, Target } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DashboardCard } from "@/components/common/DashboardCard";
 import { FilterField, ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
@@ -103,16 +101,7 @@ function ReportPage() {
         title="Báo cáo và thống kê"
         description="Khai thác dữ liệu Sổ đầu bài theo tiến độ giảng dạy, kết quả xếp loại, tình trạng hoàn thiện và báo cáo tổng hợp."
         crumbs={[{ label: "Báo cáo và thống kê" }]}
-        actions={
-          <>
-            <Button variant="outline" onClick={() => toast.success("Đã xuất báo cáo Excel (dữ liệu mẫu)")}>
-              <Download className="size-4" />Xuất Excel
-            </Button>
-            <Button variant="outline" onClick={() => toast.success("Đã xuất báo cáo PDF (dữ liệu mẫu)")}>
-              <FileText className="size-4" />Xuất PDF
-            </Button>
-          </>
-        }
+
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
