@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
 import { Pill } from "@/components/common/StatusBadge";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
 import { SUBJECTS } from "@/lib/mock-data";
@@ -44,14 +41,6 @@ function SubjectPage() {
         title="Môn học"
         description="Danh mục môn học dùng cho PPCT, TKB và sổ đầu bài."
         crumbs={[{ label: "Thiết lập dạy học" }, { label: "Môn học" }]}
-        actions={
-          can("setup.manage") ? (
-            <Button onClick={() => toast.success("Đã mở biểu mẫu thêm môn học (dữ liệu mẫu)")}>
-              <Plus className="size-4" />
-              Thêm môn học
-            </Button>
-          ) : null
-        }
       />
       <TableCard>
         <TableToolbar>
