@@ -185,6 +185,7 @@ export interface FileRoutesByTo {
   '/nguoi-dung/tai-khoan': typeof AppNguoiDungTaiKhoanRoute
   '/nguoi-dung/vai-tro': typeof AppNguoiDungVaiTroRoute
   '/so-dau-bai/$id': typeof AppSoDauBaiIdRoute
+  '/so-dau-bai/truong/$className': typeof AppSoDauBaiTruongClassNameRoute
   '/so-dau-bai': typeof AppSoDauBaiIndexRoute
 }
 export interface FileRoutesById {
@@ -234,6 +235,7 @@ export interface FileRouteTypes {
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
     | '/so-dau-bai/$id'
+    | '/so-dau-bai/truong/$className'
     | '/so-dau-bai/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -256,6 +258,7 @@ export interface FileRouteTypes {
     | '/nguoi-dung/tai-khoan'
     | '/nguoi-dung/vai-tro'
     | '/so-dau-bai/$id'
+    | '/so-dau-bai/truong/$className'
     | '/so-dau-bai'
   id:
     | '__root__'
@@ -279,6 +282,7 @@ export interface FileRouteTypes {
     | '/_app/nguoi-dung/tai-khoan'
     | '/_app/nguoi-dung/vai-tro'
     | '/_app/so-dau-bai/$id'
+    | '/_app/so-dau-bai/truong/$className'
     | '/_app/so-dau-bai/'
   fileRoutesById: FileRoutesById
 }
@@ -429,11 +433,17 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSoDauBaiIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/so-dau-bai/$id': {
-      id: '/_app/so-dau-bai/$id'
+    '/_app/so-dau-bai/$id': {      id: '/_app/so-dau-bai/$id'
       path: '/so-dau-bai/$id'
       fullPath: '/so-dau-bai/$id'
       preLoaderRoute: typeof AppSoDauBaiIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/so-dau-bai/truong/$className': {
+      id: '/_app/so-dau-bai/truong/$className'
+      path: '/so-dau-bai/truong/$className'
+      fullPath: '/so-dau-bai/truong/$className'
+      preLoaderRoute: typeof AppSoDauBaiTruongClassNameRouteImport
       parentRoute: typeof AppRoute
     }
   }
