@@ -15,7 +15,8 @@ import { useApp } from "@/lib/app-state";
 
 export const Route = createFileRoute("/_app/so-dau-bai/$id")({
   validateSearch: (search) => ({
-    mode: search.mode === "edit" ? "edit" : "view",
+    mode: search.mode === "edit" ? "edit" : search.mode === "class" ? "class" : "view",
+    className: typeof search.className === "string" ? search.className : "",
   }),
   head: () => ({
     meta: [
@@ -28,8 +29,93 @@ export const Route = createFileRoute("/_app/so-dau-bai/$id")({
 
 function BookDetailPage() {
   const { id } = useParams({ from: "/_app/so-dau-bai/$id" });
-  const { mode } = Route.useSearch();
+  const { mode, className } = Route.useSearch();
   const { books, can, user, role, updateBook } = useApp();
+
+  if (mode === "class") {
+    const classBooks = books
+      .filter((book) => book.className === className)
+      .sort((a, b) => a.date.localeCompare(b.date) || a.period - b.period);
+    const schoolViewer = role === "BGH" || role === "TPT" || role === "ADMIN";
+
+    if (!schoolViewer || !can("book.view.all") || !className || classBooks.length === 0) {
+      return (
+        <div>
+          <PageHeader
+            title="Danh sách tiết dạy"
+            crumbs={[{ label: "Quản lý Sổ đầu bài", to: "/so-dau-bai" }, { label: "Danh sách tiết dạy" }]}
+          />
+          <EmptyState
+            title="Không tìm thấy dữ liệu"
+            description="Lớp không tồn tại hoặc bạn không có quyền xem dữ liệu của lớp này."
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-5">
+        <PageHeader
+          title={"Danh sách tiết dạy lớp " + className}
+          description={"Năm học " + (classBooks[0]?.year ?? "-") + " · " + (classBooks[0]?.semester ?? "-")}
+          crumbs={[
+            { label: "Quản lý Sổ đầu bài", to: "/so-dau-bai" },
+            { label: "Lớp " + className },
+          ]}
+          actions={
+            <Button asChild variant="outline">
+              <Link to="/so-dau-bai">Quay lại</Link>
+            </Button>
+          }
+        />
+
+        <section className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
+          <h2 className="mb-4 text-base font-semibold">Danh sách tiết dạy</h2>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ngày</TableHead>
+                  <TableHead>Thứ</TableHead>
+                  <TableHead>Tiết</TableHead>
+                  <TableHead>Môn</TableHead>
+                  <TableHead>Giáo viên</TableHead>
+                  <TableHead>Nội dung từ PPCT</TableHead>
+                  <TableHead>Trạng thái tiết dạy</TableHead>
+                  <TableHead className="text-right">Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {classBooks.map((lesson) => (
+                  <TableRow key={lesson.id}>
+                    <TableCell>{lesson.date}</TableCell>
+                    <TableCell>{lesson.weekday}</TableCell>
+                    <TableCell>{"Tiết " + lesson.period}</TableCell>
+                    <TableCell>{lesson.subject}</TableCell>
+                    <TableCell>{lesson.teacher}</TableCell>
+                    <TableCell className="max-w-[320px] truncate">{lesson.plannedContent}</TableCell>
+                    <TableCell>
+                      <Pill tone={lesson.gvbmConfirm ? "success" : "warning"}>
+                        {lesson.gvbmConfirm ? "GVBM đã xác nhận" : "-"}
+                      </Pill>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button asChild variant="ghost" size="icon" title="Xem thông tin tiết dạy">
+                        <Link to="/so-dau-bai/$id" params={{ id: lesson.id }} search={{ mode: "view" }}>
+                          <Eye className="size-4" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   const book = books.find((b) => b.id === id);
 
   const [comment, setComment] = useState(book?.comment ?? "");
