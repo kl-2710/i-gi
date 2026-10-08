@@ -4,8 +4,7 @@ import { CheckCircle2, Cpu, Lock, Save, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ActionDialog } from "@/components/common/ActionDialog";
-import { LessonStatusBadge, Pill } from "@/components/common/StatusBadge";
-import { AuditTimeline } from "@/components/common/AuditTimeline";
+import { Pill } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/States";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +29,7 @@ export const Route = createFileRoute("/_app/so-dau-bai/$id")({
 function BookDetailPage() {
   const { id } = useParams({ from: "/_app/so-dau-bai/$id" });
   const { mode } = Route.useSearch();
-  const { books, audit, can, user, role, updateBook, isGvcnWeekConfirmed } = useApp();
+  const { books, can, user, role, updateBook } = useApp();
   const book = books.find((b) => b.id === id);
 
   const [comment, setComment] = useState(book?.comment ?? "");
@@ -56,7 +55,6 @@ function BookDetailPage() {
 
   const locked = book.status === "da_khoa";
   const confirmedGvbm = !!book.gvbmConfirm;
-  const weeklyConfirmed = isGvcnWeekConfirmed(book.className, book.weekNumber);
   const isOwnLesson = book.teacherId === user?.teacherId;
   const editable =
     mode === "edit" &&
@@ -71,7 +69,6 @@ function BookDetailPage() {
   if (!rank) missing.push("Xếp loại");
   if (!comment.trim()) missing.push("Nhận xét tiết học");
 
-  const entries = audit.filter((a) => a.recordCode === book.code);
 
   const saveDraft = () => {
     updateBook(
@@ -255,7 +252,6 @@ function BookDetailPage() {
         title={`Chi tiết Sổ đầu bài · ${book.className} · Tiết ${book.period} · ${book.subject}`}
         description={`${book.weekday}, ${book.date} · Giáo viên dạy: ${book.teacher}`}
         crumbs={[{ label: "Quản lý Sổ đầu bài", to: "/so-dau-bai" }, { label: book.code }]}
-        actions={<LessonStatusBadge status={book.status} />}
       />
 
       {locked && (
@@ -266,8 +262,8 @@ function BookDetailPage() {
         </div>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="space-y-5 lg:col-span-2">
+      <div className="space-y-5">
+        <div className="space-y-5">
           <section className="rounded-xl border border-border bg-card p-4 shadow-card sm:p-6">
             <div className="mb-3 flex items-center gap-2">
               <Cpu className="size-4 text-primary" />
@@ -287,28 +283,7 @@ function BookDetailPage() {
           </section>
         </div>
 
-        <div className="space-y-5">
-          <section className="rounded-xl border border-border bg-card p-4 shadow-card">
-            <h2 className="mb-3 text-base font-semibold">Trạng thái xác nhận</h2>
-            <ul className="space-y-2 text-sm">
-              <li>Tiết học: <LessonStatusBadge status={book.status} /></li>
-              <li>GVBM: {book.gvbmConfirm ? <span className="text-success">Đã xác nhận bởi {book.gvbmConfirm.by} · {book.gvbmConfirm.at}</span> : <span className="text-muted-foreground">Chưa xác nhận</span>}</li>
-              <li>GVCN: {weeklyConfirmed ? <span className="text-success">Đã xác nhận theo tuần {book.weekNumber}</span> : <span className="text-muted-foreground">Chưa xác nhận tuần {book.weekNumber}</span>}</li>
-              <li>BGH: {book.status === "xac_nhan_bgh" ? <span className="text-success">Đã xác nhận</span> : <span className="text-muted-foreground">Chưa xác nhận</span>}</li>
-              <li>Khóa: {book.status === "da_khoa" ? <span className="text-success">Đã khóa</span> : <span className="text-muted-foreground">Chưa khóa</span>}</li>
-            </ul>
-            {book.fixReason && (
-              <p className="mt-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                Yêu cầu chỉnh sửa: {book.fixReason}
-              </p>
-            )}
-          </section>
 
-          <section className="rounded-xl border border-border bg-card p-4 shadow-card">
-            <h2 className="mb-3 text-base font-semibold">Lịch sử thao tác</h2>
-            <AuditTimeline entries={entries} />
-          </section>
-        </div>
       </div>
     </div>
   );
