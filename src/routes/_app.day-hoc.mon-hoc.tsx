@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
 import { EmptyState, NoPermissionState } from "@/components/common/States";
-import { Pill } from "@/components/common/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
 import { SUBJECTS } from "@/lib/mock-data";
@@ -55,7 +54,6 @@ function SubjectPage() {
                 <TableRow>
                   <TableHead>Mã môn</TableHead>
                   <TableHead>Tên môn</TableHead>
-                  <TableHead>Trạng thái</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -63,7 +61,6 @@ function SubjectPage() {
                   <TableRow key={s.code}>
                     <TableCell className="font-mono text-xs">{s.code}</TableCell>
                     <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell><Pill tone="success">Đang áp dụng</Pill></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
