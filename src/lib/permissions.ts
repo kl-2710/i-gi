@@ -12,10 +12,6 @@ export const ROLE_PERMISSIONS: Record<RoleCode, Permission[]> = {
     "setup.view", "book.view.all", "book.confirm.bgh",
     "book.lock", "book.unlock", "report.view", "profile.view",
   ],
-  PHT: [
-    "setup.view", "setup.manage", "ppct.upload", "tkb.upload", "gen.confirm",
-    "book.view.all", "report.view", "profile.view",
-  ],
   TPT: [
     "book.view.all", "report.view", "profile.view",
   ],
@@ -36,17 +32,17 @@ export const PERMISSION_GROUPS: {
     items: [
       { key: "user.manage", label: "Quản lý tài khoản người dùng", roles: ["ADMIN"] },
       { key: "perm.manage", label: "Quản lý phân quyền", roles: ["ADMIN"] },
-      { key: "profile.view", label: "Hồ sơ cá nhân", roles: ["ADMIN", "BGH", "PHT", "TPT", "GVBM", "GVCN"] },
+      { key: "profile.view", label: "Hồ sơ cá nhân", roles: ["ADMIN", "BGH", "TPT", "GVBM", "GVCN"] },
     ],
   },
   {
     module: "2. QUẢN LÝ DANH MỤC VÀ DỮ LIỆU DẠY HỌC",
     items: [
-      { key: "setup.view", label: "Xem danh mục và dữ liệu dạy học", roles: ["ADMIN", "BGH", "PHT", "TPT", "GVBM", "GVCN"] },
-      { key: "setup.manage", label: "Quản lý danh mục dữ liệu dạy học", roles: ["ADMIN", "PHT"] },
-      { key: "ppct.upload", label: "Nhập PPCT", roles: ["PHT"] },
-      { key: "tkb.upload", label: "Nhập TKB", roles: ["PHT"] },
-      { key: "gen.confirm", label: "Hình thành tiết học", roles: ["PHT"] },
+      { key: "setup.view", label: "Xem danh mục và dữ liệu dạy học", roles: ["ADMIN", "BGH", "TPT", "GVBM", "GVCN"] },
+      { key: "setup.manage", label: "Quản lý danh mục dữ liệu dạy học", roles: ["ADMIN", "BGH"] },
+      { key: "ppct.upload", label: "Nhập PPCT", roles: ["BGH"] },
+      { key: "tkb.upload", label: "Nhập TKB", roles: ["BGH"] },
+      { key: "gen.confirm", label: "Hình thành tiết học", roles: ["BGH"] },
     ],
   },
   {
