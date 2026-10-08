@@ -84,9 +84,10 @@ function AccountsPage() {
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả phân quyền</SelectItem>
-                {(Object.keys(ROLE_LABEL) as RoleCode[]).map((r) => (
-                  <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>
-                ))}
+                <SelectItem value="ADMIN">Quản trị viên</SelectItem>
+                <SelectItem value="BGH">Ban Giám hiệu</SelectItem>
+                <SelectItem value="TPT">Tổng phụ trách</SelectItem>
+                <SelectItem value="GVBM_GVCN">Giáo viên chủ nhiệm kiêm giáo viên bộ môn</SelectItem>
               </SelectContent>
             </Select>
           </FilterField>
@@ -175,9 +176,7 @@ function AccountsPage() {
               <div className="space-y-1.5 sm:col-span-2">
                 <Label>Phân quyền được gán</Label>
                 <div className="flex flex-wrap gap-1.5 rounded-md border border-border p-2">
-                  {detail.roles.map((r) => (
-                    <Pill key={r} tone="info"><ShieldCheck className="size-3" />{ROLE_LABEL[r]}</Pill>
-                  ))}
+                  <Pill tone="info"><ShieldCheck className="size-3" />{detail.roles.includes("GVBM") && detail.roles.includes("GVCN") ? "Giáo viên chủ nhiệm kiêm giáo viên bộ môn" : ROLE_LABEL[detail.roles[0]!]}</Pill>
                 </div>
               </div>
             </div>
