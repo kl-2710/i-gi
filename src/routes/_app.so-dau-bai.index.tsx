@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Check, Lock, X } from "lucide-react";
+import { Check, Eye, Lock, X } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterField, ScrollTable, SearchBar, TableCard, TableToolbar } from "@/components/common/DataTable";
@@ -40,6 +40,212 @@ function getWeeks(books: LessonBook[]) {
   }
   return Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
 }
+
+
+function CombinedTeacherBookList({
+  books,
+  user,
+  weeklyGvcnConfirmations,
+  confirmGvcnWeek,
+}: {
+  books: LessonBook[];
+  user: ReturnType<typeof useApp>["user"];
+  weeklyGvcnConfirmations: ReturnType<typeof useApp>["weeklyGvcnConfirmations"];
+  confirmGvcnWeek: ReturnType<typeof useApp>["confirmGvcnWeek"];
+}) {
+  const homeroomClass = user?.homeroomClass ?? "";
+  const homeroomBooks = books.filter((book) => book.className === homeroomClass);
+  const teachingBooks = books.filter(
+    (book) =>
+      book.teacherId === user?.teacherId &&
+      book.className !== homeroomClass,
+  );
+
+  const teachingClasses = Array.from(
+    new Map(
+      teachingBooks.map((book) => [
+        book.className,
+        {
+          name: book.className,
+          grade: book.grade,
+          year: book.year,
+          count: teachingBooks.filter((item) => item.className === book.className).length,
+        },
+      ]),
+    ).values(),
+  );
+
+  const weeklyRows = getWeeks(homeroomBooks).slice(0, 6);
+  const confirmWeek = (weekNumber: number) => {
+    if (!homeroomClass) return;
+    const result = confirmGvcnWeek(homeroomClass, weekNumber);
+    result.ok ? toast.success(result.message) : toast.error(result.message);
+  };
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        title="Quản lý Sổ đầu bài"
+        description="Danh sách Sổ đầu bài theo phạm vi giảng dạy và lớp chủ nhiệm."
+        crumbs={[{ label: "Quản lý Sổ đầu bài" }]}
+      />
+
+      <TableCard>
+        <div className="border-b border-border p-4">
+          <h2 className="text-base font-semibold">Sổ đầu bài lớp chủ nhiệm</h2>
+        </div>
+
+        <ScrollTable>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sổ đầu bài</TableHead>
+                <TableHead>Khối</TableHead>
+                <TableHead>Năm học</TableHead>
+                <TableHead>Số tiết</TableHead>
+                <TableHead>Trạng thái GVCN</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {homeroomClass ? (
+                <TableRow>
+                  <TableCell className="font-medium">{homeroomClass}</TableCell>
+                  <TableCell>{homeroomBooks[0]?.grade ?? "-"}</TableCell>
+                  <TableCell>{homeroomBooks[0]?.year ?? "-"}</TableCell>
+                  <TableCell>{homeroomBooks.length}</TableCell>
+                  <TableCell>
+                    {weeklyRows.length > 0
+                      ? (() => {
+                          const confirmed = weeklyRows.filter(([weekNumber]) =>
+                            Boolean(
+                              weeklyGvcnConfirmations[
+                                `${homeroomBooks[0]?.year}|${homeroomClass}|W${weekNumber}`
+                              ],
+                            ),
+                          ).length;
+                          return <Pill tone={confirmed === weeklyRows.length ? "success" : "warning"}>{confirmed}/{weeklyRows.length} tuần đã xác nhận</Pill>;
+                        })()
+                      : <Pill tone="warning">Chưa có dữ liệu</Pill>}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button asChild variant="outline" size="sm">
+                      <Link to="/so-dau-bai/lop/$className" params={{ className: homeroomClass }}>
+                        <Eye className="size-4" />Xem Sổ đầu bài
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                    Chưa có lớp chủ nhiệm được xác định.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </ScrollTable>
+
+        {homeroomClass && (
+          <div className="border-t border-border p-4">
+            <h3 className="text-sm font-semibold">Xác nhận Sổ đầu bài theo tuần</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              GVCN xác nhận cả tuần sau khi tất cả tiết học trong tuần đã được GVBM xác nhận.
+            </p>
+            <div className="mt-3">
+              <ScrollTable>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Tuần</TableHead>
+                      <TableHead>Thời gian</TableHead>
+                      <TableHead>GVBM</TableHead>
+                      <TableHead>GVCN</TableHead>
+                      <TableHead className="text-right">Thao tác</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {weeklyRows.map(([weekNumber, items]) => {
+                      const allGvbm = items.every((book) => Boolean(book.gvbmConfirm));
+                      const confirmed = Boolean(
+                        weeklyGvcnConfirmations[
+                          `${items[0]?.year}|${homeroomClass}|W${weekNumber}`
+                        ],
+                      );
+                      return (
+                        <TableRow key={weekNumber}>
+                          <TableCell className="font-medium">Tuần {weekNumber}</TableCell>
+                          <TableCell>{items[0]?.weekStart} - {items[0]?.weekEnd}</TableCell>
+                          <TableCell>
+                            <Pill tone={allGvbm ? "success" : "warning"}>
+                              {allGvbm ? "Đã xác nhận đủ" : "Chưa đủ"}
+                            </Pill>
+                          </TableCell>
+                          <TableCell>
+                            <Pill tone={confirmed ? "success" : "warning"}>
+                              {confirmed ? "Đã xác nhận" : "Chưa xác nhận"}
+                            </Pill>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button size="sm" disabled={!allGvbm || confirmed} onClick={() => confirmWeek(weekNumber)}>
+                              <Check className="size-4" />Xác nhận tuần
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </ScrollTable>
+            </div>
+          </div>
+        )}
+      </TableCard>
+
+      <TableCard>
+        <div className="border-b border-border p-4">
+          <h2 className="text-base font-semibold">Sổ đầu bài các lớp được phân công giảng dạy</h2>
+        </div>
+        {teachingClasses.length === 0 ? (
+          <EmptyState title="Chưa có lớp được phân công giảng dạy" />
+        ) : (
+          <ScrollTable>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Sổ đầu bài</TableHead>
+                  <TableHead>Khối</TableHead>
+                  <TableHead>Năm học</TableHead>
+                  <TableHead>Số tiết của giáo viên</TableHead>
+                  <TableHead className="text-right">Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {teachingClasses.map((item) => (
+                  <TableRow key={item.name}>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell>{item.grade}</TableCell>
+                    <TableCell>{item.year}</TableCell>
+                    <TableCell>{item.count}</TableCell>
+                    <TableCell className="text-right">
+                      <Button asChild variant="outline" size="sm">
+                        <Link to="/so-dau-bai/giang-day/$className" params={{ className: item.name }}>
+                          <Eye className="size-4" />Xem tiết dạy
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </ScrollTable>
+        )}
+      </TableCard>
+    </div>
+  );
+}
+
 
 function BookListPage() {
   const {
@@ -124,6 +330,21 @@ function BookListPage() {
   const selectedClassConfirmed = selectedClass
     ? isBghConfirmed(selectedClass)
     : false;
+
+
+  const isCombinedTeacher =
+    Boolean(user?.roles.includes("GVBM") && user?.roles.includes("GVCN"));
+
+  if (isCombinedTeacher) {
+    return (
+      <CombinedTeacherBookList
+        books={scopedBooks}
+        user={user}
+        weeklyGvcnConfirmations={weeklyGvcnConfirmations}
+        confirmGvcnWeek={confirmGvcnWeek}
+      />
+    );
+  }
 
   return (
     <div className="space-y-5">
