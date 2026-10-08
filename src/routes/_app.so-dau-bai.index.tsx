@@ -312,56 +312,47 @@ function SchoolBookList({
   isBgh,
   confirmBghBulk,
   lockBooksByClasses,
-  weeklyGvcnConfirmations,
   isBghConfirmed,
 }: {
   books: LessonBook[];
   isBgh: boolean;
   confirmBghBulk: (classNames: string[]) => { ok: boolean; message: string };
   lockBooksByClasses: (classNames: string[]) => { ok: boolean; message: string };
-  weeklyGvcnConfirmations: Record<string, { by: string; at: string }>;
   isBghConfirmed: (className: string) => boolean;
 }) {
   const [q, setQ] = useState("");
   const [grade, setGrade] = useState("all");
   const [selected, setSelected] = useState<string[]>([]);
+  const [openClass, setOpenClass] = useState<string | null>(null);
 
   const classRows = useMemo(() => {
     const map = new Map<string, LessonBook[]>();
-    for (const book of books) {
+    books.forEach((book) => {
       const rows = map.get(book.className) ?? [];
       rows.push(book);
       map.set(book.className, rows);
-    }
+    });
 
     return Array.from(map.entries())
-      .map(([className, rows]) => {
-        const weeks = [...new Set(rows.map((book) => book.weekNumber))].sort((a, b) => a - b);
-        const confirmedWeeks = weeks.filter((weekNumber) =>
-          Boolean(weeklyGvcnConfirmations[`${rows[0]?.year}|${className}|W${weekNumber}`]),
-        ).length;
-        return {
-          className,
-          grade: rows[0]?.grade ?? "-",
-          year: rows[0]?.year ?? "-",
-          weeks,
-          confirmedWeeks,
-          allWeeksConfirmed: weeks.length > 0 && confirmedWeeks === weeks.length,
-          bghConfirmed: isBghConfirmed(className),
-          locked: rows.every((book) => book.status === "da_khoa"),
-        };
-      })
+      .map(([className, rows]) => ({
+        className,
+        grade: rows[0]?.grade ?? "-",
+        year: rows[0]?.year ?? "-",
+        weeks: [...new Set(rows.map((book) => book.weekNumber))],
+        bghConfirmed: isBghConfirmed(className),
+        locked: rows.length > 0 && rows.every((book) => book.status === "da_khoa"),
+        lessons: rows,
+      }))
       .filter((row) => {
         const haystack = `${row.className} ${row.grade} ${row.year}`.toLowerCase();
         return (!q || haystack.includes(q.toLowerCase()))
           && (grade === "all" || row.grade === grade);
       })
       .sort((a, b) => a.className.localeCompare(b.className));
-  }, [books, q, grade, weeklyGvcnConfirmations, isBghConfirmed]);
+  }, [books, q, grade, isBghConfirmed]);
 
   const visibleNames = classRows.map((row) => row.className);
   const allVisibleSelected = visibleNames.length > 0 && visibleNames.every((name) => selected.includes(name));
-  const selectedVisible = visibleNames.filter((name) => selected.includes(name));
 
   const toggleAll = () => {
     if (allVisibleSelected) {
@@ -383,6 +374,10 @@ function SchoolBookList({
     if (result.ok) setSelected((prev) => prev.filter((name) => !names.includes(name)));
   };
 
+  const selectedVisible = visibleNames.filter((name) => selected.includes(name));
+  const selectedRowData = openClass
+    ? classRows.find((row) => row.className === openClass)
+    : undefined;
   const gradeOptions = Array.from(new Set(books.map((book) => book.grade))).sort();
 
   return (
@@ -396,18 +391,15 @@ function SchoolBookList({
       {isBgh && selected.length > 0 && (
         <TableCard>
           <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-            <div className="text-sm">
-              <span className="font-medium">{selected.length} lớp</span>
-              <span className="text-muted-foreground"> đã được chọn</span>
-            </div>
+            <span className="text-sm"><strong>{selected.length}</strong> lớp đã được chọn</span>
             <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
                 disabled={!selectedVisible.every((name) => {
                   const row = classRows.find((item) => item.className === name);
-                  return Boolean(row?.allWeeksConfirmed && !row.bghConfirmed);
+                  return Boolean(row && !row.bghConfirmed && row.lessons.length > 0);
                 })}
-                onClick={() => doConfirm(selected)}
+                onClick={() => doConfirm(selectedVisible)}
               >
                 <Check className="size-4" />Xác nhận Sổ đầu bài
               </Button>
@@ -418,13 +410,11 @@ function SchoolBookList({
                   const row = classRows.find((item) => item.className === name);
                   return Boolean(row?.bghConfirmed && !row.locked);
                 })}
-                onClick={() => doLock(selected)}
+                onClick={() => doLock(selectedVisible)}
               >
                 <Lock className="size-4" />Khóa Sổ đầu bài
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => setSelected([])}>
-                Bỏ chọn
-              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setSelected([])}>Bỏ chọn</Button>
             </div>
           </div>
         </TableCard>
@@ -432,138 +422,154 @@ function SchoolBookList({
 
       <TableCard>
         <TableToolbar>
-          <SearchBar
-            value={q}
-            onChange={setQ}
-            placeholder="Tìm theo lớp..."
-          />
+          <SearchBar value={q} onChange={setQ} placeholder="Tìm theo lớp..." />
           <FilterField label="Khối">
             <Select value={grade} onValueChange={setGrade}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả khối</SelectItem>
-                {gradeOptions.map((item) => (
-                  <SelectItem key={item} value={item}>{item}</SelectItem>
-                ))}
+                {gradeOptions.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}
               </SelectContent>
             </Select>
           </FilterField>
         </TableToolbar>
 
-        {classRows.length === 0 ? (
-          <EmptyState title="Chưa có Sổ đầu bài" />
-        ) : (
+        <ScrollTable>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {isBgh && (
+                  <TableHead className="w-12 text-center">
+                    <input
+                      type="checkbox"
+                      aria-label="Chọn tất cả lớp đang hiển thị"
+                      checked={allVisibleSelected}
+                      onChange={toggleAll}
+                      className="size-4 rounded border-border"
+                    />
+                  </TableHead>
+                )}
+                <TableHead>Lớp</TableHead>
+                <TableHead>Khối</TableHead>
+                <TableHead>Năm học</TableHead>
+                <TableHead>BGH</TableHead>
+                <TableHead>Khóa</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {classRows.length === 0 ? (
+                <TableRow><TableCell colSpan={isBgh ? 7 : 6} className="py-12 text-center text-muted-foreground">Chưa có Sổ đầu bài</TableCell></TableRow>
+              ) : classRows.map((row) => {
+                const selectedRow = selected.includes(row.className);
+                const canConfirm = isBgh && !row.bghConfirmed && row.lessons.length > 0;
+                const canLock = isBgh && row.bghConfirmed && !row.locked;
+                return (
+                  <TableRow key={row.className}>
+                    {isBgh && (
+                      <TableCell className="text-center">
+                        <input
+                          type="checkbox"
+                          aria-label={`Chọn lớp ${row.className}`}
+                          checked={selectedRow}
+                          onChange={() => setSelected((prev) =>
+                            selectedRow
+                              ? prev.filter((name) => name !== row.className)
+                              : [...prev, row.className],
+                          )}
+                          className="size-4 rounded border-border"
+                        />
+                      </TableCell>
+                    )}
+                    <TableCell className="font-medium">{row.className}</TableCell>
+                    <TableCell>{row.grade}</TableCell>
+                    <TableCell>{row.year}</TableCell>
+                    <TableCell><Pill tone={row.bghConfirmed ? "success" : "warning"}>{row.bghConfirmed ? "Đã xác nhận" : "-"}</Pill></TableCell>
+                    <TableCell><Pill tone={row.locked ? "success" : "warning"}>{row.locked ? "Đã khóa" : "-"}</Pill></TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setOpenClass((prev) => prev === row.className ? null : row.className)}
+                        >
+                          <Eye className="size-4" />{openClass === row.className ? "Ẩn tiết dạy" : "Xem tiết dạy"}
+                        </Button>
+                        {isBgh && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title={canConfirm ? "Xác nhận Sổ đầu bài" : "Chưa đủ điều kiện xác nhận"}
+                              disabled={!canConfirm}
+                              onClick={() => doConfirm([row.className])}
+                            >
+                              <Check className="size-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title={canLock ? "Khóa Sổ đầu bài" : "Chưa đủ điều kiện khóa"}
+                              disabled={!canLock}
+                              onClick={() => doLock([row.className])}
+                            >
+                              <Lock className="size-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </ScrollTable>
+      </TableCard>
+
+      {selectedRowData && (
+        <TableCard>
+          <div className="border-b border-border p-4">
+            <h2 className="text-base font-semibold">Danh sách tiết dạy lớp {selectedRowData.className}</h2>
+          </div>
           <ScrollTable>
             <Table>
               <TableHeader>
                 <TableRow>
-                  {isBgh && (
-                    <TableHead className="w-12 text-center">
-                      <input
-                        type="checkbox"
-                        aria-label="Chọn tất cả lớp đang hiển thị"
-                        checked={allVisibleSelected}
-                        onChange={toggleAll}
-                        className="size-4 rounded border-border"
-                      />
-                    </TableHead>
-                  )}
-                  <TableHead>Lớp</TableHead>
-                  <TableHead>Khối</TableHead>
-                  <TableHead>Năm học</TableHead>
-                  <TableHead>GVCN</TableHead>
-                  <TableHead>BGH</TableHead>
-                  <TableHead>Khóa</TableHead>
+                  <TableHead>Ngày</TableHead>
+                  <TableHead>Thứ</TableHead>
+                  <TableHead>Tiết</TableHead>
+                  <TableHead>Môn</TableHead>
+                  <TableHead>Giáo viên</TableHead>
+                  <TableHead>Nội dung từ PPCT</TableHead>
+                  <TableHead>Trạng thái tiết dạy</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {classRows.map((row) => {
-                  const selectedRow = selected.includes(row.className);
-                  const canConfirm = isBgh && row.allWeeksConfirmed && !row.bghConfirmed;
-                  const canLock = isBgh && row.bghConfirmed && !row.locked;
-                  return (
-                    <TableRow key={row.className}>
-                      {isBgh && (
-                        <TableCell className="text-center">
-                          <input
-                            type="checkbox"
-                            aria-label={`Chọn lớp ${row.className}`}
-                            checked={selectedRow}
-                            onChange={() =>
-                              setSelected((prev) =>
-                                selectedRow
-                                  ? prev.filter((name) => name !== row.className)
-                                  : [...prev, row.className],
-                              )
-                            }
-                            className="size-4 rounded border-border"
-                          />
-                        </TableCell>
-                      )}
-                      <TableCell className="font-medium">{row.className}</TableCell>
-                      <TableCell>{row.grade}</TableCell>
-                      <TableCell>{row.year}</TableCell>
-                      <TableCell>
-                        <Pill tone={row.allWeeksConfirmed ? "success" : "warning"}>
-                          {row.weeks.length === 0
-                            ? "Chưa có dữ liệu"
-                            : row.allWeeksConfirmed
-                              ? "Đã xác nhận đủ"
-                              : `${row.confirmedWeeks}/${row.weeks.length} tuần`}
-                        </Pill>
-                      </TableCell>
-                      <TableCell>
-                        <Pill tone={row.bghConfirmed ? "success" : "warning"}>
-                          {row.bghConfirmed ? "Đã xác nhận" : "-"}
-                        </Pill>
-                      </TableCell>
-                      <TableCell>
-                        <Pill tone={row.locked ? "success" : "warning"}>
-                          {row.locked ? "Đã khóa" : "-"}
-                        </Pill>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex flex-wrap justify-end gap-1">
-                          <Button asChild variant="outline" size="sm" title="Xem danh sách tiết dạy">
-                            <Link to="/so-dau-bai/truong/$className" params={{ className: row.className }}>
-                              <Eye className="size-4" />Xem tiết dạy
-                            </Link>
-                          </Button>
-                          {isBgh && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                title={canConfirm ? "Xác nhận Sổ đầu bài" : "Chưa đủ điều kiện xác nhận"}
-                                disabled={!canConfirm}
-                                onClick={() => doConfirm([row.className])}
-                              >
-                                <Check className="size-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                title={canLock ? "Khóa Sổ đầu bài" : "Chưa đủ điều kiện khóa"}
-                                disabled={!canLock}
-                                onClick={() => doLock([row.className])}
-                              >
-                                <Lock className="size-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {selectedRowData.lessons.map((book) => (
+                  <TableRow key={book.id}>
+                    <TableCell>{book.date}</TableCell>
+                    <TableCell>{book.weekday}</TableCell>
+                    <TableCell>Tiết {book.period}</TableCell>
+                    <TableCell>{book.subject}</TableCell>
+                    <TableCell>{book.teacher}</TableCell>
+                    <TableCell className="max-w-[300px] truncate">{book.plannedContent}</TableCell>
+                    <TableCell><LessonStatusBadge status={book.status} /></TableCell>
+                    <TableCell className="text-right">
+                      <Button asChild variant="ghost" size="icon" title="Xem chi tiết tiết dạy">
+                        <Link to="/so-dau-bai/$id" params={{ id: book.id }} search={{ mode: "view" }}>
+                          <Eye className="size-4" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </ScrollTable>
-        )}
-      </TableCard>
+        </TableCard>
+      )}
     </div>
   );
 }
