@@ -81,7 +81,7 @@ function BookListPage() {
     return (
       <div>
         <PageHeader title="Quản lý Sổ đầu bài" crumbs={[{ label: "Quản lý Sổ đầu bài" }]} />
-        <NoPermissionState message="Vai trò hiện tại không tham gia nghiệp vụ Sổ đầu bài." />
+        <NoPermissionState message="Phân quyền hiện tại không tham gia nghiệp vụ Sổ đầu bài." />
       </div>
     );
   }
@@ -103,7 +103,7 @@ function BookListPage() {
         crumbs={[{ label: "Quản lý Sổ đầu bài" }]}
       />
 
-      {user.roles.includes("GVCN") || role === "GVCN" && (
+      {(user.roles.includes("GVCN") || role === "GVCN") && (
         <TableCard>
           <div className="border-b border-border p-4">
             <h2 className="text-base font-semibold">Xác nhận Sổ đầu bài theo tuần</h2>
