@@ -36,13 +36,16 @@ function LoginPage() {
   const [show, setShow] = useState(false);
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [usernameError, setUsernameError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setUsernameError(false);
+    setPasswordError(false);
     if (!username.trim() || !password.trim()) {
-      setError("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+      setUsernameError(!username.trim());
+      setPasswordError(!password.trim());
       return;
     }
     setLoading(true);
@@ -51,9 +54,9 @@ function LoginPage() {
       setLoading(false);
       if (ok) {
         toast.success("Đăng nhập thành công");
-        navigate({ to: "/dashboard" });
+        navigate({ to: "/day-hoc/nam-hoc" });
       } else {
-        setError("Tên đăng nhập không tồn tại hoặc tài khoản đang bị tạm khóa.");
+        setUsernameError(true);
       }
     }, 600);
   };
@@ -99,7 +102,9 @@ function LoginPage() {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Nhập tên đăng nhập"
                   autoComplete="username"
+                  className={usernameError ? "border-destructive focus-visible:ring-destructive" : ""}
                 />
+                {usernameError && <p className="text-xs text-destructive">Thông tin không hợp lệ</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Mật khẩu</Label>
@@ -112,7 +117,7 @@ function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Nhập mật khẩu"
                     autoComplete="current-password"
-                    className="pr-10"
+                    className={`pr-10 ${passwordError ? "border-destructive focus-visible:ring-destructive" : ""}`}
                   />
                   <button
                     type="button"
@@ -123,13 +128,8 @@ function LoginPage() {
                     {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
+                {passwordError && <p className="text-xs text-destructive">Thông tin không hợp lệ</p>}
               </div>
-
-              {error && (
-                <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                  {error}
-                </p>
-              )}
 
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 text-sm text-muted-foreground">
