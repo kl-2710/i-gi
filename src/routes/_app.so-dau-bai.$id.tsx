@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, useParams, Link } from "@tanstack/react-router";
-import { CheckCircle2, Cpu, Lock, Save, UserCheck } from "lucide-react";
+import { CheckCircle2, Cpu, Eye, Lock, Save, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ActionDialog } from "@/components/common/ActionDialog";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApp } from "@/lib/app-state";
 
 export const Route = createFileRoute("/_app/so-dau-bai/$id")({
