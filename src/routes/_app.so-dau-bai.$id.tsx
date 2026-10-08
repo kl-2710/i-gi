@@ -3,7 +3,7 @@ import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { CheckCircle2, Cpu, Lock, Save, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
-import { StatusBadge, Pill } from "@/components/common/StatusBadge";
+import { LessonStatusBadge, Pill } from "@/components/common/StatusBadge";
 import { AuditTimeline } from "@/components/common/AuditTimeline";
 import { EmptyState } from "@/components/common/States";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useApp } from "@/lib/app-state";
 
 export const Route = createFileRoute("/_app/so-dau-bai/$id")({
+  validateSearch: (search) => ({
+    mode: search.mode === "edit" ? "edit" : "view",
+  }),
   head: () => ({
     meta: [
       { title: "Chi tiết Sổ đầu bài — THCS Khương Mai" },
@@ -25,6 +28,7 @@ export const Route = createFileRoute("/_app/so-dau-bai/$id")({
 
 function BookDetailPage() {
   const { id } = useParams({ from: "/_app/so-dau-bai/$id" });
+  const { mode } = Route.useSearch();
   const { books, audit, can, user, role, updateBook, isGvcnWeekConfirmed } = useApp();
   const book = books.find((b) => b.id === id);
   const [comment, setComment] = useState(book?.comment ?? "");
@@ -45,7 +49,8 @@ function BookDetailPage() {
   const locked = book.status === "da_khoa";
   const confirmedGvbm = !!book.gvbmConfirm;
   const weeklyConfirmed = isGvcnWeekConfirmed(book.className, book.weekNumber);
-  const editable = can("book.edit") && !locked && !confirmedGvbm && book.teacherId === user?.teacherId;
+  const isOwnLesson = book.teacherId === user?.teacherId;
+  const editable = mode === "edit" && can("book.edit") && !locked && !confirmedGvbm && isOwnLesson;
   const missing: string[] = [];
   if (absentCount === "") missing.push("Số học sinh vắng");
   if (score === "") missing.push("Điểm tiết học");
@@ -60,7 +65,7 @@ function BookDetailPage() {
         title={`${can("book.edit") && book.teacherId === user?.teacherId ? "Cập nhật thông tin tiết dạy" : "Chi tiết Sổ đầu bài"} · ${book.className} · Tiết ${book.period} · ${book.subject}`}
         description={`${book.weekday}, ${book.date} · Giáo viên dạy: ${book.teacher}`}
         crumbs={[{ label: "Quản lý Sổ đầu bài", to: "/so-dau-bai" }, { label: book.code }]}
-        actions={<StatusBadge status={book.status} />}
+        actions={<LessonStatusBadge status={book.status} />}
       />
 
       {locked && (
@@ -97,7 +102,7 @@ function BookDetailPage() {
             <div className="mb-3 flex items-center gap-2">
               <UserCheck className="size-4 text-success" />
               <h2 className="text-base font-semibold">Thông tin GVBM cập nhật</h2>
-              <Pill tone="info">Thực hiện theo từng tiết</Pill>
+              <Pill tone="info">{mode === "edit" ? "Đang cập nhật" : "Chỉ xem"}</Pill>
             </div>
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -176,6 +181,7 @@ function BookDetailPage() {
           <section className="rounded-xl border border-border bg-card p-4 shadow-card">
             <h2 className="mb-3 text-base font-semibold">Trạng thái xác nhận</h2>
             <ul className="space-y-2 text-sm">
+              <li>Tiết học: <LessonStatusBadge status={book.status} /></li>
               <li>GVBM: {book.gvbmConfirm ? <span className="text-success">Đã xác nhận bởi {book.gvbmConfirm.by} · {book.gvbmConfirm.at}</span> : <span className="text-muted-foreground">Chưa xác nhận</span>}</li>
               <li>GVCN: {weeklyConfirmed ? <span className="text-success">Đã xác nhận theo tuần ${book.weekNumber}</span> : <span className="text-muted-foreground">Chưa xác nhận tuần ${book.weekNumber}</span>}</li>
               <li>BGH: {book.status === "xac_nhan_bgh" ? <span className="text-success">Đã xác nhận</span> : <span className="text-muted-foreground">Chưa xác nhận</span>}</li>
